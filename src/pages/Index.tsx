@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { generateHRData, HRData } from '../data/hrDataGenerator';
+import { generateHRData, convertHRData } from '../data/hrDataGenerator';
 import { HRAnalytics, KPIData, FilterOptions } from '../services/hrAnalytics';
 import KPICard from '../components/KPICard';
 import KPIDetailModal from '../components/KPIDetailModal';
@@ -24,9 +24,10 @@ const Index = () => {
   // Initialisation des données
   useEffect(() => {
     console.log('Initialisation du module RH...');
-    const data = generateHRData();
-    setHrData(data);
-    setAnalytics(new HRAnalytics(data));
+    const generatedData = generateHRData();
+    const convertedData = convertHRData(generatedData);
+    setHrData(convertedData);
+    setAnalytics(new HRAnalytics(convertedData));
 
     // Création du board par défaut
     const defaultBoard: Board = {

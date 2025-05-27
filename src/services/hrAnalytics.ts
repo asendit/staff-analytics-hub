@@ -41,9 +41,12 @@ export interface KPIData {
 }
 
 export interface FilterOptions {
-  period: 'week' | 'month' | 'quarter' | 'year';
+  period: 'week' | 'month' | 'quarter' | 'year' | 'custom';
   department?: string;
   remoteWork?: boolean;
+  startDate?: string;
+  endDate?: string;
+  compareWith?: 'previous' | 'year-ago';
 }
 
 export class HRAnalytics {
