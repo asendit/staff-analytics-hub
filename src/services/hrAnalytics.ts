@@ -1,4 +1,3 @@
-
 import { HRData, Employee, Absence, Training, Overtime, Expense, Task, Document } from '../data/hrDataGenerator';
 
 export interface FilterOptions {
@@ -102,7 +101,7 @@ export class HRAnalytics {
       value: headcount,
       unit: 'collaborateurs',
       trend: trend,
-      comparison: trend > 0 ? 'higher' : trend < 0 ? 'lower' : 'equal',
+      comparison: trend > 0 ? 'higher' : trend < 0 ? 'lower' : 'stable',
       insight: this.generateHeadcountInsight(headcount, trend, filters.department),
       category: trend > 0 ? 'positive' : trend < -5 ? 'negative' : 'neutral'
     };
@@ -155,7 +154,7 @@ export class HRAnalytics {
       value: Math.round(avgRemoteDays * 10) / 10,
       unit: 'jours/mois',
       trend: Math.round(trend * 10) / 10,
-      comparison: trend > 0 ? 'higher' : trend < 0 ? 'lower' : 'equal',
+      comparison: trend > 0 ? 'higher' : trend < 0 ? 'lower' : 'stable',
       insight: this.generateRemoteWorkInsight(avgRemoteDays, trend, filters.department),
       category: 'neutral'
     };
@@ -179,7 +178,7 @@ export class HRAnalytics {
       value: Math.round(avgOnboardingDays * 10) / 10,
       unit: 'jours',
       trend: Math.round(trend * 10) / 10,
-      comparison: trend > 0 ? 'higher' : trend < 0 ? 'lower' : 'equal',
+      comparison: trend > 0 ? 'higher' : trend < 0 ? 'lower' : 'stable',
       insight: this.generateOnboardingInsight(avgOnboardingDays, trend),
       category: avgOnboardingDays > 20 ? 'negative' : avgOnboardingDays < 10 ? 'positive' : 'neutral'
     };
@@ -193,25 +192,40 @@ export class HRAnalytics {
       employees = employees.filter(emp => emp.department === filters.department);
     }
 
-    const totalSalaries = employees.reduce((sum, emp) => sum + emp.salary, 0);
     const employeeIds = employees.map(emp => emp.id);
     const expenses = this.data.expenses.filter(exp => employeeIds.includes(exp.employeeId) && exp.status === 'validé');
-    const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+    
+    // Calcul par catégorie
+    const expensesByCategory = expenses.reduce((acc, exp) => {
+      acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
+      return acc;
+    }, {} as Record<string, number>);
+
     const training = this.data.training.filter(tr => employeeIds.includes(tr.employeeId));
     const trainingCosts = training.reduce((sum, tr) => sum + tr.cost, 0);
+    
+    // Catégorie principale avec le plus de dépenses
+    const topCategory = Object.entries(expensesByCategory).sort(([,a], [,b]) => b - a)[0];
+    const totalExpenses = Object.values(expensesByCategory).reduce((sum, amount) => sum + amount, 0) + trainingCosts;
+    
+    const previousCosts = totalExpenses * (0.95 + Math.random() * 0.1);
+    const trend = ((totalExpenses - previousCosts) / previousCosts) * 100;
 
-    const totalHRCosts = totalSalaries + totalExpenses + trainingCosts;
-    const previousCosts = totalHRCosts * (0.95 + Math.random() * 0.1);
-    const trend = ((totalHRCosts - previousCosts) / previousCosts) * 100;
+    const categoryBreakdown = {
+      repas: Math.round((expensesByCategory['repas'] || 0) / 100) / 10,
+      transport: Math.round((expensesByCategory['transport'] || 0) / 100) / 10,
+      formation: Math.round((trainingCosts + (expensesByCategory['formation'] || 0)) / 100) / 10,
+      materiel: Math.round((expensesByCategory['materiel'] || 0) / 100) / 10
+    };
 
     return {
       id: 'hr-expenses',
-      name: 'Dépenses RH totales',
-      value: Math.round(totalHRCosts / 1000),
-      unit: 'K€',
+      name: 'Dépenses RH par catégorie',
+      value: `${topCategory ? topCategory[0] : 'formation'}: ${categoryBreakdown[topCategory?.[0] as keyof typeof categoryBreakdown] || categoryBreakdown.formation}K€`,
+      unit: '',
       trend: Math.round(trend * 100) / 100,
       comparison: trend > 0 ? 'higher' : 'lower',
-      insight: this.generateExpensesInsight(totalHRCosts, trend),
+      insight: this.generateExpensesCategoryInsight(categoryBreakdown, topCategory?.[0], trend),
       category: trend > 10 ? 'negative' : trend < 5 ? 'positive' : 'neutral'
     };
   }
@@ -238,7 +252,7 @@ export class HRAnalytics {
       value: `${Math.round(avgAge)} ans (${Math.round(avgSeniority * 10) / 10} ans d'ancienneté)`,
       unit: '',
       trend: 0,
-      comparison: 'equal',
+      comparison: 'stable',
       insight: this.generateAgeSeniorityInsight(avgAge, avgSeniority),
       category: 'neutral'
     };
@@ -317,11 +331,11 @@ export class HRAnalytics {
     return `📊 L'absentéisme reste stable${deptText} avec ${rate.toFixed(1)}%, dans la moyenne du secteur.`;
   }
 
-  private generateTurnoverInsight(rate: number, trend: number, department?: string): string {
+  private generateTurnoverInsight(turnoverRate: number, trend: number, department?: string): string {
     const deptText = department ? ` dans le département ${department}` : '';
-    if (rate > 15) {
-      return `🚨 Turnover élevé (${rate.toFixed(1)}%)${deptText}. Recommandation : analyser les entretiens de départ et améliorer la rétention.`;
-    } else if (rate < 8) {
+    if (turnoverRate > 15) {
+      return `🚨 Turnover élevé (${turnoverRate.toFixed(1)}%)${deptText}. Recommandation : analyser les entretiens de départ et améliorer la rétention.`;
+    } else if (turnoverRate < 8) {
       return `🎯 Excellent taux de rétention${deptText}. L'entreprise maintient ses talents efficacement.`;
     }
     return `📈 Turnover modéré${deptText}. Surveillance recommandée pour identifier les signaux d'alerte.`;
@@ -399,6 +413,26 @@ export class HRAnalytics {
       return `📝 Dossiers incomplets (${rate.toFixed(1)}%). Risque de non-conformité - relancer les collaborateurs manquants.`;
     }
     return `📊 Niveau de complétude acceptable. Quelques rappels à prévoir pour finaliser les dossiers.`;
+  }
+
+  private generateExpensesCategoryInsight(categoryBreakdown: Record<string, number>, topCategory: string | undefined, trend: number): string {
+    const total = Object.values(categoryBreakdown).reduce((sum, amount) => sum + amount, 0);
+    const categoryLabels = {
+      repas: 'repas',
+      transport: 'transport', 
+      formation: 'formation',
+      materiel: 'matériel'
+    };
+    
+    const topCategoryLabel = topCategory ? categoryLabels[topCategory as keyof typeof categoryLabels] : 'formation';
+    const topAmount = topCategory ? categoryBreakdown[topCategory as keyof typeof categoryBreakdown] : categoryBreakdown.formation;
+    
+    if (trend > 10) {
+      return `💰 Hausse significative des dépenses (+${trend.toFixed(1)}%). Catégorie principale: ${topCategoryLabel} (${topAmount}K€).`;
+    } else if (trend < -5) {
+      return `💡 Optimisation réussie des coûts (-${Math.abs(trend).toFixed(1)}%). Focus sur ${topCategoryLabel}: ${topAmount}K€.`;
+    }
+    return `📊 Répartition équilibrée. ${topCategoryLabel} représente ${topAmount}K€ sur ${total.toFixed(1)}K€ total.`;
   }
 
   // Méthode principale pour obtenir tous les KPIs
