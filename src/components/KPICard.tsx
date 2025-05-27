@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { KPIData } from '../services/hrAnalytics';
 
 interface KPICardProps {
@@ -50,6 +51,19 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onClick }) => {
     return 'text-gray-500';
   };
 
+  // Génération de données factices pour les graphiques
+  const generateChartData = () => {
+    const baseValue = typeof kpi.value === 'number' ? kpi.value : 50;
+    return Array.from({ length: 7 }, (_, i) => ({
+      day: i + 1,
+      value: baseValue + (Math.random() - 0.5) * baseValue * 0.3
+    }));
+  };
+
+  const chartData = generateChartData();
+  const isPercentage = kpi.unit === '%';
+  const showChart = typeof kpi.value === 'number' && !kpi.name.includes('Âge moyen');
+
   return (
     <Card 
       className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 border-l-4 ${getCategoryColor()}`}
@@ -63,11 +77,40 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onClick }) => {
       </CardHeader>
       <CardContent className="pt-0">
         <div className="space-y-3">
-          <div className="flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-gray-900">
-              {kpi.value}
-            </span>
-            <span className="text-sm text-gray-500">{kpi.unit}</span>
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline space-x-2">
+              <span className="text-2xl font-bold text-gray-900">
+                {kpi.value}
+              </span>
+              <span className="text-sm text-gray-500">{kpi.unit}</span>
+            </div>
+            
+            {/* Mini graphique */}
+            {showChart && (
+              <div className="w-16 h-8">
+                <ResponsiveContainer width="100%" height="100%">
+                  {isPercentage ? (
+                    <LineChart data={chartData}>
+                      <Line 
+                        type="monotone" 
+                        dataKey="value" 
+                        stroke={kpi.category === 'positive' ? '#10b981' : kpi.category === 'negative' ? '#ef4444' : '#3b82f6'}
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </LineChart>
+                  ) : (
+                    <BarChart data={chartData}>
+                      <Bar 
+                        dataKey="value" 
+                        fill={kpi.category === 'positive' ? '#10b981' : kpi.category === 'negative' ? '#ef4444' : '#3b82f6'}
+                        radius={1}
+                      />
+                    </BarChart>
+                  )}
+                </ResponsiveContainer>
+              </div>
+            )}
           </div>
           
           {kpi.trend !== 0 && (
@@ -77,7 +120,7 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onClick }) => {
                 {Math.abs(kpi.trend)}
                 {kpi.unit === '%' ? 'pp' : kpi.unit === 'jours' ? ' jours' : kpi.unit === 'collaborateurs' ? '' : '%'}
               </span>
-              <span className="text-gray-500">vs période précédente</span>
+              <span className="text-gray-500 text-xs">vs période précédente</span>
             </div>
           )}
           

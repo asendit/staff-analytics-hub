@@ -1,9 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Calendar, RefreshCw, Filter } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon, RefreshCw, Filter } from 'lucide-react';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 import { FilterOptions } from '../services/hrAnalytics';
 
 interface FilterPanelProps {
@@ -19,8 +24,20 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   departments,
   onRefresh 
 }) => {
-  const handlePeriodChange = (period: 'month' | 'quarter' | 'year') => {
-    onFiltersChange({ ...filters, period });
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+
+  const handlePeriodChange = (period: 'month' | 'quarter' | 'year' | 'custom') => {
+    if (period === 'custom') {
+      onFiltersChange({ 
+        ...filters, 
+        period,
+        startDate: startDate ? format(startDate, 'yyyy-MM-dd') : undefined,
+        endDate: endDate ? format(endDate, 'yyyy-MM-dd') : undefined
+      });
+    } else {
+      onFiltersChange({ ...filters, period, startDate: undefined, endDate: undefined });
+    }
   };
 
   const handleDepartmentChange = (department: string) => {
@@ -30,8 +47,26 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     });
   };
 
-  const handleComparisonChange = (compareWith: 'previous' | 'year-ago') => {
-    onFiltersChange({ ...filters, compareWith });
+  const handleDateChange = (type: 'start' | 'end', date: Date | undefined) => {
+    if (type === 'start') {
+      setStartDate(date);
+      if (date) {
+        onFiltersChange({ 
+          ...filters, 
+          startDate: format(date, 'yyyy-MM-dd'),
+          period: 'custom'
+        });
+      }
+    } else {
+      setEndDate(date);
+      if (date) {
+        onFiltersChange({ 
+          ...filters, 
+          endDate: format(date, 'yyyy-MM-dd'),
+          period: 'custom'
+        });
+      }
+    }
   };
 
   return (
@@ -43,20 +78,75 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Période */}
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium text-gray-700">Période</label>
-            <Select value={filters.period} onValueChange={handlePeriodChange}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="month">Mois en cours</SelectItem>
-                <SelectItem value="quarter">Trimestre en cours</SelectItem>
-                <SelectItem value="year">Année en cours</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <Select value={filters.period} onValueChange={handlePeriodChange}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="month">Mois en cours</SelectItem>
+                  <SelectItem value="quarter">Trimestre en cours</SelectItem>
+                  <SelectItem value="year">Année en cours</SelectItem>
+                  <SelectItem value="custom">Période personnalisée</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {filters.period === 'custom' && (
+              <div className="flex gap-2 mt-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "flex-1 justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "dd/MM/yyyy", { locale: fr }) : "Date début"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={(date) => handleDateChange('start', date)}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "flex-1 justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? format(endDate, "dd/MM/yyyy", { locale: fr }) : "Date fin"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={(date) => handleDateChange('end', date)}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
           </div>
 
           {/* Département */}
@@ -78,23 +168,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             </Select>
           </div>
 
-          {/* Comparaison */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Comparer avec</label>
-            <Select 
-              value={filters.compareWith || 'previous'} 
-              onValueChange={handleComparisonChange}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="previous">Période précédente</SelectItem>
-                <SelectItem value="year-ago">Même période N-1</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Actions */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Actions</label>
@@ -109,15 +182,35 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           </div>
         </div>
 
-        {/* Résumé des filtres actifs */}
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-center space-x-2 text-sm text-blue-800">
-            <Calendar className="h-4 w-4" />
+        {/* Résumé des filtres actifs - plus discret */}
+        <div className="mt-4 p-2 bg-gray-50 rounded border text-xs text-gray-600">
+          <div className="flex items-center justify-between">
             <span>
-              Analyse {filters.period === 'month' ? 'mensuelle' : filters.period === 'quarter' ? 'trimestrielle' : 'annuelle'}
-              {filters.department && ` • Département: ${filters.department}`}
-              {filters.compareWith && ` • Comparaison: ${filters.compareWith === 'previous' ? 'période précédente' : 'année précédente'}`}
+              {filters.period === 'custom' ? 
+                `${startDate ? format(startDate, "dd/MM/yyyy") : '...'} - ${endDate ? format(endDate, "dd/MM/yyyy") : '...'}` :
+                filters.period === 'month' ? 'Mois en cours' : 
+                filters.period === 'quarter' ? 'Trimestre en cours' : 'Année en cours'
+              }
+              {filters.department && ` • ${filters.department}`}
             </span>
+            {filters.compareWith && (
+              <Select 
+                value={filters.compareWith || 'none'} 
+                onValueChange={(value) => onFiltersChange({ 
+                  ...filters, 
+                  compareWith: value === 'none' ? undefined : value as 'previous' | 'year-ago' 
+                })}
+              >
+                <SelectTrigger className="w-auto h-6 text-xs border-none bg-transparent">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Sans comparaison</SelectItem>
+                  <SelectItem value="previous">vs période précédente</SelectItem>
+                  <SelectItem value="year-ago">vs année précédente</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </div>
       </CardContent>

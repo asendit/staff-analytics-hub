@@ -197,16 +197,8 @@ const Index = () => {
           onRefresh={handleRefresh}
         />
 
-        {/* Insight global */}
-        <GlobalInsightPanel
-          insight={globalInsight}
-          kpis={kpis}
-          isLoading={isLoadingInsight}
-          onGenerateInsight={handleGenerateInsight}
-        />
-
         {/* Grille des KPIs */}
-        <div className="space-y-6">
+        <div className="space-y-6 mb-8">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">
               {currentBoard.name}
@@ -240,6 +232,14 @@ const Index = () => {
             </div>
           )}
         </div>
+
+        {/* Insight global déplacé en bas */}
+        <GlobalInsightPanel
+          insight={globalInsight}
+          kpis={kpis}
+          isLoading={isLoadingInsight}
+          onGenerateInsight={handleGenerateInsight}
+        />
 
         {/* Footer */}
         <div className="mt-12 text-center text-sm text-gray-500">
