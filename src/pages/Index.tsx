@@ -8,6 +8,7 @@ import FilterPanel from '../components/FilterPanel';
 import BoardManager, { Board } from '../components/BoardManager';
 import GlobalInsightPanel from '../components/GlobalInsightPanel';
 import { Users, BarChart3, Brain, Sparkles } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 
 const Index = () => {
@@ -21,6 +22,7 @@ const Index = () => {
   const [currentBoard, setCurrentBoard] = useState<Board | null>(null);
   const [selectedKPI, setSelectedKPI] = useState<KPIData | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isAIEnabled, setIsAIEnabled] = useState(true);
 
   // Initialisation des données
   useEffect(() => {
@@ -69,6 +71,8 @@ const Index = () => {
   }, [analytics, filters, currentBoard]);
 
   const handleGenerateInsight = async () => {
+    if (!isAIEnabled) return;
+    
     setIsLoadingInsight(true);
     
     // Simulation d'un appel à l'API IA
@@ -84,6 +88,29 @@ const Index = () => {
         description: "Les insights ont été régénérés avec succès"
       });
     }, 2000);
+  };
+
+  const handleAIToggle = (enabled: boolean) => {
+    setIsAIEnabled(enabled);
+    
+    if (!enabled) {
+      setGlobalInsight('');
+      toast({
+        title: "IA désactivée",
+        description: "Les analyses et insights IA ont été désactivés"
+      });
+    } else {
+      toast({
+        title: "IA activée",
+        description: "Les analyses et insights IA sont maintenant disponibles"
+      });
+      
+      // Générer les insights si l'IA est réactivée
+      if (analytics) {
+        const insight = analytics.generateGlobalInsight(kpis, filters);
+        setGlobalInsight(insight);
+      }
+    }
   };
 
   const handleRefresh = () => {
@@ -171,14 +198,19 @@ const Index = () => {
                 <p className="text-sm text-gray-500">Module d'analyse et de pilotage RH</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex items-center space-x-6 text-sm text-gray-600">
               <div className="flex items-center space-x-2">
                 <Users className="h-4 w-4" />
                 <span>{hrData.employees.filter(emp => emp.status === 'active').length} collaborateurs actifs</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <Sparkles className="h-4 w-4" />
-                <span>IA activée</span>
+              <div className="flex items-center space-x-3">
+                <Brain className="h-4 w-4" />
+                <span>IA</span>
+                <Switch
+                  checked={isAIEnabled}
+                  onCheckedChange={handleAIToggle}
+                />
+                {isAIEnabled && <Sparkles className="h-4 w-4 text-primary" />}
               </div>
             </div>
           </div>
@@ -224,6 +256,7 @@ const Index = () => {
                   <KPICard 
                     kpi={kpi} 
                     onInfoClick={() => handleKPIInfoClick(kpi)}
+                    showInsight={isAIEnabled}
                   />
                 </div>
               ))}
@@ -237,13 +270,15 @@ const Index = () => {
           )}
         </div>
 
-        {/* Insight global déplacé en bas */}
-        <GlobalInsightPanel
-          insight={globalInsight}
-          kpis={kpis}
-          isLoading={isLoadingInsight}
-          onGenerateInsight={handleGenerateInsight}
-        />
+        {/* Insight global - affiché seulement si IA activée */}
+        {isAIEnabled && (
+          <GlobalInsightPanel
+            insight={globalInsight}
+            kpis={kpis}
+            isLoading={isLoadingInsight}
+            onGenerateInsight={handleGenerateInsight}
+          />
+        )}
 
         {/* Footer */}
         <div className="mt-12 text-center text-sm text-gray-500">
@@ -266,6 +301,7 @@ const Index = () => {
         onClose={() => setIsDetailModalOpen(false)}
         kpi={selectedKPI}
         filters={filters}
+        showInsight={isAIEnabled}
       />
     </div>
   );
