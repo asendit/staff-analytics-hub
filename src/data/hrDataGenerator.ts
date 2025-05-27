@@ -1,3 +1,4 @@
+
 import { faker } from '@faker-js/faker';
 
 export interface Employee {
@@ -45,7 +46,7 @@ export const generateHRData = (): GeneratedHRData => {
     'Direction'
   ];
 
-  const positionsByDepartment = {
+  const positionsByDepartment: Record<string, string[]> = {
     'Ressources Humaines': ['DRH', 'Chargé RH', 'Assistant RH', 'Responsable Formation'],
     'Développement': ['Lead Developer', 'Développeur Frontend', 'Développeur Backend', 'DevOps', 'QA Engineer'],
     'Marketing': ['Directeur Marketing', 'Chef de Produit', 'Chargé Marketing', 'Community Manager'],
@@ -102,7 +103,7 @@ export const generateHRData = (): GeneratedHRData => {
   }
 
   // Génération des dépenses RH
-  const expenseCategories: Array<'repas' | 'transport' | 'formation' | 'materiel'> = ['repas', 'transport', 'formation', 'materiel'];
+  const expenseCategories = ['repas', 'transport', 'formation', 'materiel'];
   
   for (let i = 0; i < 500; i++) {
     const category = faker.helpers.arrayElement(expenseCategories);
@@ -126,6 +127,9 @@ export const generateHRData = (): GeneratedHRData => {
         amount = faker.number.int({ min: 50, max: 1500 });
         description = `Matériel bureau - ${faker.helpers.arrayElement(['Ordinateur', 'Mobilier', 'Fournitures', 'Logiciels'])}`;
         break;
+      default:
+        amount = 0;
+        description = 'Dépense divers';
     }
 
     const expense: Expense = {
