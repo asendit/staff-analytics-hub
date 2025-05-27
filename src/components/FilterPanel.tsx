@@ -27,7 +27,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
 
-  const handlePeriodChange = (period: 'month' | 'quarter' | 'year' | 'custom') => {
+  const handlePeriodChange = (period: 'week' | 'month' | 'quarter' | 'year' | 'custom') => {
     if (period === 'custom') {
       onFiltersChange({ 
         ...filters, 
@@ -44,6 +44,13 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     onFiltersChange({ 
       ...filters, 
       department: department === 'all' ? undefined : department 
+    });
+  };
+
+  const handleCompareWithChange = (compareWith: string) => {
+    onFiltersChange({ 
+      ...filters, 
+      compareWith: compareWith === 'none' ? undefined : compareWith as 'previous' | 'year-ago' 
     });
   };
 
@@ -78,7 +85,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Période */}
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium text-gray-700">Période</label>
@@ -88,6 +95,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="week">Semaine en cours</SelectItem>
                   <SelectItem value="month">Mois en cours</SelectItem>
                   <SelectItem value="quarter">Trimestre en cours</SelectItem>
                   <SelectItem value="year">Année en cours</SelectItem>
@@ -168,6 +176,24 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             </Select>
           </div>
 
+          {/* Période de comparaison */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Comparaison</label>
+            <Select 
+              value={filters.compareWith || 'none'} 
+              onValueChange={handleCompareWithChange}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Aucune</SelectItem>
+                <SelectItem value="previous">vs période précédente</SelectItem>
+                <SelectItem value="year-ago">vs année précédente</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Actions */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Actions</label>
@@ -182,35 +208,19 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           </div>
         </div>
 
-        {/* Résumé des filtres actifs - plus discret */}
+        {/* Résumé des filtres actifs */}
         <div className="mt-4 p-2 bg-gray-50 rounded border text-xs text-gray-600">
           <div className="flex items-center justify-between">
             <span>
               {filters.period === 'custom' ? 
                 `${startDate ? format(startDate, "dd/MM/yyyy") : '...'} - ${endDate ? format(endDate, "dd/MM/yyyy") : '...'}` :
+                filters.period === 'week' ? 'Semaine en cours' :
                 filters.period === 'month' ? 'Mois en cours' : 
                 filters.period === 'quarter' ? 'Trimestre en cours' : 'Année en cours'
               }
               {filters.department && ` • ${filters.department}`}
+              {filters.compareWith && ` • ${filters.compareWith === 'previous' ? 'vs période précédente' : 'vs année précédente'}`}
             </span>
-            {filters.compareWith && (
-              <Select 
-                value={filters.compareWith || 'none'} 
-                onValueChange={(value) => onFiltersChange({ 
-                  ...filters, 
-                  compareWith: value === 'none' ? undefined : value as 'previous' | 'year-ago' 
-                })}
-              >
-                <SelectTrigger className="w-auto h-6 text-xs border-none bg-transparent">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Sans comparaison</SelectItem>
-                  <SelectItem value="previous">vs période précédente</SelectItem>
-                  <SelectItem value="year-ago">vs année précédente</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
           </div>
         </div>
       </CardContent>
