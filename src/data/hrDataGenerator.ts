@@ -110,7 +110,7 @@ function generateEmployees(): Employee[] {
     const firstName = getRandomElement(firstNames[gender]);
     const lastName = getRandomElement(lastNames);
     const department = getRandomElement(departments);
-    const position = getRandomElement(positions[department]);
+    const position = getRandomElement(positions[department as keyof typeof positions]);
     
     employees.push({
       id: i,

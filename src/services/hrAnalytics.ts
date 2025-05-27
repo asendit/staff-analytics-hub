@@ -1,5 +1,13 @@
 
-import { HRData, Employee, Absence, Task, Document } from '../data/hrDataGenerator';
+import { HRData, Employee, Absence, Training, Overtime, Expense, Task, Document } from '../data/hrDataGenerator';
+
+export interface FilterOptions {
+  period: 'month' | 'quarter' | 'year' | 'custom';
+  startDate?: string;
+  endDate?: string;
+  department?: string;
+  compareWith?: 'previous' | 'year-ago';
+}
 
 export interface KPIData {
   id: string;
@@ -7,17 +15,9 @@ export interface KPIData {
   value: number | string;
   unit: string;
   trend: number;
-  comparison: 'higher' | 'lower' | 'equal';
+  comparison: 'higher' | 'lower' | 'stable';
   insight: string;
   category: 'positive' | 'negative' | 'neutral';
-}
-
-export interface FilterOptions {
-  period: 'month' | 'quarter' | 'year';
-  department?: string;
-  startDate?: string;
-  endDate?: string;
-  compareWith?: 'previous' | 'year-ago';
 }
 
 export class HRAnalytics {
