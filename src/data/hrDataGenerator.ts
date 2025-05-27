@@ -72,26 +72,27 @@ export interface HRData {
   documents: Document[];
 }
 
-const departments = ['IT', 'RH', 'Finance', 'Marketing', 'Commercial', 'Production', 'Logistique', 'Direction'];
+const departments = ['Tech & Innovation', 'Relations Humaines', 'Comptabilité & Finance', 'Marketing Digital', 'Ventes & Business Dev', 'Opérations', 'Supply Chain', 'Direction Générale'];
+
 const positions = {
-  'IT': ['Développeur', 'Senior Developer', 'Tech Lead', 'DevOps', 'Data Analyst', 'Product Owner'],
-  'RH': ['RH Généraliste', 'Chargé de recrutement', 'Responsable RH', 'Assistant RH'],
-  'Finance': ['Comptable', 'Contrôleur de gestion', 'Directeur financier', 'Assistant comptable'],
-  'Marketing': ['Chef de produit', 'Community Manager', 'Responsable Marketing', 'Chargé de communication'],
-  'Commercial': ['Commercial', 'Responsable commercial', 'Business Developer', 'Account Manager'],
-  'Production': ['Opérateur', 'Chef d\'équipe', 'Responsable production', 'Technicien'],
-  'Logistique': ['Préparateur', 'Responsable logistique', 'Chauffeur-livreur', 'Magasinier'],
-  'Direction': ['Directeur général', 'Directeur opérationnel', 'Assistant de direction']
+  'Tech & Innovation': ['Développeur Full-Stack', 'Architecte Cloud', 'Data Scientist', 'UX/UI Designer', 'DevOps Engineer', 'CTO', 'Tech Lead'],
+  'Relations Humaines': ['Business Partner RH', 'Talent Acquisition', 'Responsable Formation', 'HR Analytics', 'Gestionnaire Paie'],
+  'Comptabilité & Finance': ['Analyste Financier', 'Contrôleur Budgétaire', 'CFO', 'Comptable Senior', 'Credit Manager'],
+  'Marketing Digital': ['Growth Hacker', 'Social Media Manager', 'Brand Manager', 'SEO Specialist', 'Content Creator'],
+  'Ventes & Business Dev': ['Account Executive', 'Sales Manager', 'Business Developer', 'Key Account Manager', 'Inside Sales'],
+  'Opérations': ['Operations Manager', 'Process Analyst', 'Quality Manager', 'Project Coordinator', 'Operations Specialist'],
+  'Supply Chain': ['Procurement Manager', 'Logistics Coordinator', 'Supply Planner', 'Warehouse Manager', 'Transport Coordinator'],
+  'Direction Générale': ['CEO', 'COO', 'Directeur Stratégie', 'Executive Assistant', 'Chief Innovation Officer']
 };
 
 const firstNames = {
-  M: ['Pierre', 'Jean', 'Michel', 'Philippe', 'Alain', 'Nicolas', 'Christophe', 'Daniel', 'Julien', 'Thomas', 'Alexandre', 'David', 'Stéphane', 'Laurent', 'Sébastien'],
-  F: ['Marie', 'Nathalie', 'Isabelle', 'Sylvie', 'Catherine', 'Françoise', 'Valérie', 'Christine', 'Sophie', 'Martine', 'Julie', 'Sandrine', 'Caroline', 'Patricia', 'Céline']
+  M: ['Lucas', 'Hugo', 'Théo', 'Antoine', 'Maxime', 'Romain', 'Alexandre', 'Quentin', 'Adrien', 'Kevin', 'Florian', 'Nathan', 'Clément', 'Benjamin', 'Gabriel'],
+  F: ['Emma', 'Jade', 'Louise', 'Alice', 'Chloé', 'Lina', 'Léa', 'Manon', 'Zoé', 'Clara', 'Camille', 'Sarah', 'Inès', 'Juliette', 'Océane']
 };
 
-const lastNames = ['Martin', 'Bernard', 'Thomas', 'Petit', 'Robert', 'Richard', 'Durand', 'Dubois', 'Moreau', 'Laurent', 'Simon', 'Michel', 'Lefebvre', 'Leroy', 'Roux', 'David', 'Bertrand', 'Morel', 'Fournier', 'Girard'];
+const lastNames = ['Lefevre', 'Mercier', 'Garnier', 'Rousseau', 'Blanc', 'Guerin', 'Muller', 'Henry', 'Roussel', 'Nicolas', 'Perrin', 'Morin', 'Mathieu', 'Clement', 'Gauthier', 'Dumont', 'Lopez', 'Fontaine', 'Chevalier', 'Robin'];
 
-const managers = ['Bob Wilson', 'Sarah Connor', 'Mike Johnson', 'Lisa Anderson', 'Tom Brown', 'Emma Davis', 'John Smith', 'Anna Garcia'];
+const managers = ['Sophie Delacroix', 'Marc Beaumont', 'Julie Fontaine', 'Thomas Dubois', 'Nathalie Rousseau', 'Pierre Lecomte', 'Isabelle Moreau', 'François Girard'];
 
 function getRandomElement<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)];
@@ -106,26 +107,32 @@ function generateEmployees(): Employee[] {
   const employees: Employee[] = [];
   
   for (let i = 1; i <= 250; i++) {
-    const gender = Math.random() > 0.5 ? 'M' : 'F';
+    const gender = Math.random() > 0.45 ? 'M' : 'F';
     const firstName = getRandomElement(firstNames[gender]);
     const lastName = getRandomElement(lastNames);
     const department = getRandomElement(departments);
     const position = getRandomElement(positions[department as keyof typeof positions]);
     
+    // Salaires plus réalistes selon les postes
+    let baseSalary = 35000;
+    if (position.includes('Senior') || position.includes('Manager')) baseSalary = 55000;
+    if (position.includes('Lead') || position.includes('Director')) baseSalary = 70000;
+    if (position.includes('CEO') || position.includes('CTO') || position.includes('CFO')) baseSalary = 120000;
+    
     employees.push({
       id: i,
       name: `${firstName} ${lastName}`,
-      age: Math.floor(Math.random() * 40) + 22,
+      age: Math.floor(Math.random() * 35) + 25,
       gender,
       department,
       position,
-      salary: Math.floor(Math.random() * 80000) + 25000,
-      hireDate: getRandomDate(new Date(2018, 0, 1), new Date(2024, 0, 1)),
-      status: Math.random() > 0.05 ? 'active' : 'inactive',
+      salary: baseSalary + Math.floor(Math.random() * 30000),
+      hireDate: getRandomDate(new Date(2019, 0, 1), new Date(2024, 2, 1)),
+      status: Math.random() > 0.08 ? 'active' : 'inactive',
       manager: getRandomElement(managers),
-      evaluationScore: Math.round((Math.random() * 2 + 3) * 10) / 10,
-      onboardingCompletedDays: Math.floor(Math.random() * 30) + 5,
-      remoteWorkDays: Math.floor(Math.random() * 15)
+      evaluationScore: Math.round((Math.random() * 1.5 + 3.5) * 10) / 10,
+      onboardingCompletedDays: Math.floor(Math.random() * 45) + 7,
+      remoteWorkDays: Math.floor(Math.random() * 20)
     });
   }
   
@@ -136,14 +143,14 @@ function generateAbsences(employees: Employee[]): Absence[] {
   const absences: Absence[] = [];
   
   employees.forEach(employee => {
-    const numAbsences = Math.floor(Math.random() * 6) + 1;
+    const numAbsences = Math.floor(Math.random() * 8) + 2;
     
     for (let i = 0; i < numAbsences; i++) {
       absences.push({
         employeeId: employee.id,
-        days: Math.floor(Math.random() * 20) + 1,
+        days: Math.floor(Math.random() * 15) + 1,
         type: getRandomElement(['vacation', 'sick', 'personal', 'training']),
-        date: getRandomDate(new Date(2023, 0, 1), new Date(2024, 11, 31))
+        date: getRandomDate(new Date(2023, 6, 1), new Date(2024, 11, 31))
       });
     }
   });
@@ -152,17 +159,17 @@ function generateAbsences(employees: Employee[]): Absence[] {
 }
 
 function generateTraining(employees: Employee[]): Training[] {
-  const courses = ['React Advanced', 'Leadership', 'Excel Expert', 'Communication', 'Sécurité', 'Qualité', 'Management', 'Anglais'];
+  const courses = ['Machine Learning Fundamentals', 'Agile Leadership', 'Advanced Excel & BI', 'Soft Skills & Communication', 'Cybersécurité', 'Lean Six Sigma', 'Digital Transformation', 'Business English', 'Design Thinking'];
   const training: Training[] = [];
   
   employees.forEach(employee => {
-    if (Math.random() > 0.3) {
+    if (Math.random() > 0.25) {
       training.push({
         employeeId: employee.id,
         course: getRandomElement(courses),
-        hours: Math.floor(Math.random() * 40) + 8,
-        cost: Math.floor(Math.random() * 2000) + 500,
-        completed: Math.random() > 0.2
+        hours: Math.floor(Math.random() * 50) + 12,
+        cost: Math.floor(Math.random() * 3000) + 800,
+        completed: Math.random() > 0.15
       });
     }
   });
@@ -172,15 +179,15 @@ function generateTraining(employees: Employee[]): Training[] {
 
 function generateOvertime(employees: Employee[]): Overtime[] {
   const overtime: Overtime[] = [];
-  const months = ['2024-01', '2024-02', '2024-03', '2024-04', '2024-05', '2024-06'];
+  const months = ['2024-03', '2024-04', '2024-05', '2024-06', '2024-07', '2024-08'];
   
   employees.forEach(employee => {
     months.forEach(month => {
-      if (Math.random() > 0.6) {
+      if (Math.random() > 0.55) {
         overtime.push({
           employeeId: employee.id,
           month,
-          hours: Math.floor(Math.random() * 20) + 1
+          hours: Math.floor(Math.random() * 25) + 2
         });
       }
     });
@@ -193,14 +200,25 @@ function generateExpenses(employees: Employee[]): Expense[] {
   const expenses: Expense[] = [];
   
   employees.forEach(employee => {
-    const numExpenses = Math.floor(Math.random() * 10) + 1;
+    const numExpenses = Math.floor(Math.random() * 12) + 3;
     
     for (let i = 0; i < numExpenses; i++) {
+      const category = getRandomElement(['repas', 'transport', 'formation', 'materiel']);
+      let amount = 15;
+      
+      // Montants plus réalistes selon la catégorie
+      switch(category) {
+        case 'repas': amount = Math.round((Math.random() * 35 + 12) * 100) / 100; break;
+        case 'transport': amount = Math.round((Math.random() * 150 + 25) * 100) / 100; break;
+        case 'formation': amount = Math.round((Math.random() * 800 + 200) * 100) / 100; break;
+        case 'materiel': amount = Math.round((Math.random() * 400 + 50) * 100) / 100; break;
+      }
+      
       expenses.push({
         employeeId: employee.id,
-        date: getRandomDate(new Date(2024, 0, 1), new Date(2024, 5, 30)),
-        category: getRandomElement(['repas', 'transport', 'formation', 'materiel']),
-        amount: Math.round((Math.random() * 200 + 10) * 100) / 100,
+        date: getRandomDate(new Date(2024, 2, 1), new Date(2024, 7, 30)),
+        category,
+        amount,
         status: getRandomElement(['validé', 'en_attente', 'refusé'])
       });
     }
@@ -212,20 +230,20 @@ function generateExpenses(employees: Employee[]): Expense[] {
 function generateTasks(employees: Employee[]): Task[] {
   const tasks: Task[] = [];
   const taskTypes = {
-    onboarding: ['Signer contrat', 'Fournir justificatifs', 'Formation sécurité', 'Visite médicale'],
-    administrative: ['Mettre à jour dossier', 'Valider congés', 'Compléter évaluation'],
-    evaluation: ['Entretien annuel', 'Définir objectifs', 'Bilan compétences']
+    onboarding: ['Signature contrat CDI', 'Remise badge et équipements', 'Formation sécurité obligatoire', 'Visite médicale d\'embauche', 'Présentation équipe'],
+    administrative: ['Mise à jour profil SIRH', 'Validation planning congés', 'Entretien professionnel', 'Bilan formation annuel'],
+    evaluation: ['Entretien annuel d\'évaluation', 'Définition objectifs N+1', 'Assessment 360°', 'Plan développement compétences']
   };
   
   employees.forEach(employee => {
-    const numTasks = Math.floor(Math.random() * 5) + 2;
+    const numTasks = Math.floor(Math.random() * 6) + 3;
     
     for (let i = 0; i < numTasks; i++) {
       const category = getRandomElement(['onboarding', 'administrative', 'evaluation'] as const);
       tasks.push({
         employeeId: employee.id,
         task: getRandomElement(taskTypes[category]),
-        dueDate: getRandomDate(new Date(2024, 0, 1), new Date(2024, 11, 31)),
+        dueDate: getRandomDate(new Date(2024, 3, 1), new Date(2024, 11, 31)),
         status: getRandomElement(['complétée', 'en_cours', 'en_retard']),
         category
       });
@@ -238,16 +256,16 @@ function generateTasks(employees: Employee[]): Task[] {
 function generateDocuments(employees: Employee[]): Document[] {
   return employees.map(employee => ({
     employeeId: employee.id,
-    contractSigned: Math.random() > 0.05,
-    idCardProvided: Math.random() > 0.1,
-    bankDetailsProvided: Math.random() > 0.08,
-    evaluationCompleted: Math.random() > 0.15,
-    medicalCheckCompleted: Math.random() > 0.12
+    contractSigned: Math.random() > 0.03,
+    idCardProvided: Math.random() > 0.07,
+    bankDetailsProvided: Math.random() > 0.05,
+    evaluationCompleted: Math.random() > 0.12,
+    medicalCheckCompleted: Math.random() > 0.09
   }));
 }
 
 export function generateHRData(): HRData {
-  console.log('Génération des données RH...');
+  console.log('Génération de nouvelles données RH...');
   
   const employees = generateEmployees();
   const absences = generateAbsences(employees);
@@ -257,7 +275,7 @@ export function generateHRData(): HRData {
   const tasks = generateTasks(employees);
   const documents = generateDocuments(employees);
   
-  console.log(`Données générées: ${employees.length} employés, ${absences.length} absences, ${training.length} formations`);
+  console.log(`Nouvelles données générées: ${employees.length} employés, ${absences.length} absences, ${training.length} formations`);
   
   return {
     employees,
