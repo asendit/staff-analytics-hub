@@ -2,16 +2,17 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, TrendingDown, Minus, Info } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Info, BarChart3 } from 'lucide-react';
 import { KPIData } from '../services/hrAnalytics';
 
 interface KPICardProps {
   kpi: KPIData;
   onInfoClick: () => void;
+  onChartClick: () => void;
   showInsight?: boolean;
 }
 
-const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, showInsight = true }) => {
+const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, onChartClick, showInsight = true }) => {
   const getTrendIcon = () => {
     if (kpi.trend > 0) return <TrendingUp className="h-4 w-4 text-green-600" />;
     if (kpi.trend < 0) return <TrendingDown className="h-4 w-4 text-red-600" />;
@@ -38,14 +39,26 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, showInsight = true 
         <CardTitle className="text-sm font-medium text-gray-700">
           {kpi.name}
         </CardTitle>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onInfoClick}
-          className="h-8 w-8 p-0"
-        >
-          <Info className="h-4 w-4" />
-        </Button>
+        <div className="flex space-x-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onChartClick}
+            className="h-8 w-8 p-0"
+            title="Voir les graphiques"
+          >
+            <BarChart3 className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onInfoClick}
+            className="h-8 w-8 p-0"
+            title="Voir les détails"
+          >
+            <Info className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">

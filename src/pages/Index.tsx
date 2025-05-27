@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { generateHRData } from '../data/hrDataGenerator';
 import { convertHRData } from '../utils/dataConverter';
-import { HRAnalytics, KPIData, FilterOptions, HRData } from '../services/hrAnalytics';
+import { HRAnalytics, KPIData, KPIChartData, FilterOptions, HRData } from '../services/hrAnalytics';
 import KPICard from '../components/KPICard';
 import KPIDetailModal from '../components/KPIDetailModal';
+import KPIChartModal from '../components/KPIChartModal';
 import FilterPanel from '../components/FilterPanel';
 import BoardManager, { Board } from '../components/BoardManager';
 import GlobalInsightPanel from '../components/GlobalInsightPanel';
@@ -21,7 +22,9 @@ const Index = () => {
   const [boards, setBoards] = useState<Board[]>([]);
   const [currentBoard, setCurrentBoard] = useState<Board | null>(null);
   const [selectedKPI, setSelectedKPI] = useState<KPIData | null>(null);
+  const [selectedKPIChartData, setSelectedKPIChartData] = useState<KPIChartData | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isChartModalOpen, setIsChartModalOpen] = useState(false);
   const [isAIEnabled, setIsAIEnabled] = useState(true);
 
   // Initialisation des données
@@ -156,6 +159,15 @@ const Index = () => {
     setIsDetailModalOpen(true);
   };
 
+  const handleKPIChartClick = (kpi: KPIData) => {
+    if (analytics) {
+      const chartData = analytics.getKPIChartData(kpi.id, filters);
+      setSelectedKPI(kpi);
+      setSelectedKPIChartData(chartData);
+      setIsChartModalOpen(true);
+    }
+  };
+
   const availableKPIs = [
     { id: 'absenteeism', name: 'Taux d\'absentéisme' },
     { id: 'turnover', name: 'Turnover' },
@@ -256,6 +268,7 @@ const Index = () => {
                   <KPICard 
                     kpi={kpi} 
                     onInfoClick={() => handleKPIInfoClick(kpi)}
+                    onChartClick={() => handleKPIChartClick(kpi)}
                     showInsight={isAIEnabled}
                   />
                 </div>
@@ -302,6 +315,14 @@ const Index = () => {
         kpi={selectedKPI}
         filters={filters}
         showInsight={isAIEnabled}
+      />
+
+      {/* Modal des graphiques KPI */}
+      <KPIChartModal
+        isOpen={isChartModalOpen}
+        onClose={() => setIsChartModalOpen(false)}
+        kpi={selectedKPI}
+        chartData={selectedKPIChartData}
       />
     </div>
   );

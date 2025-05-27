@@ -40,6 +40,15 @@ export interface KPIData {
   insight: string;
 }
 
+export interface KPIChartData {
+  timeEvolution: Array<{ month: string; value: number }>;
+  departmentBreakdown: Array<{ department: string; value: number }>;
+  specificBreakdown: {
+    title: string;
+    data: Array<{ name: string; value: number }>;
+  };
+}
+
 export interface FilterOptions {
   period: 'week' | 'month' | 'quarter' | 'year' | 'custom';
   department?: string;
@@ -70,6 +79,32 @@ export class HRAnalytics {
     };
   }
 
+  getAbsenteeismChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 2, max: 8, precision: 0.1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 1, max: 10, precision: 0.1 })
+      })),
+      specificBreakdown: {
+        title: 'Répartition par type d\'absence',
+        data: [
+          { name: 'Maladie', value: faker.number.int({ min: 40, max: 60 }) },
+          { name: 'Congés payés', value: faker.number.int({ min: 20, max: 30 }) },
+          { name: 'Formation', value: faker.number.int({ min: 5, max: 15 }) },
+          { name: 'Personnel', value: faker.number.int({ min: 5, max: 15 }) },
+          { name: 'Autre', value: faker.number.int({ min: 2, max: 8 }) }
+        ]
+      }
+    };
+  }
+
   getTurnoverRate(filters: FilterOptions): KPIData {
     const employees = this.filterEmployees(filters);
     const terminatedEmployees = employees.filter(employee => employee.status === 'terminated').length;
@@ -87,6 +122,31 @@ export class HRAnalytics {
     };
   }
 
+  getTurnoverChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 5, max: 15, precision: 0.1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 3, max: 18, precision: 0.1 })
+      })),
+      specificBreakdown: {
+        title: 'Turnover par type de contrat',
+        data: [
+          { name: 'CDI', value: faker.number.int({ min: 30, max: 50 }) },
+          { name: 'CDD', value: faker.number.int({ min: 25, max: 35 }) },
+          { name: 'Stage', value: faker.number.int({ min: 10, max: 20 }) },
+          { name: 'Freelance', value: faker.number.int({ min: 5, max: 15 }) }
+        ]
+      }
+    };
+  }
+
   getHeadcount(filters: FilterOptions): KPIData {
     const employees = this.filterEmployees(filters);
     const activeEmployees = employees.filter(employee => employee.status === 'active').length;
@@ -100,6 +160,30 @@ export class HRAnalytics {
       comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
       category: activeEmployees < 100 ? 'negative' : 'positive',
       insight: `L'effectif actif est de ${activeEmployees} collaborateurs. ${activeEmployees < 100 ? '⚠️ L\'effectif est réduit.' : '👥 L\'équipe maintient une taille stable.'}`
+    };
+  }
+
+  getHeadcountChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.int({ min: 180, max: 250 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.int({ min: 15, max: 60 })
+      })),
+      specificBreakdown: {
+        title: 'Répartition par statut',
+        data: [
+          { name: 'Actifs', value: faker.number.int({ min: 200, max: 230 }) },
+          { name: 'En congé', value: faker.number.int({ min: 10, max: 20 }) },
+          { name: 'Inactifs', value: faker.number.int({ min: 5, max: 15 }) }
+        ]
+      }
     };
   }
 
@@ -120,6 +204,31 @@ export class HRAnalytics {
     };
   }
 
+  getWorkforceUtilizationChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 75, max: 95, precision: 0.1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 70, max: 98, precision: 0.1 })
+      })),
+      specificBreakdown: {
+        title: 'Répartition du temps',
+        data: [
+          { name: 'Productif', value: faker.number.int({ min: 60, max: 75 }) },
+          { name: 'Formation', value: faker.number.int({ min: 10, max: 20 }) },
+          { name: 'Réunions', value: faker.number.int({ min: 8, max: 15 }) },
+          { name: 'Autre', value: faker.number.int({ min: 5, max: 12 }) }
+        ]
+      }
+    };
+  }
+
   getRemoteWorkAdoption(filters: FilterOptions): KPIData {
     const employees = this.filterEmployees(filters);
     const remoteEmployees = employees.filter(employee => employee.remoteWork).length;
@@ -134,6 +243,30 @@ export class HRAnalytics {
       comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
       category: remoteWorkAdoptionRate < 20 ? 'negative' : 'positive',
       insight: `Le taux d'adoption du télétravail est de ${remoteWorkAdoptionRate.toFixed(1)}%. ${remoteWorkAdoptionRate < 20 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
+    };
+  }
+
+  getRemoteWorkChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 30, max: 70, precision: 0.1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 20, max: 80, precision: 0.1 })
+      })),
+      specificBreakdown: {
+        title: 'Modalités de travail',
+        data: [
+          { name: 'Télétravail complet', value: faker.number.int({ min: 20, max: 30 }) },
+          { name: 'Hybride', value: faker.number.int({ min: 35, max: 45 }) },
+          { name: 'Présentiel', value: faker.number.int({ min: 25, max: 35 }) }
+        ]
+      }
     };
   }
 
@@ -158,6 +291,31 @@ export class HRAnalytics {
     };
   }
 
+  getOnboardingChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.int({ min: 15, max: 45 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.int({ min: 10, max: 50 })
+      })),
+      specificBreakdown: {
+        title: 'Phases d\'onboarding',
+        data: [
+          { name: 'Documentation', value: faker.number.int({ min: 3, max: 7 }) },
+          { name: 'Formation métier', value: faker.number.int({ min: 8, max: 15 }) },
+          { name: 'Intégration équipe', value: faker.number.int({ min: 5, max: 10 }) },
+          { name: 'Autonomie', value: faker.number.int({ min: 10, max: 20 }) }
+        ]
+      }
+    };
+  }
+
   getHRExpenses(filters: FilterOptions): KPIData {
     const totalExpenses = this.data.expenses.reduce((sum, expense) => sum + expense.amount, 0);
     
@@ -179,6 +337,32 @@ export class HRAnalytics {
           ? `📉 Réduction de ${Math.abs(Math.round(trend))}% des dépenses par rapport à la période précédente.`
           : '📊 Dépenses stables par rapport à la période précédente.'
       }`
+    };
+  }
+
+  getHRExpensesChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.int({ min: 15000, max: 35000 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.int({ min: 5000, max: 25000 })
+      })),
+      specificBreakdown: {
+        title: 'Répartition par type de dépense',
+        data: [
+          { name: 'Recrutement', value: faker.number.int({ min: 15000, max: 25000 }) },
+          { name: 'Formation', value: faker.number.int({ min: 10000, max: 20000 }) },
+          { name: 'Équipements', value: faker.number.int({ min: 8000, max: 15000 }) },
+          { name: 'Événements', value: faker.number.int({ min: 3000, max: 8000 }) },
+          { name: 'Logiciels RH', value: faker.number.int({ min: 2000, max: 6000 }) }
+        ]
+      }
     };
   }
 
@@ -210,6 +394,31 @@ export class HRAnalytics {
     };
   }
 
+  getAgeAndSeniorityChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 32, max: 38, precision: 0.1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 28, max: 45, precision: 0.1 })
+      })),
+      specificBreakdown: {
+        title: 'Répartition par tranche d\'âge',
+        data: [
+          { name: '20-30 ans', value: faker.number.int({ min: 25, max: 35 }) },
+          { name: '30-40 ans', value: faker.number.int({ min: 30, max: 40 }) },
+          { name: '40-50 ans', value: faker.number.int({ min: 20, max: 30 }) },
+          { name: '50+ ans', value: faker.number.int({ min: 10, max: 20 }) }
+        ]
+      }
+    };
+  }
+
   getTaskCompletionRate(filters: FilterOptions): KPIData {
     const employees = this.filterEmployees(filters);
     const completedTasks = employees.reduce((sum, employee) => sum + faker.number.int({ min: 0, max: 10 }), 0);
@@ -225,6 +434,32 @@ export class HRAnalytics {
       comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
       category: completionRate < 80 ? 'negative' : 'positive',
       insight: `Le taux de complétion des tâches est de ${completionRate.toFixed(1)}%. ${completionRate < 80 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
+    };
+  }
+
+  getTaskCompletionChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 75, max: 95, precision: 0.1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 70, max: 98, precision: 0.1 })
+      })),
+      specificBreakdown: {
+        title: 'Types de tâches RH',
+        data: [
+          { name: 'Recrutement', value: faker.number.int({ min: 20, max: 30 }) },
+          { name: 'Formation', value: faker.number.int({ min: 15, max: 25 }) },
+          { name: 'Administration', value: faker.number.int({ min: 25, max: 35 }) },
+          { name: 'Évaluations', value: faker.number.int({ min: 10, max: 20 }) },
+          { name: 'Autre', value: faker.number.int({ min: 5, max: 15 }) }
+        ]
+      }
     };
   }
 
@@ -244,6 +479,47 @@ export class HRAnalytics {
       category: completionRate < 80 ? 'negative' : 'positive',
       insight: `Le taux de complétion des dossiers est de ${completionRate.toFixed(1)}%. ${completionRate < 80 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
     };
+  }
+
+  getDocumentCompletionChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 80, max: 98, precision: 0.1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 75, max: 100, precision: 0.1 })
+      })),
+      specificBreakdown: {
+        title: 'Types de documents',
+        data: [
+          { name: 'Contrats', value: faker.number.int({ min: 90, max: 100 }) },
+          { name: 'Évaluations', value: faker.number.int({ min: 70, max: 90 }) },
+          { name: 'Formations', value: faker.number.int({ min: 60, max: 85 }) },
+          { name: 'Administratif', value: faker.number.int({ min: 85, max: 95 }) }
+        ]
+      }
+    };
+  }
+
+  getKPIChartData(kpiId: string, filters: FilterOptions): KPIChartData | null {
+    switch (kpiId) {
+      case 'absenteeism': return this.getAbsenteeismChartData(filters);
+      case 'turnover': return this.getTurnoverChartData(filters);
+      case 'headcount': return this.getHeadcountChartData(filters);
+      case 'work-utilization': return this.getWorkforceUtilizationChartData(filters);
+      case 'remote-work': return this.getRemoteWorkChartData(filters);
+      case 'onboarding': return this.getOnboardingChartData(filters);
+      case 'hr-expenses': return this.getHRExpensesChartData(filters);
+      case 'age-seniority': return this.getAgeAndSeniorityChartData(filters);
+      case 'task-completion': return this.getTaskCompletionChartData(filters);
+      case 'document-completion': return this.getDocumentCompletionChartData(filters);
+      default: return null;
+    }
   }
 
   generateGlobalInsight(kpis: KPIData[], filters: FilterOptions): string {
@@ -284,6 +560,17 @@ export class HRAnalytics {
       this.getTaskCompletionRate(filters),
       this.getDocumentCompletionRate(filters)
     ];
+  }
+
+  private generateMonthLabels(period: string): string[] {
+    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    
+    switch (period) {
+      case 'quarter': return months.slice(0, 3);
+      case 'year': return months;
+      case 'month': return ['S1', 'S2', 'S3', 'S4'];
+      default: return months.slice(0, 6);
+    }
   }
 
   private getTotalDays(period: string): number {
