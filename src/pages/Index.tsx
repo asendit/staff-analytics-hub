@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { generateHRData, HRData } from '../data/hrDataGenerator';
 import { HRAnalytics, KPIData, FilterOptions } from '../services/hrAnalytics';
 import KPICard from '../components/KPICard';
+import KPIDetailModal from '../components/KPIDetailModal';
 import FilterPanel from '../components/FilterPanel';
 import BoardManager, { Board } from '../components/BoardManager';
 import GlobalInsightPanel from '../components/GlobalInsightPanel';
@@ -18,6 +18,8 @@ const Index = () => {
   const [isLoadingInsight, setIsLoadingInsight] = useState(false);
   const [boards, setBoards] = useState<Board[]>([]);
   const [currentBoard, setCurrentBoard] = useState<Board | null>(null);
+  const [selectedKPI, setSelectedKPI] = useState<KPIData | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Initialisation des données
   useEffect(() => {
@@ -120,6 +122,11 @@ const Index = () => {
     }
   };
 
+  const handleKPIInfoClick = (kpi: KPIData) => {
+    setSelectedKPI(kpi);
+    setIsDetailModalOpen(true);
+  };
+
   const availableKPIs = [
     { id: 'absenteeism', name: 'Taux d\'absentéisme' },
     { id: 'turnover', name: 'Turnover' },
@@ -214,12 +221,7 @@ const Index = () => {
                 <div key={kpi.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                   <KPICard 
                     kpi={kpi} 
-                    onClick={() => {
-                      toast({
-                        title: kpi.name,
-                        description: kpi.insight
-                      });
-                    }}
+                    onInfoClick={() => handleKPIInfoClick(kpi)}
                   />
                 </div>
               ))}
@@ -255,6 +257,13 @@ const Index = () => {
           </p>
         </div>
       </div>
+
+      {/* Modal des détails KPI */}
+      <KPIDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        kpi={selectedKPI}
+      />
     </div>
   );
 };

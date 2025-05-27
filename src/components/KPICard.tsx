@@ -2,15 +2,14 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle, Info } from 'lucide-react';
-import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { KPIData } from '../services/hrAnalytics';
 
 interface KPICardProps {
   kpi: KPIData;
-  onClick?: () => void;
+  onInfoClick?: () => void;
 }
 
-const KPICard: React.FC<KPICardProps> = ({ kpi, onClick }) => {
+const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick }) => {
   const getTrendIcon = () => {
     if (kpi.comparison === 'higher') {
       return <TrendingUp className="h-4 w-4 text-green-600" />;
@@ -51,70 +50,36 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onClick }) => {
     return 'text-gray-500';
   };
 
-  // Génération de données factices pour les graphiques
-  const generateChartData = () => {
-    const baseValue = typeof kpi.value === 'number' ? kpi.value : 50;
-    return Array.from({ length: 7 }, (_, i) => ({
-      day: i + 1,
-      value: baseValue + (Math.random() - 0.5) * baseValue * 0.3
-    }));
-  };
-
-  const chartData = generateChartData();
-  const isPercentage = kpi.unit === '%';
-  const showChart = typeof kpi.value === 'number' && !kpi.name.includes('Âge moyen');
-
   return (
-    <Card 
-      className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 border-l-4 ${getCategoryColor()}`}
-      onClick={onClick}
-    >
+    <Card className={`transition-all duration-200 hover:shadow-lg border-l-4 ${getCategoryColor()}`}>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-gray-600 flex items-center justify-between">
           <span>{kpi.name}</span>
-          {getCategoryIcon()}
+          <div className="flex items-center space-x-2">
+            {getCategoryIcon()}
+            <button
+              onClick={onInfoClick}
+              className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+              title="Voir les détails"
+            >
+              <Info className="h-4 w-4 text-gray-500" />
+            </button>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="space-y-3">
-          <div className="flex items-baseline justify-between">
-            <div className="flex items-baseline space-x-2">
-              <span className="text-2xl font-bold text-gray-900">
-                {kpi.value}
-              </span>
-              <span className="text-sm text-gray-500">{kpi.unit}</span>
+        <div className="space-y-4">
+          {/* Valeur principale */}
+          <div className="text-center">
+            <div className="text-3xl font-bold text-gray-900 mb-1">
+              {kpi.value}
+              <span className="text-lg font-normal text-gray-500 ml-1">{kpi.unit}</span>
             </div>
-            
-            {/* Mini graphique */}
-            {showChart && (
-              <div className="w-16 h-8">
-                <ResponsiveContainer width="100%" height="100%">
-                  {isPercentage ? (
-                    <LineChart data={chartData}>
-                      <Line 
-                        type="monotone" 
-                        dataKey="value" 
-                        stroke={kpi.category === 'positive' ? '#10b981' : kpi.category === 'negative' ? '#ef4444' : '#3b82f6'}
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                    </LineChart>
-                  ) : (
-                    <BarChart data={chartData}>
-                      <Bar 
-                        dataKey="value" 
-                        fill={kpi.category === 'positive' ? '#10b981' : kpi.category === 'negative' ? '#ef4444' : '#3b82f6'}
-                        radius={1}
-                      />
-                    </BarChart>
-                  )}
-                </ResponsiveContainer>
-              </div>
-            )}
           </div>
           
+          {/* Tendance */}
           {kpi.trend !== 0 && (
-            <div className={`flex items-center space-x-1 text-sm ${getTrendColor()}`}>
+            <div className={`flex items-center justify-center space-x-1 text-sm ${getTrendColor()}`}>
               {getTrendIcon()}
               <span>
                 {Math.abs(kpi.trend)}
@@ -124,9 +89,10 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onClick }) => {
             </div>
           )}
           
-          <div className="bg-white p-3 rounded-lg border border-gray-200">
-            <p className="text-xs text-gray-700 leading-relaxed">
-              {kpi.insight}
+          {/* Insight court */}
+          <div className="bg-white p-2 rounded-lg border border-gray-200 text-center">
+            <p className="text-xs text-gray-700">
+              {kpi.insight.split('.')[0]}.
             </p>
           </div>
         </div>
