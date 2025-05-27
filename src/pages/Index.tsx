@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { generateHRData, convertHRData } from '../data/hrDataGenerator';
-import { HRAnalytics, KPIData, FilterOptions } from '../services/hrAnalytics';
+import { generateHRData } from '../data/hrDataGenerator';
+import { convertHRData } from '../utils/dataConverter';
+import { HRAnalytics, KPIData, FilterOptions, HRData } from '../services/hrAnalytics';
 import KPICard from '../components/KPICard';
 import KPIDetailModal from '../components/KPIDetailModal';
 import FilterPanel from '../components/FilterPanel';
@@ -141,7 +142,7 @@ const Index = () => {
     { id: 'document-completion', name: 'Dossiers collaborateurs' }
   ];
 
-  const departments = hrData ? [...new Set(hrData.employees.map(emp => emp.department))] : [];
+  const departments = hrData ? [...new Set(hrData.employees.map(emp => emp.department))] as string[] : [];
 
   if (!hrData || !analytics || !currentBoard) {
     return (
