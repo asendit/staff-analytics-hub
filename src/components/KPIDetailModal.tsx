@@ -2,25 +2,46 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { LineChart, Line, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from 'recharts';
-import { KPIData } from '../services/hrAnalytics';
+import { KPIData, FilterOptions } from '../services/hrAnalytics';
 
 interface KPIDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   kpi: KPIData | null;
+  filters: FilterOptions;
 }
 
-const KPIDetailModal: React.FC<KPIDetailModalProps> = ({ isOpen, onClose, kpi }) => {
+const KPIDetailModal: React.FC<KPIDetailModalProps> = ({ isOpen, onClose, kpi, filters }) => {
   if (!kpi) return null;
 
-  // Génération de données pour les graphiques
-  const generateTimeSeriesData = () => {
+  // Génération de données mensuelles selon la période
+  const generateMonthlyData = () => {
     const baseValue = typeof kpi.value === 'number' ? kpi.value : 50;
-    return Array.from({ length: 12 }, (_, i) => ({
-      month: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'][i],
-      value: baseValue + (Math.random() - 0.5) * baseValue * 0.4,
-      trend: baseValue * (1 + (Math.random() - 0.5) * 0.3)
-    }));
+    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    
+    // Si la période couvre plusieurs mois, on génère des données mensuelles
+    const isMultiMonth = ['quarter', 'year', 'custom'].includes(filters.period);
+    
+    if (isMultiMonth) {
+      return months.map((month, i) => ({
+        month,
+        value: Math.max(0, baseValue + (Math.random() - 0.5) * baseValue * 0.6),
+        trend: baseValue * (1 + (Math.random() - 0.5) * 0.3),
+        target: baseValue * 1.1
+      }));
+    } else {
+      // Pour les périodes courtes, on génère des données journalières/hebdomadaires
+      const periods = filters.period === 'week' ? 
+        ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'] :
+        Array.from({ length: 30 }, (_, i) => `${i + 1}`);
+        
+      return periods.map((period, i) => ({
+        month: period,
+        value: Math.max(0, baseValue + (Math.random() - 0.5) * baseValue * 0.4),
+        trend: baseValue * (1 + (Math.random() - 0.5) * 0.2),
+        target: baseValue * 1.05
+      }));
+    }
   };
 
   const generateCategoryData = () => {
@@ -33,7 +54,6 @@ const KPIDetailModal: React.FC<KPIDetailModalProps> = ({ isOpen, onClose, kpi })
       ];
     }
     
-    // Données génériques pour les autres KPIs
     return [
       { name: 'Catégorie A', value: 40, color: '#8884d8' },
       { name: 'Catégorie B', value: 30, color: '#82ca9d' },
@@ -42,15 +62,47 @@ const KPIDetailModal: React.FC<KPIDetailModalProps> = ({ isOpen, onClose, kpi })
     ];
   };
 
-  const timeSeriesData = generateTimeSeriesData();
+  const monthlyData = generateMonthlyData();
   const categoryData = generateCategoryData();
+  const isMultiMonth = ['quarter', 'year', 'custom'].includes(filters.period);
 
   const renderExpensesDetail = () => (
     <div className="space-y-6">
+      {/* Évolution mensuelle si période multi-mois */}
+      {isMultiMonth && (
+        <div>
+          <h3 className="text-lg font-semibold mb-4">📊 Évolution mensuelle des dépenses</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip formatter={(value) => [`${Math.round(Number(value)).toLocaleString()}€`, 'Montant']} />
+                <Line 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke="#8884d8" 
+                  strokeWidth={2}
+                  name="Dépenses réelles"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="target" 
+                  stroke="#82ca9d" 
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  name="Objectif"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
       <div>
-        <h3 className="text-lg font-semibold mb-4">Répartition des dépenses RH par catégorie</h3>
+        <h3 className="text-lg font-semibold mb-4">💰 Répartition des dépenses RH par catégorie</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Graphique en secteurs */}
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -73,7 +125,6 @@ const KPIDetailModal: React.FC<KPIDetailModalProps> = ({ isOpen, onClose, kpi })
             </ResponsiveContainer>
           </div>
           
-          {/* Liste détaillée */}
           <div className="space-y-3">
             {categoryData.map((category, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -95,34 +146,48 @@ const KPIDetailModal: React.FC<KPIDetailModalProps> = ({ isOpen, onClose, kpi })
 
   const renderGeneralDetail = () => (
     <div className="space-y-6">
-      {/* Évolution temporelle */}
-      <div>
-        <h3 className="text-lg font-semibold mb-4">Évolution sur 12 mois</h3>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={timeSeriesData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Line 
-                type="monotone" 
-                dataKey="value" 
-                stroke="#8884d8" 
-                strokeWidth={2}
-                name={kpi.name}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+      {/* Évolution mensuelle si période multi-mois */}
+      {isMultiMonth && (
+        <div>
+          <h3 className="text-lg font-semibold mb-4">📈 Évolution mensuelle - {kpi.name}</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Line 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke="#8884d8" 
+                  strokeWidth={2}
+                  name={kpi.name}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="target" 
+                  stroke="#82ca9d" 
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  name="Objectif"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Comparaison avec la tendance */}
+      {/* Évolution sur la période sélectionnée */}
       <div>
-        <h3 className="text-lg font-semibold mb-4">Comparaison avec la tendance</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          📊 Évolution sur {filters.period === 'week' ? 'la semaine' : 
+                          filters.period === 'month' ? 'le mois' :
+                          filters.period === 'quarter' ? 'le trimestre' : 'la période'}
+        </h3>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={timeSeriesData}>
+            <BarChart data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
@@ -149,9 +214,11 @@ const KPIDetailModal: React.FC<KPIDetailModalProps> = ({ isOpen, onClose, kpi })
         </DialogHeader>
         
         <div className="mt-6">
-          {/* Insight détaillé */}
+          {/* Insight détaillé avec emoji */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <p className="text-blue-800">{kpi.insight}</p>
+            <p className="text-blue-800">
+              {kpi.category === 'positive' ? '✅' : kpi.category === 'negative' ? '⚠️' : 'ℹ️'} {kpi.insight}
+            </p>
           </div>
 
           {/* Contenu spécifique selon le KPI */}

@@ -66,7 +66,7 @@ export class HRAnalytics {
       trend: faker.number.int({ min: -5, max: 5 }),
       comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
       category: absenteeismRate > 5 ? 'negative' : 'positive',
-      insight: `Le taux d'absentéisme est de ${absenteeismRate.toFixed(1)}%. ${absenteeismRate > 5 ? 'Il est supérieur à la moyenne.' : 'Il est dans la moyenne.'}`
+      insight: `Le taux d'absentéisme est de ${absenteeismRate.toFixed(1)}%. ${absenteeismRate > 5 ? '⚠️ Il est supérieur à la moyenne et nécessite une attention particulière.' : '✅ Il est dans la moyenne acceptable.'}`
     };
   }
 
@@ -83,7 +83,7 @@ export class HRAnalytics {
       trend: faker.number.int({ min: -5, max: 5 }),
       comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
       category: turnoverRate > 10 ? 'negative' : 'positive',
-      insight: `Le taux de turnover est de ${turnoverRate.toFixed(1)}%. ${turnoverRate > 10 ? 'Il est supérieur à la moyenne.' : 'Il est dans la moyenne.'}`
+      insight: `Le taux de turnover est de ${turnoverRate.toFixed(1)}%. ${turnoverRate > 10 ? '🚨 Il est élevé et pourrait indiquer des problèmes de rétention.' : '📈 Il reste dans une fourchette acceptable.'}`
     };
   }
 
@@ -99,7 +99,7 @@ export class HRAnalytics {
       trend: faker.number.int({ min: -10, max: 10 }),
       comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
       category: activeEmployees < 100 ? 'negative' : 'positive',
-      insight: `L'effectif actif est de ${activeEmployees} collaborateurs. ${activeEmployees < 100 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
+      insight: `L'effectif actif est de ${activeEmployees} collaborateurs. ${activeEmployees < 100 ? '⚠️ L\'effectif est réduit.' : '👥 L\'équipe maintient une taille stable.'}`
     };
   }
 
@@ -161,8 +161,7 @@ export class HRAnalytics {
   getHRExpenses(filters: FilterOptions): KPIData {
     const totalExpenses = this.data.expenses.reduce((sum, expense) => sum + expense.amount, 0);
     
-    // Calculate trend (simulation)
-    const previousTotal = totalExpenses * 0.95; // Simulate 5% increase
+    const previousTotal = totalExpenses * 0.95;
     const trend = ((totalExpenses - previousTotal) / previousTotal) * 100;
     
     return {
@@ -173,12 +172,12 @@ export class HRAnalytics {
       trend: Math.round(trend),
       comparison: trend > 0 ? 'higher' : trend < 0 ? 'lower' : 'stable',
       category: trend > 15 ? 'negative' : trend > 5 ? 'neutral' : 'positive',
-      insight: `Budget RH de ${Math.round(totalExpenses).toLocaleString()}€ cette période. ${
+      insight: `💰 Budget RH de ${Math.round(totalExpenses).toLocaleString()}€ cette période. ${
         trend > 0 
-          ? `Augmentation de ${Math.round(trend)}% par rapport à la période précédente, principalement due aux frais de formation et équipements.`
+          ? `📈 Augmentation de ${Math.round(trend)}% par rapport à la période précédente, principalement due aux frais de formation et équipements.`
           : trend < 0
-          ? `Réduction de ${Math.abs(Math.round(trend))}% des dépenses par rapport à la période précédente.`
-          : 'Dépenses stables par rapport à la période précédente.'
+          ? `📉 Réduction de ${Math.abs(Math.round(trend))}% des dépenses par rapport à la période précédente.`
+          : '📊 Dépenses stables par rapport à la période précédente.'
       }`
     };
   }
@@ -251,22 +250,22 @@ export class HRAnalytics {
     const positiveKPIs = kpis.filter(kpi => kpi.category === 'positive');
     const negativeKPIs = kpis.filter(kpi => kpi.category === 'negative');
 
-    let insight = `Analyse globale de la période (${filters.period}): `;
+    let insight = `📊 Analyse globale de la période (${filters.period}): `;
 
     if (positiveKPIs.length > negativeKPIs.length) {
-      insight += 'La majorité des indicateurs sont positifs, ce qui indique une bonne performance globale.';
+      insight += '✅ La majorité des indicateurs sont positifs, ce qui indique une bonne performance globale.';
     } else if (negativeKPIs.length > positiveKPIs.length) {
-      insight += 'La majorité des indicateurs sont négatifs, ce qui nécessite une attention particulière.';
+      insight += '⚠️ La majorité des indicateurs sont négatifs, ce qui nécessite une attention particulière.';
     } else {
-      insight += 'Il y a un équilibre entre les indicateurs positifs et négatifs.';
+      insight += 'ℹ️ Il y a un équilibre entre les indicateurs positifs et négatifs.';
     }
 
-    insight += ' Les points clés à surveiller sont : ';
+    insight += ' 🎯 Les points clés à surveiller sont : ';
 
     if (negativeKPIs.length > 0) {
       insight += negativeKPIs.map(kpi => kpi.name).join(', ') + '.';
     } else {
-      insight += 'aucun point critique détecté.';
+      insight += 'aucun point critique détecté. 🎉';
     }
 
     return insight;

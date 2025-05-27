@@ -265,6 +265,7 @@ const Index = () => {
         isOpen={isDetailModalOpen}
         onClose={() => setIsDetailModalOpen(false)}
         kpi={selectedKPI}
+        filters={filters}
       />
     </div>
   );
