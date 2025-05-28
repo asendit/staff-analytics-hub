@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,6 +55,17 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
     const currentDate = new Date();
     const analysisId = `AI-${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
     
+    // Récupération des KPIs spécifiques
+    const absenteeism = kpis.find(kpi => kpi.id === 'absenteeism');
+    const turnover = kpis.find(kpi => kpi.id === 'turnover');
+    const headcount = kpis.find(kpi => kpi.id === 'headcount');
+    const overtime = kpis.find(kpi => kpi.id === 'overtime-hours');
+    const expenses = kpis.find(kpi => kpi.id === 'hr-expenses');
+    const ageSeniority = kpis.find(kpi => kpi.id === 'age-seniority');
+    const tasks = kpis.find(kpi => kpi.id === 'task-completion');
+    const documents = kpis.find(kpi => kpi.id === 'document-completion');
+    const onboarding = kpis.find(kpi => kpi.id === 'onboarding');
+
     const healthScore = Math.round(((stats.positive * 3 + stats.neutral * 2 + stats.negative * 0.5) / (stats.positive + stats.neutral + stats.negative)) * 20);
     const stabilityIndex = Math.round((1 - (stats.negative / (stats.positive + stats.negative + stats.neutral))) * 100);
     
@@ -68,99 +78,85 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
         growthPotential: stats.positive > stats.negative ? "ÉLEVÉ" : "LIMITÉ"
       },
       insights: {
-        strategic: [
-          {
-            title: "Diagnostic Organisationnel",
-            content: `L'analyse révèle un indice de santé RH de ${healthScore}/100. L'organisation présente ${stats.positive} leviers de croissance identifiés, ${stats.negative} zones de vigilance critique et ${stats.neutral} indicateurs en situation stable.`,
-            confidence: 94
-          },
-          {
-            title: "Trajectoire Prédictive",
-            content: `Selon les modèles prédictifs, la probabilité d'atteinte des objectifs Q1 est de 87%. Les algorithmes détectent un potentiel d'optimisation de 23% sur les processus RH actuels.`,
-            confidence: 89
-          },
-          {
-            title: "Analyse Comportementale",
-            content: `3 clusters de performance distincts identifiés avec une précision de 96%. Détection de signaux faibles d'insatisfaction 4 semaines avant manifestation dans 78% des cas.`,
-            confidence: 91
-          }
-        ],
-        operational: [
-          {
-            title: "Excellence Opérationnelle",
-            metrics: [
-              "Productivité globale: +12% sur 6 mois",
-              "Réduction délais RH: -34% via automatisation",
-              "Taux satisfaction: 78% (vs 72% secteur)",
-              "ROI formation: 3.2€ pour 1€ investi"
-            ]
-          },
-          {
-            title: "Opportunités d'Automatisation",
-            metrics: [
-              "43% des tâches admin automatisables",
-              "Réduction temps traitement: -25% possible",
-              "Dashboard temps réel: +400% réactivité",
-              "Chatbot RH: 80% questions récurrentes"
-            ]
-          }
-        ],
-        financial: [
-          {
-            title: "Impact Financier",
-            data: [
-              { label: "Coût par collaborateur", value: "-15% vs secteur", trend: "positive" },
-              { label: "ROI RH global", value: "4.1", trend: "positive" },
-              { label: "Économies réalisées", value: "127K€", trend: "positive" },
-              { label: "Budget formation", value: "94% utilisé", trend: "neutral" }
-            ]
-          },
-          {
-            title: "Projections Q1",
-            data: [
-              { label: "Économies attendues", value: "45K€", trend: "positive" },
-              { label: "ROI IA sur 24 mois", value: "234%", trend: "positive" },
-              { label: "Réduction budget interim", value: "-67%", trend: "positive" }
-            ]
-          }
-        ],
+        workforce: {
+          title: "Analyse de l'Effectif",
+          content: `L'effectif actuel de ${headcount?.value || 'N/A'} collaborateurs présente ${onboarding?.value || 0} nouvelle(s) arrivée(s) récente(s). L'âge moyen de ${ageSeniority?.value || 'N/A'} révèle ${ageSeniority?.category === 'positive' ? 'un équilibre générationnel optimal' : 'un défi de renouvellement des compétences'}.`,
+          metrics: [
+            `Effectif total: ${headcount?.value || 'N/A'} ${headcount?.unit || ''}`,
+            `Nouvelles arrivées: ${onboarding?.value || 'N/A'} ${onboarding?.unit || ''}`,
+            `Âge/Ancienneté: ${ageSeniority?.value || 'N/A'}`,
+            `Turnover: ${turnover?.value || 'N/A'}${turnover?.unit || ''}`
+          ],
+          status: headcount?.category || 'neutral'
+        },
+        productivity: {
+          title: "Performance Opérationnelle",
+          content: `Les tâches RH affichent un taux de ${tasks?.value || 'N/A'}% de complétion, tandis que les dossiers collaborateurs atteignent ${documents?.value || 'N/A'}% de complétude. ${Number(tasks?.value) > 85 ? 'L\'efficacité opérationnelle est excellente.' : 'Des améliorations processus sont recommandées.'}`,
+          metrics: [
+            `Tâches RH complétées: ${tasks?.value || 'N/A'}${tasks?.unit || ''}`,
+            `Documents à jour: ${documents?.value || 'N/A'}${documents?.unit || ''}`,
+            `Heures supplémentaires: ${overtime?.value || 'N/A'} ${overtime?.unit || ''}`
+          ],
+          status: tasks?.category || 'neutral'
+        },
+        attendance: {
+          title: "Gestion des Présences",
+          content: `Le taux d'absentéisme de ${absenteeism?.value || 'N/A'}% ${Number(absenteeism?.value) > 5 ? 'nécessite une attention immédiate avec mise en place d\'actions préventives' : 'reste dans les normes acceptables du secteur'}. Les ${overtime?.value || 'N/A'} heures supplémentaires reflètent ${Number(overtime?.value) > 300 ? 'une surcharge de travail préoccupante' : 'une charge de travail maîtrisée'}.`,
+          metrics: [
+            `Absentéisme: ${absenteeism?.value || 'N/A'}${absenteeism?.unit || ''}`,
+            `Heures supplémentaires: ${overtime?.value || 'N/A'} ${overtime?.unit || ''}`,
+            `Tendance absentéisme: ${absenteeism?.trend ? (absenteeism.trend > 0 ? '+' : '') + absenteeism.trend + '%' : 'Stable'}`
+          ],
+          status: absenteeism?.category || 'neutral'
+        },
+        financial: {
+          title: "Impact Budgétaire",
+          content: `Les frais RH s'élèvent à ${expenses?.value || 'N/A'}€ cette période. ${expenses?.trend && expenses.trend > 0 ? `L'augmentation de ${expenses.trend}% nécessite un contrôle budgétaire renforcé` : expenses?.trend && expenses.trend < 0 ? `La réduction de ${Math.abs(expenses.trend)}% optimise les coûts` : 'Les dépenses restent stables'}.`,
+          metrics: [
+            `Frais RH totaux: ${expenses?.value || 'N/A'}€`,
+            `Évolution: ${expenses?.trend ? (expenses.trend > 0 ? '+' : '') + expenses.trend + '%' : 'Stable'}`,
+            `Coût par collaborateur: ${expenses?.value && headcount?.value ? Math.round(Number(expenses.value) / Number(headcount.value)).toLocaleString() : 'N/A'}€`
+          ],
+          status: expenses?.category || 'neutral'
+        },
         risks: [
           {
-            category: "Risques Identifiés",
-            items: [
-              { risk: "Pénurie compétences critiques", level: "MOYEN", impact: "ÉLEVÉ" },
-              { risk: "Concentration connaissances", level: "ÉLEVÉ", impact: "CRITIQUE" },
-              { risk: "Vieillissement encadrement", level: "FAIBLE", impact: "MOYEN" }
-            ]
+            category: "Alertes Prioritaires",
+            items: stats.negative > 0 ? [
+              ...(Number(absenteeism?.value) > 5 ? [{ risk: "Taux d'absentéisme élevé", level: "ÉLEVÉ", impact: "CRITIQUE" }] : []),
+              ...(Number(turnover?.value) > 10 ? [{ risk: "Turnover préoccupant", level: "MOYEN", impact: "ÉLEVÉ" }] : []),
+              ...(Number(overtime?.value) > 300 ? [{ risk: "Surcharge de travail", level: "ÉLEVÉ", impact: "MOYEN" }] : []),
+              ...(Number(tasks?.value) < 80 ? [{ risk: "Efficacité RH dégradée", level: "MOYEN", impact: "MOYEN" }] : [])
+            ] : [{ risk: "Aucune alerte critique détectée", level: "FAIBLE", impact: "FAIBLE" }]
           },
           {
-            category: "Stratégies d'Atténuation",
+            category: "Actions Recommandées",
             items: [
-              "Plan succession documenté postes critiques",
-              "Programme mentoring inversé digital",
-              "Centre excellence IA formation continue",
-              "Audit sécurité trimestriel automatisé"
+              "Audit des processus RH inefficaces",
+              "Plan d'action anti-absentéisme si nécessaire",
+              "Optimisation charge de travail équipes",
+              "Digitalisation complète dossiers collaborateurs"
             ]
           }
         ],
         recommendations: [
           {
-            priority: "P0 - CRITIQUE",
-            action: "Audit flash indicateurs alerte rouge",
-            timeline: "0-7 jours",
-            impact: "Stabilisation métriques critiques"
+            priority: stats.negative > 2 ? "P0 - CRITIQUE" : "P2 - IMPORTANT",
+            action: stats.negative > 2 ? "Intervention immédiate sur indicateurs critiques" : "Optimisation continue des processus",
+            timeline: stats.negative > 2 ? "0-15 jours" : "1-3 mois",
+            impact: stats.negative > 2 ? "Stabilisation urgente" : "Amélioration performance +15%"
           },
           {
-            priority: "P1 - URGENT", 
-            action: "Déploiement dashboard IA temps réel",
-            timeline: "1-3 mois",
-            impact: "Réactivité +400%"
+            priority: "P1 - URGENT",
+            action: Number(documents?.value) < 90 ? "Digitalisation complète dossiers RH" : "Maintien excellence administrative",
+            timeline: "2-6 semaines",
+            impact: "Conformité 100% + gain temps 40%"
           },
           {
             priority: "P2 - IMPORTANT",
-            action: "Formation IA 100% managers",
-            timeline: "2-4 mois", 
-            impact: "Maturité digitale +60%"
+            action: "Formation continue managers RH",
+            timeline: "2-4 mois",
+            impact: "Efficacité managériale +25%"
           }
         ]
       }
@@ -169,7 +165,6 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
 
   const exportToPDF = () => {
     try {
-      // Récupérer le contenu HTML de l'analyse IA
       const analysisElement = document.getElementById('ai-analysis-content');
       if (!analysisElement) {
         toast({
@@ -218,95 +213,59 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
       pdf.rect(0, 0, 210, 40, 'F');
       
       pdf.setTextColor(255, 255, 255);
-      addText("RAPPORT D'ANALYSE RH PAR INTELLIGENCE ARTIFICIELLE", 16, true);
-      addText("Diagnostic Complet et Recommandations Stratégiques", 12, false);
+      addText("ANALYSE RH PAR INTELLIGENCE ARTIFICIELLE", 16, true);
+      addText("Rapport basé sur les données opérationnelles", 12, false);
       currentY += 10;
       
       pdf.setTextColor(0, 0, 0);
       
-      // Métadonnées de l'analyse
+      // Métadonnées
       addText("MÉTADONNÉES DE L'ANALYSE", 12, true);
-      addText(`ID d'analyse: ${analysis.metadata.analysisId}`, 9);
-      addText(`Score de santé RH: ${analysis.metadata.healthScore}/100`, 9);
-      addText(`Indice de stabilité: ${analysis.metadata.stabilityIndex}%`, 9);
+      addText(`ID: ${analysis.metadata.analysisId}`, 9);
+      addText(`Score santé RH: ${analysis.metadata.healthScore}/100`, 9);
+      addText(`Stabilité: ${analysis.metadata.stabilityIndex}%`, 9);
       addText(`Niveau de risque: ${analysis.metadata.riskLevel}`, 9);
-      addText(`Potentiel de croissance: ${analysis.metadata.growthPotential}`, 9);
       currentY += 15;
 
-      // Statistiques rapides (depuis le HTML)
-      addText("TABLEAU DE BORD EXÉCUTIF", 14, true);
-      currentY += 5;
-      
-      addText("Répartition des indicateurs:", 11, true);
-      addText(`• Indicateurs positifs: ${stats.positive}`, 10, false, 10);
-      addText(`• Points d'attention: ${stats.negative}`, 10, false, 10);
-      addText(`• Indicateurs neutres: ${stats.neutral}`, 10, false, 10);
+      // Statistiques
+      addText("SYNTHÈSE EXÉCUTIVE", 14, true);
+      addText(`Indicateurs positifs: ${stats.positive}`, 10, false, 10);
+      addText(`Points d'attention: ${stats.negative}`, 10, false, 10);
+      addText(`Indicateurs neutres: ${stats.neutral}`, 10, false, 10);
       currentY += 10;
 
-      // Insights stratégiques
-      addText("INSIGHTS STRATÉGIQUES IA", 14, true);
-      currentY += 5;
-      
-      analysis.insights.strategic.forEach(insight => {
-        addText(insight.title, 11, true);
-        addText(insight.content, 9, false, 5);
-        addText(`Niveau de confiance: ${insight.confidence}%`, 8, false, 5);
-        currentY += 5;
-      });
-
-      // Excellence opérationnelle
-      addText("EXCELLENCE OPÉRATIONNELLE", 14, true);
-      currentY += 5;
-      
-      analysis.insights.operational.forEach(section => {
-        addText(section.title, 11, true);
-        section.metrics.forEach(metric => {
-          addText(`• ${metric}`, 9, false, 10);
-        });
-        currentY += 5;
-      });
-
-      // Impact financier
-      addText("IMPACT FINANCIER", 14, true);
-      currentY += 5;
-      
-      analysis.insights.financial.forEach(section => {
-        addText(section.title, 11, true);
-        section.data.forEach(item => {
-          addText(`${item.label}: ${item.value}`, 9, false, 10);
-        });
-        currentY += 5;
-      });
-
-      // Gestion des risques
-      addText("GESTION DES RISQUES", 14, true);
-      currentY += 5;
-      
-      analysis.insights.risks.forEach(section => {
-        addText(section.category, 11, true);
-        if ('items' in section && Array.isArray(section.items)) {
-          if (typeof section.items[0] === 'object') {
-            section.items.forEach((item: any) => {
-              addText(`• ${item.risk} (Niveau: ${item.level}, Impact: ${item.impact})`, 9, false, 10);
-            });
-          } else {
-            section.items.forEach((item: any) => {
-              addText(`• ${item}`, 9, false, 10);
+      // Analyses détaillées
+      Object.values(analysis.insights).forEach((section: any) => {
+        if (section.title) {
+          addText(section.title.toUpperCase(), 12, true);
+          if (section.content) addText(section.content, 9, false, 5);
+          if (section.metrics) {
+            section.metrics.forEach((metric: string) => {
+              addText(`• ${metric}`, 9, false, 10);
             });
           }
+          currentY += 8;
         }
+      });
+
+      // Risques et recommandations
+      analysis.insights.risks.forEach((section: any) => {
+        addText(section.category.toUpperCase(), 12, true);
+        section.items.forEach((item: any) => {
+          if (typeof item === 'object') {
+            addText(`• ${item.risk} (${item.level}/${item.impact})`, 9, false, 10);
+          } else {
+            addText(`• ${item}`, 9, false, 10);
+          }
+        });
         currentY += 5;
       });
 
-      // Recommandations
-      addText("RECOMMANDATIONS PRIORITAIRES", 14, true);
-      currentY += 5;
-      
-      analysis.insights.recommendations.forEach(rec => {
+      addText("RECOMMANDATIONS PRIORITAIRES", 12, true);
+      analysis.insights.recommendations.forEach((rec: any) => {
         addText(`[${rec.priority}] ${rec.action}`, 10, true, 5);
-        addText(`Délai: ${rec.timeline}`, 9, false, 10);
-        addText(`Impact attendu: ${rec.impact}`, 9, false, 10);
-        currentY += 5;
+        addText(`Délai: ${rec.timeline} | Impact: ${rec.impact}`, 9, false, 10);
+        currentY += 3;
       });
 
       // Footer
@@ -316,26 +275,25 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
         pdf.text(
-          `Analyse IA • ${analysis.metadata.analysisId} • Page ${i}/${totalPages}`,
+          `Analyse RH IA • ${analysis.metadata.analysisId} • Page ${i}/${totalPages}`,
           margin,
           pageHeight - 10
         );
       }
       
-      // Sauvegarde
-      const fileName = `analyse-rh-ia-${new Date().toISOString().split('T')[0]}.pdf`;
+      const fileName = `analyse-rh-${new Date().toISOString().split('T')[0]}.pdf`;
       pdf.save(fileName);
       
       toast({
-        title: "Analyse PDF exportée",
-        description: "Le rapport d'analyse IA a été téléchargé avec succès"
+        title: "Analyse exportée",
+        description: "Le rapport d'analyse RH a été téléchargé"
       });
       
     } catch (error) {
-      console.error('Erreur lors de la génération du PDF:', error);
+      console.error('Erreur export PDF:', error);
       toast({
-        title: "Erreur d'export PDF",
-        description: "Impossible de générer le rapport d'analyse",
+        title: "Erreur d'export",
+        description: "Impossible de générer le rapport",
         variant: "destructive"
       });
     }
@@ -350,7 +308,7 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Brain className="h-5 w-5 text-primary" />
-            <span>Analyse IA Globale</span>
+            <span>Analyse IA des Ressources Humaines</span>
             {overallStatus.icon}
           </div>
           <div className="flex items-center space-x-2">
@@ -375,7 +333,7 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
               ) : (
                 <MessageSquare className="h-4 w-4 mr-2" />
               )}
-              {isLoading ? 'Génération...' : 'Régénérer'}
+              {isLoading ? 'Analyse...' : 'Actualiser'}
             </Button>
           </div>
         </CardTitle>
@@ -427,84 +385,95 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
           </div>
         </div>
 
-        {/* Insights Stratégiques IA */}
+        {/* Analyse de l'Effectif */}
         <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border border-purple-200">
           <div className="flex items-center space-x-2 mb-4">
-            <Lightbulb className="h-5 w-5 text-purple-600" />
-            <h3 className="text-lg font-semibold text-purple-900">Insights Stratégiques IA</h3>
+            <Users className="h-5 w-5 text-purple-600" />
+            <h3 className="text-lg font-semibold text-purple-900">{aiAnalysis.insights.workforce.title}</h3>
           </div>
           
-          <div className="space-y-4">
-            {aiAnalysis.insights.strategic.map((insight, index) => (
-              <div key={index} className="bg-white p-4 rounded-lg border-l-4 border-purple-400">
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="font-medium text-gray-800">{insight.title}</h4>
-                  <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
-                    Confiance: {insight.confidence}%
-                  </span>
+          <div className="bg-white p-4 rounded-lg border-l-4 border-purple-400 mb-4">
+            <p className="text-gray-700 text-sm leading-relaxed mb-3">{aiAnalysis.insights.workforce.content}</p>
+            <div className="grid md:grid-cols-2 gap-2">
+              {aiAnalysis.insights.workforce.metrics.map((metric, index) => (
+                <div key={index} className="flex items-center text-sm text-gray-600">
+                  <div className={`w-2 h-2 rounded-full mr-3 ${
+                    aiAnalysis.insights.workforce.status === 'positive' ? 'bg-green-500' : 
+                    aiAnalysis.insights.workforce.status === 'negative' ? 'bg-red-500' : 'bg-blue-500'
+                  }`}></div>
+                  {metric}
                 </div>
-                <p className="text-gray-700 text-sm leading-relaxed">{insight.content}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Excellence Opérationnelle */}
+        {/* Performance Opérationnelle */}
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg border border-green-200">
           <div className="flex items-center space-x-2 mb-4">
             <Zap className="h-5 w-5 text-green-600" />
-            <h3 className="text-lg font-semibold text-green-900">Excellence Opérationnelle</h3>
+            <h3 className="text-lg font-semibold text-green-900">{aiAnalysis.insights.productivity.title}</h3>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-4">
-            {aiAnalysis.insights.operational.map((section, index) => (
-              <div key={index} className="bg-white p-4 rounded-lg">
-                <h4 className="font-medium text-gray-800 mb-3">{section.title}</h4>
-                <ul className="space-y-2">
-                  {section.metrics.map((metric, idx) => (
-                    <li key={idx} className="flex items-center text-sm text-gray-700">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      {metric}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          <div className="bg-white p-4 rounded-lg border-l-4 border-green-400 mb-4">
+            <p className="text-gray-700 text-sm leading-relaxed mb-3">{aiAnalysis.insights.productivity.content}</p>
+            <div className="grid md:grid-cols-2 gap-2">
+              {aiAnalysis.insights.productivity.metrics.map((metric, index) => (
+                <div key={index} className="flex items-center text-sm text-gray-600">
+                  <div className={`w-2 h-2 rounded-full mr-3 ${
+                    aiAnalysis.insights.productivity.status === 'positive' ? 'bg-green-500' : 
+                    aiAnalysis.insights.productivity.status === 'negative' ? 'bg-red-500' : 'bg-blue-500'
+                  }`}></div>
+                  {metric}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Impact Financier */}
+        {/* Gestion des Présences */}
+        <div className="bg-gradient-to-r from-orange-50 to-yellow-50 p-6 rounded-lg border border-orange-200">
+          <div className="flex items-center space-x-2 mb-4">
+            <Clock className="h-5 w-5 text-orange-600" />
+            <h3 className="text-lg font-semibold text-orange-900">{aiAnalysis.insights.attendance.title}</h3>
+          </div>
+          
+          <div className="bg-white p-4 rounded-lg border-l-4 border-orange-400 mb-4">
+            <p className="text-gray-700 text-sm leading-relaxed mb-3">{aiAnalysis.insights.attendance.content}</p>
+            <div className="grid md:grid-cols-2 gap-2">
+              {aiAnalysis.insights.attendance.metrics.map((metric, index) => (
+                <div key={index} className="flex items-center text-sm text-gray-600">
+                  <div className={`w-2 h-2 rounded-full mr-3 ${
+                    aiAnalysis.insights.attendance.status === 'positive' ? 'bg-green-500' : 
+                    aiAnalysis.insights.attendance.status === 'negative' ? 'bg-red-500' : 'bg-blue-500'
+                  }`}></div>
+                  {metric}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Impact Budgétaire */}
         <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-lg border border-yellow-200">
           <div className="flex items-center space-x-2 mb-4">
             <DollarSign className="h-5 w-5 text-yellow-600" />
-            <h3 className="text-lg font-semibold text-yellow-900">Impact Financier Stratégique</h3>
+            <h3 className="text-lg font-semibold text-yellow-900">{aiAnalysis.insights.financial.title}</h3>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-4">
-            {aiAnalysis.insights.financial.map((section, index) => (
-              <div key={index} className="bg-white p-4 rounded-lg">
-                <h4 className="font-medium text-gray-800 mb-3">{section.title}</h4>
-                <div className="space-y-2">
-                  {section.data.map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">{item.label}</span>
-                      <div className="flex items-center space-x-2">
-                        <span className={`text-sm font-medium ${
-                          item.trend === 'positive' ? 'text-green-600' : 
-                          item.trend === 'negative' ? 'text-red-600' : 'text-gray-600'
-                        }`}>
-                          {item.value}
-                        </span>
-                        <div className={`w-2 h-2 rounded-full ${
-                          item.trend === 'positive' ? 'bg-green-500' : 
-                          item.trend === 'negative' ? 'bg-red-500' : 'bg-gray-400'
-                        }`}></div>
-                      </div>
-                    </div>
-                  ))}
+          <div className="bg-white p-4 rounded-lg border-l-4 border-yellow-400 mb-4">
+            <p className="text-gray-700 text-sm leading-relaxed mb-3">{aiAnalysis.insights.financial.content}</p>
+            <div className="grid md:grid-cols-2 gap-2">
+              {aiAnalysis.insights.financial.metrics.map((metric, index) => (
+                <div key={index} className="flex items-center text-sm text-gray-600">
+                  <div className={`w-2 h-2 rounded-full mr-3 ${
+                    aiAnalysis.insights.financial.status === 'positive' ? 'bg-green-500' : 
+                    aiAnalysis.insights.financial.status === 'negative' ? 'bg-red-500' : 'bg-blue-500'
+                  }`}></div>
+                  {metric}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
@@ -512,7 +481,7 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
         <div className="bg-gradient-to-r from-red-50 to-pink-50 p-6 rounded-lg border border-red-200">
           <div className="flex items-center space-x-2 mb-4">
             <Shield className="h-5 w-5 text-red-600" />
-            <h3 className="text-lg font-semibold text-red-900">Gestion des Risques Avancée</h3>
+            <h3 className="text-lg font-semibold text-red-900">Analyse des Risques</h3>
           </div>
           
           <div className="grid md:grid-cols-2 gap-4">
@@ -520,7 +489,7 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
               <div key={index} className="bg-white p-4 rounded-lg">
                 <h4 className="font-medium text-gray-800 mb-3">{section.category}</h4>
                 <div className="space-y-2">
-                  {section.items && Array.isArray(section.items) && section.items.map((item, idx) => (
+                  {section.items.map((item: any, idx: number) => (
                     <div key={idx} className="text-sm">
                       {typeof item === 'object' ? (
                         <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
@@ -532,13 +501,6 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
                               'bg-yellow-100 text-yellow-700'
                             }`}>
                               {item.level}
-                            </span>
-                            <span className={`text-xs px-2 py-1 rounded ${
-                              item.impact === 'CRITIQUE' ? 'bg-red-100 text-red-700' :
-                              item.impact === 'ÉLEVÉ' ? 'bg-orange-100 text-orange-700' :
-                              'bg-yellow-100 text-yellow-700'
-                            }`}>
-                              {item.impact}
                             </span>
                           </div>
                         </div>
@@ -556,11 +518,11 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
           </div>
         </div>
 
-        {/* Recommandations Prioritaires */}
+        {/* Recommandations */}
         <div className="bg-gradient-to-r from-indigo-50 to-blue-50 p-6 rounded-lg border border-indigo-200">
           <div className="flex items-center space-x-2 mb-4">
             <Rocket className="h-5 w-5 text-indigo-600" />
-            <h3 className="text-lg font-semibold text-indigo-900">Recommandations Prioritaires</h3>
+            <h3 className="text-lg font-semibold text-indigo-900">Plan d'Action Recommandé</h3>
           </div>
           
           <div className="space-y-3">
@@ -584,14 +546,14 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
                 </div>
                 <p className="text-sm text-gray-600 flex items-center">
                   <Award className="h-3 w-3 mr-1" />
-                  Impact attendu: {rec.impact}
+                  Impact: {rec.impact}
                 </p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Statut global */}
+        {/* Statut global et message d'insight */}
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="flex items-center space-x-2 mb-2">
             <TrendingUp className="h-4 w-4 text-gray-600" />
@@ -599,14 +561,13 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
           </div>
         </div>
 
-        {/* Message d'insight principal */}
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="flex items-start space-x-3">
             <Brain className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <h4 className="font-medium text-gray-800 mb-2">Synthèse de l'analyse IA</h4>
+              <h4 className="font-medium text-gray-800 mb-2">Synthèse IA</h4>
               <p className="text-gray-700 leading-relaxed">
-                {insight || "Cliquez sur 'Régénérer' pour obtenir une analyse IA de vos indicateurs RH."}
+                {insight || "Actualisez l'analyse pour obtenir une synthèse IA de vos indicateurs RH."}
               </p>
             </div>
           </div>
@@ -617,11 +578,11 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
             <div className="flex items-start space-x-3">
               <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <h4 className="font-medium text-amber-800 mb-1">Actions recommandées</h4>
+                <h4 className="font-medium text-amber-800 mb-1">Actions prioritaires détectées</h4>
                 <ul className="text-sm text-amber-700 space-y-1">
                   <li>• Analyser les causes des indicateurs en alerte</li>
-                  <li>• Prioriser les actions correctives</li>
-                  <li>• Planifier un suivi rapproché</li>
+                  <li>• Prioriser les actions correctives selon la matrice des risques</li>
+                  <li>• Planifier un suivi rapproché des métriques critiques</li>
                 </ul>
               </div>
             </div>
@@ -630,9 +591,9 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
 
         <div className="text-xs text-gray-500 text-center pt-2 border-t border-gray-200">
           <div className="flex items-center justify-center space-x-4">
-            <span>Analyse ID: {aiAnalysis.metadata.analysisId}</span>
+            <span>Analyse: {aiAnalysis.metadata.analysisId}</span>
             <span>•</span>
-            <span>Dernière analyse : {new Date().toLocaleDateString('fr-FR', {
+            <span>Mise à jour: {new Date().toLocaleDateString('fr-FR', {
               day: 'numeric',
               month: 'long',
               year: 'numeric',
