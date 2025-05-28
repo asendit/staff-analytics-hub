@@ -339,36 +339,13 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6" id="ai-analysis-content">
-        {/* Tableau de bord exécutif */}
+        {/* Vue d'ensemble simplifiée */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
           <div className="flex items-center space-x-2 mb-4">
             <Target className="h-5 w-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-blue-900">Tableau de Bord Exécutif</h3>
+            <h3 className="text-lg font-semibold text-blue-900">Vue d'Ensemble</h3>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-              <div className="text-2xl font-bold text-blue-600">{aiAnalysis.metadata.healthScore}</div>
-              <div className="text-sm text-gray-600">Score Santé RH</div>
-              <div className="text-xs text-blue-500">/100</div>
-            </div>
-            <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-              <div className="text-2xl font-bold text-green-600">{aiAnalysis.metadata.stabilityIndex}%</div>
-              <div className="text-sm text-gray-600">Stabilité</div>
-              <div className="text-xs text-green-500">Index</div>
-            </div>
-            <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-              <div className="text-lg font-bold text-orange-600">{aiAnalysis.metadata.riskLevel}</div>
-              <div className="text-sm text-gray-600">Niveau</div>
-              <div className="text-xs text-orange-500">de Risque</div>
-            </div>
-            <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-              <div className="text-lg font-bold text-purple-600">{aiAnalysis.metadata.growthPotential}</div>
-              <div className="text-sm text-gray-600">Potentiel</div>
-              <div className="text-xs text-purple-500">Croissance</div>
-            </div>
-          </div>
-
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-3 bg-green-100 rounded-lg">
               <div className="text-2xl font-bold text-green-700">{stats.positive}</div>
@@ -381,6 +358,19 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
             <div className="text-center p-3 bg-blue-100 rounded-lg">
               <div className="text-2xl font-bold text-blue-700">{stats.neutral}</div>
               <div className="text-sm text-blue-600">Indicateurs neutres</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Synthèse IA */}
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <div className="flex items-start space-x-3">
+            <Brain className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <h4 className="font-medium text-gray-800 mb-2">Synthèse IA</h4>
+              <p className="text-gray-700 leading-relaxed">
+                {insight || "Actualisez l'analyse pour obtenir une synthèse IA de vos indicateurs RH."}
+              </p>
             </div>
           </div>
         </div>
@@ -553,23 +543,11 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
           </div>
         </div>
 
-        {/* Statut global et message d'insight */}
+        {/* Statut global */}
         <div className="bg-white p-4 rounded-lg border border-gray-200">
           <div className="flex items-center space-x-2 mb-2">
             <TrendingUp className="h-4 w-4 text-gray-600" />
             <span className="font-medium text-gray-800">Statut global : {overallStatus.status}</span>
-          </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <div className="flex items-start space-x-3">
-            <Brain className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-            <div className="flex-1">
-              <h4 className="font-medium text-gray-800 mb-2">Synthèse IA</h4>
-              <p className="text-gray-700 leading-relaxed">
-                {insight || "Actualisez l'analyse pour obtenir une synthèse IA de vos indicateurs RH."}
-              </p>
-            </div>
           </div>
         </div>
 
