@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
 import { KPIData, KPIChartData } from '../services/hrAnalytics';
-import { BarChart3, TrendingUp, PieChart as PieChartIcon } from 'lucide-react';
+import { BarChart3, TrendingUp, PieChart as PieChartIcon, Users } from 'lucide-react';
 
 interface KPIChartModalProps {
   isOpen: boolean;
@@ -27,9 +27,13 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
     },
   };
 
+  // Vérifier si on a des données démographiques pour le KPI effectif
+  const hasAgeData = kpi.id === 'headcount' && chartData.ageDistribution;
+  const hasGenderData = kpi.id === 'headcount' && chartData.genderDistribution;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <BarChart3 className="h-5 w-5" />
@@ -38,7 +42,7 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
         </DialogHeader>
 
         <Tabs defaultValue="evolution" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className={`grid w-full ${hasAgeData || hasGenderData ? 'grid-cols-5' : 'grid-cols-3'}`}>
             <TabsTrigger value="evolution" className="flex items-center space-x-2">
               <TrendingUp className="h-4 w-4" />
               <span>Évolution</span>
@@ -51,6 +55,18 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
               <PieChartIcon className="h-4 w-4" />
               <span>Répartition</span>
             </TabsTrigger>
+            {hasAgeData && (
+              <TabsTrigger value="age" className="flex items-center space-x-2">
+                <Users className="h-4 w-4" />
+                <span>Par âge</span>
+              </TabsTrigger>
+            )}
+            {hasGenderData && (
+              <TabsTrigger value="gender" className="flex items-center space-x-2">
+                <Users className="h-4 w-4" />
+                <span>Par genre</span>
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="evolution" className="space-y-4">
@@ -126,6 +142,59 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
               </CardContent>
             </Card>
           </TabsContent>
+
+          {hasAgeData && (
+            <TabsContent value="age" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Répartition par tranche d'âge</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer config={chartConfig} className="h-80">
+                    <BarChart data={chartData.ageDistribution}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="ageGroup" />
+                      <YAxis />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Bar dataKey="value" fill="#10b981" />
+                    </BarChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
+
+          {hasGenderData && (
+            <TabsContent value="gender" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Répartition par genre</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer config={chartConfig} className="h-80">
+                    <PieChart>
+                      <Pie
+                        data={chartData.genderDistribution}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ gender, percent }) => `${gender} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {chartData.genderDistribution?.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={index === 0 ? '#3b82f6' : '#ef4444'} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Legend />
+                    </PieChart>
+                  </ChartContainer>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
         </Tabs>
       </DialogContent>
     </Dialog>

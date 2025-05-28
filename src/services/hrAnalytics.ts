@@ -14,6 +14,8 @@ export interface Employee {
   trainingHours: number;
   remoteWork: boolean;
   address: string;
+  gender?: 'homme' | 'femme';
+  birthDate?: Date;
 }
 
 export interface Expense {
@@ -47,6 +49,8 @@ export interface KPIChartData {
     title: string;
     data: Array<{ name: string; value: number }>;
   };
+  ageDistribution?: Array<{ ageGroup: string; value: number }>;
+  genderDistribution?: Array<{ gender: string; value: number }>;
 }
 
 export interface FilterOptions {
@@ -172,6 +176,36 @@ export class HRAnalytics {
   getHeadcountChartData(filters: FilterOptions): KPIChartData {
     const months = this.generateMonthLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    const employees = this.filterEmployees(filters);
+    
+    // Distribution par âge
+    const ageGroups = {
+      '20-30 ans': 0,
+      '30-40 ans': 0,
+      '40-50 ans': 0,
+      '50+ ans': 0
+    };
+
+    // Distribution par genre
+    const genderDistribution = {
+      'homme': 0,
+      'femme': 0
+    };
+
+    employees.forEach(employee => {
+      // Calcul de l'âge
+      const birthDate = employee.birthDate || new Date(faker.date.birthdate({ min: 25, max: 60, mode: 'age' }));
+      const age = new Date().getFullYear() - birthDate.getFullYear();
+      
+      if (age < 30) ageGroups['20-30 ans']++;
+      else if (age < 40) ageGroups['30-40 ans']++;
+      else if (age < 50) ageGroups['40-50 ans']++;
+      else ageGroups['50+ ans']++;
+
+      // Distribution par genre
+      const gender = employee.gender || (Math.random() > 0.5 ? 'homme' : 'femme');
+      genderDistribution[gender]++;
+    });
     
     return {
       timeEvolution: months.map(month => ({
@@ -189,7 +223,15 @@ export class HRAnalytics {
           { name: 'En congé', value: faker.number.int({ min: 10, max: 20 }) },
           { name: 'Inactifs', value: faker.number.int({ min: 5, max: 15 }) }
         ]
-      }
+      },
+      ageDistribution: Object.entries(ageGroups).map(([ageGroup, value]) => ({
+        ageGroup,
+        value
+      })),
+      genderDistribution: Object.entries(genderDistribution).map(([gender, value]) => ({
+        gender,
+        value
+      }))
     };
   }
 
