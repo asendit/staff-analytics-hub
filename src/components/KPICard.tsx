@@ -14,6 +14,7 @@ interface KPICardProps {
 
 const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, onChartClick, showInsight = true }) => {
   const getTrendIcon = () => {
+    if (kpi.trend === null) return null;
     if (kpi.trend > 0) return <TrendingUp className="h-4 w-4 text-green-600" />;
     if (kpi.trend < 0) return <TrendingDown className="h-4 w-4 text-red-600" />;
     return <Minus className="h-4 w-4 text-gray-400" />;
@@ -28,6 +29,7 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, onChartClick, showI
   };
 
   const getTrendColor = () => {
+    if (kpi.trend === null) return 'text-gray-500';
     if (kpi.trend > 0) return 'text-green-600';
     if (kpi.trend < 0) return 'text-red-600';
     return 'text-gray-500';
@@ -72,16 +74,18 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, onChartClick, showI
             </div>
           </div>
 
-          {/* Tendance */}
-          <div className="flex items-center space-x-2">
-            {getTrendIcon()}
-            <span className={`text-sm font-medium ${getTrendColor()}`}>
-              {kpi.trend > 0 ? '+' : ''}{kpi.trend}%
-            </span>
-            <span className="text-xs text-gray-500">
-              vs période précédente
-            </span>
-          </div>
+          {/* Tendance - affichée seulement si kpi.trend n'est pas null */}
+          {kpi.trend !== null && (
+            <div className="flex items-center space-x-2">
+              {getTrendIcon()}
+              <span className={`text-sm font-medium ${getTrendColor()}`}>
+                {kpi.trend > 0 ? '+' : ''}{kpi.trend}%
+              </span>
+              <span className="text-xs text-gray-500">
+                vs période de comparaison
+              </span>
+            </div>
+          )}
 
           {/* Insight IA - affiché seulement si showInsight est true */}
           {showInsight && kpi.insight && (

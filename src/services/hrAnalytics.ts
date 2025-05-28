@@ -1,3 +1,4 @@
+
 import { faker } from '@faker-js/faker';
 
 export interface Employee {
@@ -34,7 +35,7 @@ export interface KPIData {
   name: string;
   value: number | string;
   unit: string;
-  trend: number;
+  trend: number | null;
   comparison: 'higher' | 'lower' | 'stable';
   category: 'positive' | 'negative' | 'neutral';
   insight: string;
@@ -67,13 +68,15 @@ export class HRAnalytics {
     const absentDays = employees.reduce((sum, employee) => sum + faker.number.int({ min: 0, max: 2 }), 0);
     const absenteeismRate = (absentDays / (employees.length * totalDays)) * 100;
 
+    const trend = this.calculateTrend(filters);
+
     return {
       id: 'absenteeism',
       name: 'Taux d\'absentéisme',
       value: absenteeismRate.toFixed(1),
       unit: '%',
-      trend: faker.number.int({ min: -5, max: 5 }),
-      comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
+      trend,
+      comparison: this.getTrendComparison(trend),
       category: absenteeismRate > 5 ? 'negative' : 'positive',
       insight: `Le taux d'absentéisme est de ${absenteeismRate.toFixed(1)}%. ${absenteeismRate > 5 ? '⚠️ Il est supérieur à la moyenne et nécessite une attention particulière.' : '✅ Il est dans la moyenne acceptable.'}`
     };
@@ -86,11 +89,11 @@ export class HRAnalytics {
     return {
       timeEvolution: months.map(month => ({
         month,
-        value: faker.number.float({ min: 2, max: 8, precision: 0.1 })
+        value: faker.number.float({ min: 2, max: 8, fractionDigits: 1 })
       })),
       departmentBreakdown: departments.map(dept => ({
         department: dept,
-        value: faker.number.float({ min: 1, max: 10, precision: 0.1 })
+        value: faker.number.float({ min: 1, max: 10, fractionDigits: 1 })
       })),
       specificBreakdown: {
         title: 'Répartition par type d\'absence',
@@ -110,13 +113,15 @@ export class HRAnalytics {
     const terminatedEmployees = employees.filter(employee => employee.status === 'terminated').length;
     const turnoverRate = (terminatedEmployees / employees.length) * 100;
 
+    const trend = this.calculateTrend(filters);
+
     return {
       id: 'turnover',
       name: 'Turnover',
       value: turnoverRate.toFixed(1),
       unit: '%',
-      trend: faker.number.int({ min: -5, max: 5 }),
-      comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
+      trend,
+      comparison: this.getTrendComparison(trend),
       category: turnoverRate > 10 ? 'negative' : 'positive',
       insight: `Le taux de turnover est de ${turnoverRate.toFixed(1)}%. ${turnoverRate > 10 ? '🚨 Il est élevé et pourrait indiquer des problèmes de rétention.' : '📈 Il reste dans une fourchette acceptable.'}`
     };
@@ -129,11 +134,11 @@ export class HRAnalytics {
     return {
       timeEvolution: months.map(month => ({
         month,
-        value: faker.number.float({ min: 5, max: 15, precision: 0.1 })
+        value: faker.number.float({ min: 5, max: 15, fractionDigits: 1 })
       })),
       departmentBreakdown: departments.map(dept => ({
         department: dept,
-        value: faker.number.float({ min: 3, max: 18, precision: 0.1 })
+        value: faker.number.float({ min: 3, max: 18, fractionDigits: 1 })
       })),
       specificBreakdown: {
         title: 'Turnover par type de contrat',
@@ -151,13 +156,15 @@ export class HRAnalytics {
     const employees = this.filterEmployees(filters);
     const activeEmployees = employees.filter(employee => employee.status === 'active').length;
 
+    const trend = this.calculateTrend(filters);
+
     return {
       id: 'headcount',
       name: 'Effectif actif',
       value: activeEmployees,
       unit: 'collaborateurs',
-      trend: faker.number.int({ min: -10, max: 10 }),
-      comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
+      trend,
+      comparison: this.getTrendComparison(trend),
       category: activeEmployees < 100 ? 'negative' : 'positive',
       insight: `L'effectif actif est de ${activeEmployees} collaborateurs. ${activeEmployees < 100 ? '⚠️ L\'effectif est réduit.' : '👥 L\'équipe maintient une taille stable.'}`
     };
@@ -187,43 +194,46 @@ export class HRAnalytics {
     };
   }
 
-  getWorkforceUtilization(filters: FilterOptions): KPIData {
+  getOvertimeHours(filters: FilterOptions): KPIData {
     const employees = this.filterEmployees(filters);
-    const totalHours = employees.reduce((sum, employee) => sum + employee.trainingHours, 0);
-    const utilizationRate = (totalHours / (employees.length * 40)) * 100;
+    const totalOvertimeHours = employees.reduce(() => faker.number.int({ min: 0, max: 15 }), 0);
+    const averageOvertimePerEmployee = totalOvertimeHours / employees.length;
+
+    const trend = this.calculateTrend(filters);
 
     return {
-      id: 'work-utilization',
-      name: 'Utilisation du temps',
-      value: utilizationRate.toFixed(1),
-      unit: '%',
-      trend: faker.number.int({ min: -5, max: 5 }),
-      comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
-      category: utilizationRate < 80 ? 'negative' : 'positive',
-      insight: `Le taux d'utilisation du temps est de ${utilizationRate.toFixed(1)}%. ${utilizationRate < 80 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
+      id: 'overtime-hours',
+      name: 'Heures supplémentaires',
+      value: Math.round(totalOvertimeHours),
+      unit: 'heures',
+      trend,
+      comparison: this.getTrendComparison(trend),
+      category: totalOvertimeHours > (employees.length * 10) ? 'negative' : 'neutral',
+      insight: `${totalOvertimeHours} heures supplémentaires sur la période (${averageOvertimePerEmployee.toFixed(1)}h/collaborateur en moyenne). ${totalOvertimeHours > (employees.length * 10) ? '⚠️ Volume élevé, attention à la charge de travail.' : '📊 Volume dans la normale.'}`
     };
   }
 
-  getWorkforceUtilizationChartData(filters: FilterOptions): KPIChartData {
+  getOvertimeHoursChartData(filters: FilterOptions): KPIChartData {
     const months = this.generateMonthLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
       timeEvolution: months.map(month => ({
         month,
-        value: faker.number.float({ min: 75, max: 95, precision: 0.1 })
+        value: faker.number.int({ min: 50, max: 300 })
       })),
       departmentBreakdown: departments.map(dept => ({
         department: dept,
-        value: faker.number.float({ min: 70, max: 98, precision: 0.1 })
+        value: faker.number.int({ min: 20, max: 120 })
       })),
       specificBreakdown: {
-        title: 'Répartition du temps',
+        title: 'Répartition par motif',
         data: [
-          { name: 'Productif', value: faker.number.int({ min: 60, max: 75 }) },
-          { name: 'Formation', value: faker.number.int({ min: 10, max: 20 }) },
-          { name: 'Réunions', value: faker.number.int({ min: 8, max: 15 }) },
-          { name: 'Autre', value: faker.number.int({ min: 5, max: 12 }) }
+          { name: 'Projets urgents', value: faker.number.int({ min: 30, max: 45 }) },
+          { name: 'Pics d\'activité', value: faker.number.int({ min: 25, max: 35 }) },
+          { name: 'Formations', value: faker.number.int({ min: 10, max: 20 }) },
+          { name: 'Support client', value: faker.number.int({ min: 15, max: 25 }) },
+          { name: 'Autre', value: faker.number.int({ min: 5, max: 15 }) }
         ]
       }
     };
@@ -234,13 +244,15 @@ export class HRAnalytics {
     const remoteEmployees = employees.filter(employee => employee.remoteWork).length;
     const remoteWorkAdoptionRate = (remoteEmployees / employees.length) * 100;
 
+    const trend = this.calculateTrend(filters);
+
     return {
       id: 'remote-work',
       name: 'Télétravail',
       value: remoteWorkAdoptionRate.toFixed(1),
       unit: '%',
-      trend: faker.number.int({ min: -5, max: 5 }),
-      comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
+      trend,
+      comparison: this.getTrendComparison(trend),
       category: remoteWorkAdoptionRate < 20 ? 'negative' : 'positive',
       insight: `Le taux d'adoption du télétravail est de ${remoteWorkAdoptionRate.toFixed(1)}%. ${remoteWorkAdoptionRate < 20 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
     };
@@ -253,11 +265,11 @@ export class HRAnalytics {
     return {
       timeEvolution: months.map(month => ({
         month,
-        value: faker.number.float({ min: 30, max: 70, precision: 0.1 })
+        value: faker.number.float({ min: 30, max: 70, fractionDigits: 1 })
       })),
       departmentBreakdown: departments.map(dept => ({
         department: dept,
-        value: faker.number.float({ min: 20, max: 80, precision: 0.1 })
+        value: faker.number.float({ min: 20, max: 80, fractionDigits: 1 })
       })),
       specificBreakdown: {
         title: 'Modalités de travail',
@@ -279,13 +291,15 @@ export class HRAnalytics {
       return sum + (diff / (1000 * 3600 * 24));
     }, 0) / employees.length;
 
+    const trend = this.calculateTrend(filters);
+
     return {
       id: 'onboarding',
       name: 'Durée d\'onboarding',
       value: onboardingDuration.toFixed(0),
       unit: 'jours',
-      trend: faker.number.int({ min: -5, max: 5 }),
-      comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
+      trend,
+      comparison: this.getTrendComparison(trend),
       category: onboardingDuration > 30 ? 'negative' : 'positive',
       insight: `La durée moyenne d'onboarding est de ${onboardingDuration.toFixed(0)} jours. ${onboardingDuration > 30 ? 'Elle est supérieure à la moyenne.' : 'Elle est dans la moyenne.'}`
     };
@@ -319,23 +333,22 @@ export class HRAnalytics {
   getHRExpenses(filters: FilterOptions): KPIData {
     const totalExpenses = this.data.expenses.reduce((sum, expense) => sum + expense.amount, 0);
     
-    const previousTotal = totalExpenses * 0.95;
-    const trend = ((totalExpenses - previousTotal) / previousTotal) * 100;
+    const trend = this.calculateTrend(filters);
     
     return {
       id: 'hr-expenses',
       name: 'Dépenses RH totales',
       value: Math.round(totalExpenses),
       unit: '€',
-      trend: Math.round(trend),
-      comparison: trend > 0 ? 'higher' : trend < 0 ? 'lower' : 'stable',
-      category: trend > 15 ? 'negative' : trend > 5 ? 'neutral' : 'positive',
+      trend,
+      comparison: this.getTrendComparison(trend),
+      category: trend && trend > 15 ? 'negative' : trend && trend > 5 ? 'neutral' : 'positive',
       insight: `💰 Budget RH de ${Math.round(totalExpenses).toLocaleString()}€ cette période. ${
-        trend > 0 
-          ? `📈 Augmentation de ${Math.round(trend)}% par rapport à la période précédente, principalement due aux frais de formation et équipements.`
-          : trend < 0
-          ? `📉 Réduction de ${Math.abs(Math.round(trend))}% des dépenses par rapport à la période précédente.`
-          : '📊 Dépenses stables par rapport à la période précédente.'
+        trend && trend > 0 
+          ? `📈 Augmentation de ${Math.round(trend)}% par rapport à la période de comparaison, principalement due aux frais de formation et équipements.`
+          : trend && trend < 0
+          ? `📉 Réduction de ${Math.abs(Math.round(trend))}% des dépenses par rapport à la période de comparaison.`
+          : '📊 Dépenses stables par rapport à la période de comparaison.'
       }`
     };
   }
@@ -382,13 +395,15 @@ export class HRAnalytics {
       return sum + (diff / (1000 * 3600 * 24 * 365.25));
     }, 0) / employees.length;
 
+    const trend = this.calculateTrend(filters);
+
     return {
       id: 'age-seniority',
       name: 'Âge et ancienneté',
       value: `${averageAge.toFixed(0)} ans / ${averageSeniority.toFixed(0)} ans`,
       unit: '',
-      trend: faker.number.int({ min: -5, max: 5 }),
-      comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
+      trend,
+      comparison: this.getTrendComparison(trend),
       category: averageAge > 40 ? 'negative' : 'positive',
       insight: `L'âge moyen est de ${averageAge.toFixed(0)} ans et l'ancienneté moyenne est de ${averageSeniority.toFixed(0)} ans. ${averageAge > 40 ? 'L\'âge moyen est supérieur à la moyenne.' : 'L\'âge moyen est dans la moyenne.'}`
     };
@@ -401,11 +416,11 @@ export class HRAnalytics {
     return {
       timeEvolution: months.map(month => ({
         month,
-        value: faker.number.float({ min: 32, max: 38, precision: 0.1 })
+        value: faker.number.float({ min: 32, max: 38, fractionDigits: 1 })
       })),
       departmentBreakdown: departments.map(dept => ({
         department: dept,
-        value: faker.number.float({ min: 28, max: 45, precision: 0.1 })
+        value: faker.number.float({ min: 28, max: 45, fractionDigits: 1 })
       })),
       specificBreakdown: {
         title: 'Répartition par tranche d\'âge',
@@ -425,13 +440,15 @@ export class HRAnalytics {
     const totalTasks = employees.length * 10;
     const completionRate = (completedTasks / totalTasks) * 100;
 
+    const trend = this.calculateTrend(filters);
+
     return {
       id: 'task-completion',
       name: 'Tâches RH',
       value: completionRate.toFixed(1),
       unit: '%',
-      trend: faker.number.int({ min: -5, max: 5 }),
-      comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
+      trend,
+      comparison: this.getTrendComparison(trend),
       category: completionRate < 80 ? 'negative' : 'positive',
       insight: `Le taux de complétion des tâches est de ${completionRate.toFixed(1)}%. ${completionRate < 80 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
     };
@@ -444,11 +461,11 @@ export class HRAnalytics {
     return {
       timeEvolution: months.map(month => ({
         month,
-        value: faker.number.float({ min: 75, max: 95, precision: 0.1 })
+        value: faker.number.float({ min: 75, max: 95, fractionDigits: 1 })
       })),
       departmentBreakdown: departments.map(dept => ({
         department: dept,
-        value: faker.number.float({ min: 70, max: 98, precision: 0.1 })
+        value: faker.number.float({ min: 70, max: 98, fractionDigits: 1 })
       })),
       specificBreakdown: {
         title: 'Types de tâches RH',
@@ -469,13 +486,15 @@ export class HRAnalytics {
     const totalDocuments = employees.length * 5;
     const completionRate = (completedDocuments / totalDocuments) * 100;
 
+    const trend = this.calculateTrend(filters);
+
     return {
       id: 'document-completion',
       name: 'Dossiers collaborateurs',
       value: completionRate.toFixed(1),
       unit: '%',
-      trend: faker.number.int({ min: -5, max: 5 }),
-      comparison: faker.helpers.shuffle(['higher', 'lower', 'stable'])[0] as any,
+      trend,
+      comparison: this.getTrendComparison(trend),
       category: completionRate < 80 ? 'negative' : 'positive',
       insight: `Le taux de complétion des dossiers est de ${completionRate.toFixed(1)}%. ${completionRate < 80 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
     };
@@ -488,11 +507,11 @@ export class HRAnalytics {
     return {
       timeEvolution: months.map(month => ({
         month,
-        value: faker.number.float({ min: 80, max: 98, precision: 0.1 })
+        value: faker.number.float({ min: 80, max: 98, fractionDigits: 1 })
       })),
       departmentBreakdown: departments.map(dept => ({
         department: dept,
-        value: faker.number.float({ min: 75, max: 100, precision: 0.1 })
+        value: faker.number.float({ min: 75, max: 100, fractionDigits: 1 })
       })),
       specificBreakdown: {
         title: 'Types de documents',
@@ -511,7 +530,7 @@ export class HRAnalytics {
       case 'absenteeism': return this.getAbsenteeismChartData(filters);
       case 'turnover': return this.getTurnoverChartData(filters);
       case 'headcount': return this.getHeadcountChartData(filters);
-      case 'work-utilization': return this.getWorkforceUtilizationChartData(filters);
+      case 'overtime-hours': return this.getOvertimeHoursChartData(filters);
       case 'remote-work': return this.getRemoteWorkChartData(filters);
       case 'onboarding': return this.getOnboardingChartData(filters);
       case 'hr-expenses': return this.getHRExpensesChartData(filters);
@@ -552,7 +571,7 @@ export class HRAnalytics {
       this.getAbsenteeismRate(filters),
       this.getTurnoverRate(filters),
       this.getHeadcount(filters),
-      this.getWorkforceUtilization(filters),
+      this.getOvertimeHours(filters),
       this.getRemoteWorkAdoption(filters),
       this.getOnboardingDuration(filters),
       this.getHRExpenses(filters),
@@ -560,6 +579,23 @@ export class HRAnalytics {
       this.getTaskCompletionRate(filters),
       this.getDocumentCompletionRate(filters)
     ];
+  }
+
+  private calculateTrend(filters: FilterOptions): number | null {
+    // Si aucune comparaison n'est sélectionnée, on ne retourne pas de tendance
+    if (!filters.compareWith) {
+      return null;
+    }
+
+    // Simulation de calcul de tendance selon le type de comparaison
+    return faker.number.int({ min: -10, max: 10 });
+  }
+
+  private getTrendComparison(trend: number | null): 'higher' | 'lower' | 'stable' {
+    if (trend === null) return 'stable';
+    if (trend > 0) return 'higher';
+    if (trend < 0) return 'lower';
+    return 'stable';
   }
 
   private generateMonthLabels(period: string): string[] {

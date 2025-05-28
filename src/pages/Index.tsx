@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { generateHRData } from '../data/hrDataGenerator';
 import { convertHRData } from '../utils/dataConverter';
@@ -41,7 +42,7 @@ const Index = () => {
       name: 'Tableau de Bord Principal',
       description: 'Vue d\'ensemble de tous les indicateurs RH',
       kpis: [
-        'absenteeism', 'turnover', 'headcount', 'work-utilization', 'remote-work',
+        'absenteeism', 'turnover', 'headcount', 'overtime-hours', 'remote-work',
         'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
       ],
       createdAt: new Date().toISOString(),
@@ -172,7 +173,7 @@ const Index = () => {
     { id: 'absenteeism', name: 'Taux d\'absentéisme' },
     { id: 'turnover', name: 'Turnover' },
     { id: 'headcount', name: 'Effectif actif' },
-    { id: 'work-utilization', name: 'Utilisation du temps' },
+    { id: 'overtime-hours', name: 'Heures supplémentaires' },
     { id: 'remote-work', name: 'Télétravail' },
     { id: 'onboarding', name: 'Durée d\'onboarding' },
     { id: 'hr-expenses', name: 'Dépenses RH' },
