@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
 import { KPIData, KPIChartData } from '../services/hrAnalytics';
-import { BarChart3, TrendingUp, PieChart as PieChartIcon, Users } from 'lucide-react';
+import { BarChart3, TrendingUp, PieChart as PieChartIcon } from 'lucide-react';
 
 interface KPIChartModalProps {
   isOpen: boolean;
@@ -42,7 +42,7 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
         </DialogHeader>
 
         <Tabs defaultValue="evolution" className="w-full">
-          <TabsList className={`grid w-full ${hasAgeData || hasGenderData ? 'grid-cols-5' : 'grid-cols-3'}`}>
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="evolution" className="flex items-center space-x-2">
               <TrendingUp className="h-4 w-4" />
               <span>Évolution</span>
@@ -55,18 +55,6 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
               <PieChartIcon className="h-4 w-4" />
               <span>Répartition</span>
             </TabsTrigger>
-            {hasAgeData && (
-              <TabsTrigger value="age" className="flex items-center space-x-2">
-                <Users className="h-4 w-4" />
-                <span>Par âge</span>
-              </TabsTrigger>
-            )}
-            {hasGenderData && (
-              <TabsTrigger value="gender" className="flex items-center space-x-2">
-                <Users className="h-4 w-4" />
-                <span>Par genre</span>
-              </TabsTrigger>
-            )}
           </TabsList>
 
           <TabsContent value="evolution" className="space-y-4">
@@ -141,10 +129,9 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
                 </ChartContainer>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          {hasAgeData && (
-            <TabsContent value="age" className="space-y-4">
+            {/* Graphiques spécifiques à l'effectif */}
+            {hasAgeData && (
               <Card>
                 <CardHeader>
                   <CardTitle>Répartition par tranche d'âge</CardTitle>
@@ -161,11 +148,9 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
                   </ChartContainer>
                 </CardContent>
               </Card>
-            </TabsContent>
-          )}
+            )}
 
-          {hasGenderData && (
-            <TabsContent value="gender" className="space-y-4">
+            {hasGenderData && (
               <Card>
                 <CardHeader>
                   <CardTitle>Répartition par genre</CardTitle>
@@ -193,8 +178,8 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
                   </ChartContainer>
                 </CardContent>
               </Card>
-            </TabsContent>
-          )}
+            )}
+          </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
