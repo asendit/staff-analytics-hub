@@ -11,7 +11,6 @@ import GlobalInsightPanel from '../components/GlobalInsightPanel';
 import { Users, BarChart3, Brain, Sparkles } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
-import DataExporter from '../components/DataExporter';
 
 const Index = () => {
   const [hrData, setHrData] = useState<HRData | null>(null);
@@ -242,11 +241,6 @@ const Index = () => {
           onBoardDelete={handleBoardDelete}
           availableKPIs={availableKPIs}
         />
-
-        {/* Export des données */}
-        <div className="mb-8">
-          <DataExporter hrData={hrData} />
-        </div>
 
         {/* Filtres */}
         <FilterPanel
