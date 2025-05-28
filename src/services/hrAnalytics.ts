@@ -1,4 +1,3 @@
-
 import { faker } from '@faker-js/faker';
 
 export interface Employee {
@@ -284,24 +283,26 @@ export class HRAnalytics {
 
   getOnboardingDuration(filters: FilterOptions): KPIData {
     const employees = this.filterEmployees(filters);
-    const onboardingDuration = employees.reduce((sum, employee) => {
+    const periodStart = this.getPeriodStartDate(filters.period);
+    const periodEnd = new Date();
+    
+    // Compter les employés embauchés durant la période sélectionnée
+    const newHires = employees.filter(employee => {
       const hireDate = new Date(employee.hireDate);
-      const now = new Date();
-      const diff = now.getTime() - hireDate.getTime();
-      return sum + (diff / (1000 * 3600 * 24));
-    }, 0) / employees.length;
+      return hireDate >= periodStart && hireDate <= periodEnd;
+    }).length;
 
     const trend = this.calculateTrend(filters);
 
     return {
       id: 'onboarding',
-      name: 'Durée d\'onboarding',
-      value: onboardingDuration.toFixed(0),
-      unit: 'jours',
+      name: 'Nouvelles arrivées',
+      value: newHires,
+      unit: 'personnes',
       trend,
       comparison: this.getTrendComparison(trend),
-      category: onboardingDuration > 30 ? 'negative' : 'positive',
-      insight: `La durée moyenne d'onboarding est de ${onboardingDuration.toFixed(0)} jours. ${onboardingDuration > 30 ? 'Elle est supérieure à la moyenne.' : 'Elle est dans la moyenne.'}`
+      category: newHires > 0 ? 'positive' : 'neutral',
+      insight: `${newHires} nouvelle${newHires > 1 ? 's' : ''} arrivée${newHires > 1 ? 's' : ''} sur la période. ${newHires > 5 ? '📈 Croissance soutenue de l\'équipe.' : newHires > 0 ? '👥 Recrutement modéré.' : '⚡ Aucune nouvelle embauche sur cette période.'}`
     };
   }
 
@@ -606,6 +607,32 @@ export class HRAnalytics {
       case 'year': return months;
       case 'month': return ['S1', 'S2', 'S3', 'S4'];
       default: return months.slice(0, 6);
+    }
+  }
+
+  private getPeriodStartDate(period: string): Date {
+    const now = new Date();
+    switch (period) {
+      case 'week':
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - 7);
+        return weekStart;
+      case 'month':
+        const monthStart = new Date(now);
+        monthStart.setMonth(now.getMonth() - 1);
+        return monthStart;
+      case 'quarter':
+        const quarterStart = new Date(now);
+        quarterStart.setMonth(now.getMonth() - 3);
+        return quarterStart;
+      case 'year':
+        const yearStart = new Date(now);
+        yearStart.setFullYear(now.getFullYear() - 1);
+        return yearStart;
+      default:
+        const defaultStart = new Date(now);
+        defaultStart.setMonth(now.getMonth() - 1);
+        return defaultStart;
     }
   }
 

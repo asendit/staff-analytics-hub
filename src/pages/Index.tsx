@@ -175,7 +175,7 @@ const Index = () => {
     { id: 'headcount', name: 'Effectif actif' },
     { id: 'overtime-hours', name: 'Heures supplémentaires' },
     { id: 'remote-work', name: 'Télétravail' },
-    { id: 'onboarding', name: 'Durée d\'onboarding' },
+    { id: 'onboarding', name: 'Nouvelles arrivées' },
     { id: 'hr-expenses', name: 'Dépenses RH' },
     { id: 'age-seniority', name: 'Âge et ancienneté' },
     { id: 'task-completion', name: 'Tâches RH' },
