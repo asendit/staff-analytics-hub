@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Copy, Share, Edit, Trash2, Save, BarChart3, Eye, EyeOff } from 'lucide-react';
+import { Plus, Copy, Share, Edit, Trash2, Save, BarChart3 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 export interface Board {
@@ -18,33 +18,128 @@ export interface Board {
 }
 
 interface BoardManagerProps {
-  showInsights: boolean;
-  onToggleInsights: (show: boolean) => void;
+  boards: Board[];
+  currentBoard: Board;
+  onBoardChange: (board: Board) => void;
+  onBoardCreate: (board: Omit<Board, 'id' | 'createdAt'>) => void;
+  onBoardUpdate: (board: Board) => void;
+  onBoardDelete: (boardId: string) => void;
+  availableKPIs: { id: string; name: string }[];
 }
 
 const BoardManager: React.FC<BoardManagerProps> = ({
-  showInsights,
-  onToggleInsights
+  boards,
+  currentBoard,
+  onBoardChange,
+  onBoardCreate,
+  onBoardUpdate,
+  onBoardDelete,
+  availableKPIs
 }) => {
-  // For now, we'll use mock data until full board management is implemented
-  const mockBoards: Board[] = [
-    {
-      id: 'default',
-      name: 'Tableau de bord par défaut',
-      description: 'Vue d\'ensemble des indicateurs RH principaux',
-      kpis: ['headcount', 'absenteeism', 'turnover', 'overtime-hours'],
-      createdAt: new Date().toISOString(),
-      isDefault: true
-    }
-  ];
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [newBoardName, setNewBoardName] = useState('');
+  const [newBoardDescription, setNewBoardDescription] = useState('');
+  const [selectedKPIs, setSelectedKPIs] = useState<string[]>([]);
 
-  const mockCurrentBoard = mockBoards[0];
-  const mockAvailableKPIs = [
-    { id: 'headcount', name: 'Effectifs' },
-    { id: 'absenteeism', name: 'Absentéisme' },
-    { id: 'turnover', name: 'Turnover' },
-    { id: 'overtime-hours', name: 'Heures supplémentaires' }
-  ];
+  const handleCreateBoard = () => {
+    if (!newBoardName.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le nom du tableau de bord est requis",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newBoard = {
+      name: newBoardName,
+      description: newBoardDescription,
+      kpis: selectedKPIs,
+      isDefault: false
+    };
+
+    onBoardCreate(newBoard);
+    
+    // Reset form
+    setNewBoardName('');
+    setNewBoardDescription('');
+    setSelectedKPIs([]);
+    setIsCreateDialogOpen(false);
+
+    toast({
+      title: "Succès",
+      description: "Tableau de bord créé avec succès"
+    });
+  };
+
+  const handleEditBoard = () => {
+    const updatedBoard = {
+      ...currentBoard,
+      name: newBoardName,
+      description: newBoardDescription,
+      kpis: selectedKPIs
+    };
+
+    onBoardUpdate(updatedBoard);
+    setIsEditDialogOpen(false);
+
+    toast({
+      title: "Succès",
+      description: "Tableau de bord mis à jour"
+    });
+  };
+
+  const handleDuplicateBoard = (board: Board) => {
+    const duplicatedBoard = {
+      name: `${board.name} (Copie)`,
+      description: board.description,
+      kpis: [...board.kpis],
+      isDefault: false
+    };
+
+    onBoardCreate(duplicatedBoard);
+
+    toast({
+      title: "Succès",
+      description: "Tableau de bord dupliqué avec succès"
+    });
+  };
+
+  const handleShareBoard = (board: Board) => {
+    const shareUrl = `${window.location.origin}?board=${board.id}`;
+    navigator.clipboard.writeText(shareUrl);
+
+    toast({
+      title: "Lien copié",
+      description: "Le lien de partage a été copié dans le presse-papier"
+    });
+  };
+
+  const handleDeleteBoard = (boardId: string) => {
+    if (boards.find(b => b.id === boardId)?.isDefault) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le tableau de bord par défaut",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    onBoardDelete(boardId);
+
+    toast({
+      title: "Succès",
+      description: "Tableau de bord supprimé"
+    });
+  };
+
+  const openEditDialog = (board: Board) => {
+    setNewBoardName(board.name);
+    setNewBoardDescription(board.description);
+    setSelectedKPIs(board.kpis);
+    setIsEditDialogOpen(true);
+  };
 
   return (
     <Card className="mb-6">
@@ -54,16 +149,88 @@ const BoardManager: React.FC<BoardManagerProps> = ({
             <BarChart3 className="h-5 w-5" />
             <span>Gestion des Tableaux de Bord</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              onClick={() => onToggleInsights(!showInsights)}
-              variant={showInsights ? "default" : "outline"}
-              size="sm"
-            >
-              {showInsights ? <Eye className="h-4 w-4 mr-2" /> : <EyeOff className="h-4 w-4 mr-2" />}
-              {showInsights ? 'Masquer insights' : 'Afficher insights'}
-            </Button>
-          </div>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-primary hover:bg-primary-600">
+                <Plus className="h-4 w-4 mr-2" />
+                Nouveau Board
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Créer un nouveau tableau de bord</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">Nom</label>
+                  <Input
+                    value={newBoardName}
+                    onChange={(e) => setNewBoardName(e.target.value)}
+                    placeholder="Ex: Tableau RH Mensuel"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Description</label>
+                  <Input
+                    value={newBoardDescription}
+                    onChange={(e) => setNewBoardDescription(e.target.value)}
+                    placeholder="Description du tableau de bord"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">KPIs à inclure</label>
+                  <Select onValueChange={(value) => {
+                    if (!selectedKPIs.includes(value)) {
+                      setSelectedKPIs([...selectedKPIs, value]);
+                    }
+                  }}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner des KPIs" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableKPIs.map(kpi => (
+                        <SelectItem 
+                          key={kpi.id} 
+                          value={kpi.id}
+                          disabled={selectedKPIs.includes(kpi.id)}
+                        >
+                          {kpi.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedKPIs.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {selectedKPIs.map(kpiId => {
+                        const kpi = availableKPIs.find(k => k.id === kpiId);
+                        return (
+                          <div key={kpiId} className="flex items-center justify-between bg-gray-100 px-2 py-1 rounded text-sm">
+                            <span>{kpi?.name}</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setSelectedKPIs(selectedKPIs.filter(id => id !== kpiId))}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+                <div className="flex space-x-2">
+                  <Button onClick={handleCreateBoard} className="flex-1">
+                    <Save className="h-4 w-4 mr-2" />
+                    Créer
+                  </Button>
+                  <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="flex-1">
+                    Annuler
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -71,14 +238,22 @@ const BoardManager: React.FC<BoardManagerProps> = ({
           {/* Sélection du board actuel */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Tableau de bord actuel</label>
-            <Select value={mockCurrentBoard.id} disabled>
+            <Select 
+              value={currentBoard.id} 
+              onValueChange={(boardId) => {
+                const board = boards.find(b => b.id === boardId);
+                if (board) onBoardChange(board);
+              }}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={mockCurrentBoard.id}>
-                  {mockCurrentBoard.name} (Défaut)
-                </SelectItem>
+                {boards.map(board => (
+                  <SelectItem key={board.id} value={board.id}>
+                    {board.name} {board.isDefault && '(Défaut)'}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -87,14 +262,36 @@ const BoardManager: React.FC<BoardManagerProps> = ({
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Actions</label>
             <div className="flex space-x-2">
-              <Button size="sm" variant="outline" disabled>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => openEditDialog(currentBoard)}
+                disabled={currentBoard.isDefault}
+              >
                 <Edit className="h-4 w-4" />
               </Button>
-              <Button size="sm" variant="outline" disabled>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => handleDuplicateBoard(currentBoard)}
+              >
                 <Copy className="h-4 w-4" />
               </Button>
-              <Button size="sm" variant="outline" disabled>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => handleShareBoard(currentBoard)}
+              >
                 <Share className="h-4 w-4" />
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => handleDeleteBoard(currentBoard.id)}
+                disabled={currentBoard.isDefault}
+                className="text-red-600 hover:text-red-700"
+              >
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -103,11 +300,45 @@ const BoardManager: React.FC<BoardManagerProps> = ({
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Informations</label>
             <div className="text-sm text-gray-600">
-              <p>{mockCurrentBoard.description}</p>
-              <p className="text-xs mt-1">{mockCurrentBoard.kpis.length} KPIs • Créé le {new Date(mockCurrentBoard.createdAt).toLocaleDateString()}</p>
+              <p>{currentBoard.description || 'Aucune description'}</p>
+              <p className="text-xs mt-1">{currentBoard.kpis.length} KPIs • Créé le {new Date(currentBoard.createdAt).toLocaleDateString()}</p>
             </div>
           </div>
         </div>
+
+        {/* Dialog d'édition */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Modifier le tableau de bord</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Nom</label>
+                <Input
+                  value={newBoardName}
+                  onChange={(e) => setNewBoardName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Description</label>
+                <Input
+                  value={newBoardDescription}
+                  onChange={(e) => setNewBoardDescription(e.target.value)}
+                />
+              </div>
+              <div className="flex space-x-2">
+                <Button onClick={handleEditBoard} className="flex-1">
+                  <Save className="h-4 w-4 mr-2" />
+                  Sauvegarder
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} className="flex-1">
+                  Annuler
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );

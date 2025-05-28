@@ -2,38 +2,23 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Brain, MessageSquare, TrendingUp, AlertCircle, CheckCircle2, Info, FileText, Download, Target, Zap, Users, DollarSign, Shield, Lightbulb, BarChart3, Clock, Award, Rocket } from 'lucide-react';
-import { KPIData, FilterOptions, HRAnalytics } from '../services/hrAnalytics';
+import { KPIData } from '../services/hrAnalytics';
 import { toast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
 
 interface GlobalInsightPanelProps {
+  insight: string;
   kpis: KPIData[];
-  filters: FilterOptions;
-  analytics: HRAnalytics | null;
+  isLoading?: boolean;
+  onGenerateInsight: () => void;
 }
 
 const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
+  insight,
   kpis,
-  filters,
-  analytics
+  isLoading = false,
+  onGenerateInsight
 }) => {
-  const [insight, setInsight] = React.useState<string>('');
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  const onGenerateInsight = () => {
-    setIsLoading(true);
-    // Simulate AI insight generation
-    setTimeout(() => {
-      const insights = [
-        "L'analyse des données RH révèle une tendance positive avec une amélioration de la productivité et une stabilisation de l'absentéisme.",
-        "Les indicateurs montrent une période de transition nécessitant une attention particulière sur la gestion des talents et l'optimisation des processus.",
-        "Performance globale équilibrée avec des opportunités d'amélioration identifiées dans la gestion des heures supplémentaires et l'onboarding."
-      ];
-      setInsight(insights[Math.floor(Math.random() * insights.length)]);
-      setIsLoading(false);
-    }, 2000);
-  };
-
   const getInsightStats = () => {
     const positive = kpis.filter(kpi => kpi.category === 'positive').length;
     const negative = kpis.filter(kpi => kpi.category === 'negative').length;
@@ -42,8 +27,9 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
     return { positive, negative, neutral };
   };
 
+  const stats = getInsightStats();
+
   const getOverallStatus = () => {
-    const stats = getInsightStats();
     if (stats.negative > stats.positive) {
       return {
         icon: <AlertCircle className="h-5 w-5 text-red-600" />,
@@ -66,7 +52,6 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
   };
 
   const generateAIAnalysis = () => {
-    const stats = getInsightStats();
     const currentDate = new Date();
     const analysisId = `AI-${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
     
@@ -242,7 +227,6 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
       addText(`Niveau de risque: ${analysis.metadata.riskLevel}`, 9);
       currentY += 15;
 
-      const stats = getInsightStats();
       // Statistiques
       addText("SYNTHÈSE EXÉCUTIVE", 14, true);
       addText(`Indicateurs positifs: ${stats.positive}`, 10, false, 10);
@@ -317,7 +301,6 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
 
   const overallStatus = getOverallStatus();
   const aiAnalysis = generateAIAnalysis();
-  const stats = getInsightStats();
 
   return (
     <Card className={`border-l-4 ${overallStatus.color} mb-6`}>

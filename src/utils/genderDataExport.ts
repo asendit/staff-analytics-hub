@@ -1,22 +1,14 @@
 
-import { HRAnalytics, FilterOptions } from '../services/hrAnalytics';
-import { generateHRData } from '../data/hrDataGenerator';
+import { generateKPIChartData } from '../services/hrAnalytics';
 
-export const generateGenderDataJSON = () => {
+export const downloadGenderDataAsJSON = async () => {
   try {
-    // Créer une instance des données HR
-    const hrData = generateHRData();
-    const analytics = new HRAnalytics(hrData);
-    
-    // Utiliser des filtres par défaut
-    const filters: FilterOptions = { period: 'month' };
-    
-    // Obtenir les données de graphique pour l'effectif
-    const chartData = analytics.getHeadcountChartData(filters);
+    // Générer les données de graphique pour l'effectif
+    const chartData = await generateKPIChartData({ id: 'headcount' } as any);
     
     if (!chartData.genderDistribution) {
       console.warn('Aucune donnée de répartition par genre disponible');
-      return null;
+      return;
     }
 
     // Créer l'objet JSON avec les données de genre
@@ -31,23 +23,26 @@ export const generateGenderDataJSON = () => {
       total: chartData.genderDistribution.reduce((sum, item) => sum + item.value, 0)
     };
 
-    // Afficher le JSON dans la console
-    console.log('Données de répartition par genre (JSON):');
-    console.log(JSON.stringify(genderData, null, 2));
+    // Créer et télécharger le fichier JSON
+    const jsonString = JSON.stringify(genderData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     
-    return genderData;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `repartition-genre-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    URL.revokeObjectURL(url);
+    
+    console.log('Fichier JSON téléchargé avec succès:', genderData);
     
   } catch (error) {
-    console.error('Erreur lors de la génération des données de genre:', error);
-    return null;
+    console.error('Erreur lors du téléchargement des données de genre:', error);
   }
 };
 
 // Appel automatique de la fonction au chargement du module
-const jsonData = generateGenderDataJSON();
-
-if (jsonData) {
-  // Afficher également le JSON formaté
-  console.log('=== DONNÉES JSON HOMME/FEMME ===');
-  console.log(JSON.stringify(jsonData, null, 2));
-}
+downloadGenderDataAsJSON();

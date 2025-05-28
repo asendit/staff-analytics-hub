@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
-import { KPIData, KPIChartData, FilterOptions } from '../services/hrAnalytics';
+import { KPIData, KPIChartData } from '../services/hrAnalytics';
 import { BarChart3, TrendingUp, PieChart as PieChartIcon } from 'lucide-react';
 
 interface KPIChartModalProps {
@@ -13,12 +13,11 @@ interface KPIChartModalProps {
   onClose: () => void;
   kpi: KPIData | null;
   chartData: KPIChartData | null;
-  filters: FilterOptions;
 }
 
 const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'];
 
-const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, chartData, filters }) => {
+const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, chartData }) => {
   if (!kpi || !chartData) return null;
 
   const chartConfig = {
@@ -26,33 +25,11 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
       label: kpi.unit,
       color: "#3b82f6",
     },
-    comparisonValue: {
-      label: `${kpi.unit} (comparaison)`,
-      color: "#ef4444",
-    },
   };
 
   // Vérifier si on a des données démographiques pour le KPI effectif
   const hasAgeData = kpi.id === 'headcount' && chartData.ageDistribution;
   const hasGenderData = kpi.id === 'headcount' && chartData.genderDistribution;
-
-  // Générer des données de comparaison simulées si une comparaison est sélectionnée
-  const generateComparisonData = () => {
-    if (!filters.compareWith) return null;
-
-    return chartData.timeEvolution.map(item => ({
-      ...item,
-      comparisonValue: Math.round(item.value * (0.85 + Math.random() * 0.3)) // Variation de ±15%
-    }));
-  };
-
-  const comparisonData = generateComparisonData();
-
-  const getComparisonLabel = () => {
-    if (filters.compareWith === 'previous') return 'Période précédente';
-    if (filters.compareWith === 'year-ago') return 'Année précédente';
-    return '';
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -83,14 +60,11 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
           <TabsContent value="evolution" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>
-                  Évolution mensuelle
-                  {filters.compareWith && ` vs ${getComparisonLabel()}`}
-                </CardTitle>
+                <CardTitle>Évolution mensuelle</CardTitle>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig} className="h-80">
-                  <LineChart data={comparisonData || chartData.timeEvolution}>
+                  <LineChart data={chartData.timeEvolution}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
@@ -101,20 +75,7 @@ const KPIChartModal: React.FC<KPIChartModalProps> = ({ isOpen, onClose, kpi, cha
                       stroke="#3b82f6" 
                       strokeWidth={2}
                       dot={{ r: 4 }}
-                      name="Période actuelle"
                     />
-                    {comparisonData && (
-                      <Line 
-                        type="monotone" 
-                        dataKey="comparisonValue" 
-                        stroke="#ef4444" 
-                        strokeWidth={2}
-                        strokeDasharray="5 5"
-                        dot={{ r: 4 }}
-                        name={getComparisonLabel()}
-                      />
-                    )}
-                    <Legend />
                   </LineChart>
                 </ChartContainer>
               </CardContent>
