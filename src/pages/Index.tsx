@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
-import { KPICard } from '@/components/KPICard';
-import { FilterPanel } from '@/components/FilterPanel';
-import { BoardManager } from '@/components/BoardManager';
-import { GlobalInsightPanel } from '@/components/GlobalInsightPanel';
+import KPICard from '@/components/KPICard';
+import FilterPanel from '@/components/FilterPanel';
+import BoardManager from '@/components/BoardManager';
+import GlobalInsightPanel from '@/components/GlobalInsightPanel';
 import UserStoriesExport from '@/components/UserStoriesExport';
 import { generateHRData } from '@/data/hrDataGenerator';
 import { analyzeHRData } from '@/services/hrAnalytics';
@@ -10,27 +11,27 @@ import type { KPIData, FilterOptions, HRAnalytics } from '@/services/hrAnalytics
 
 const Index = () => {
   const [kpiData, setKpiData] = useState<KPIData>({
-    employeeCount: 0,
+    totalEmployees: 0,
     turnoverRate: 0,
     absenteeismRate: 0,
-    satisfactionRate: 0,
+    satisfactionScore: 0,
   });
   const [hrAnalytics, setHrAnalytics] = useState<HRAnalytics | null>(null);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     department: 'All',
-    period: 'All',
+    period: 'year',
     employmentType: 'All',
   });
   const [showInsights, setShowInsights] = useState(true);
 
   useEffect(() => {
-    const data = generateHRData(100);
+    const data = generateHRData();
     const analytics = analyzeHRData(data, filterOptions);
     setKpiData({
-      employeeCount: analytics.employeeCount,
+      totalEmployees: analytics.totalEmployees,
       turnoverRate: analytics.turnoverRate,
       absenteeismRate: analytics.absenteeismRate,
-      satisfactionRate: analytics.satisfactionRate,
+      satisfactionScore: analytics.satisfactionScore,
     });
     setHrAnalytics(analytics);
   }, [filterOptions]);
@@ -55,10 +56,10 @@ const Index = () => {
         <FilterPanel onFilterChange={setFilterOptions} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <KPICard title="Effectifs" value={kpiData.employeeCount} />
+          <KPICard title="Effectifs" value={kpiData.totalEmployees} />
           <KPICard title="Taux de Turnover" value={kpiData.turnoverRate} />
           <KPICard title="Taux d'Absentéisme" value={kpiData.absenteeismRate} />
-          <KPICard title="Satisfaction des Employés" value={kpiData.satisfactionRate} />
+          <KPICard title="Satisfaction des Employés" value={kpiData.satisfactionScore} />
         </div>
 
         {showInsights && hrAnalytics && (
