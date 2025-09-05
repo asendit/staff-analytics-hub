@@ -19,6 +19,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Segoe UI', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', 'Arial', 'sans-serif'],
+				fluent: ['Segoe UI', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -26,45 +30,51 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: '#2563eb',
-					foreground: '#ffffff',
-					50: '#eff6ff',
-					100: '#dbeafe',
-					500: '#3b82f6',
-					600: '#2563eb',
-					700: '#1d4ed8'
+					DEFAULT: 'hsl(var(--primary))',
+					foreground: 'hsl(var(--primary-foreground))',
+					hover: 'hsl(var(--primary-hover))',
+					50: '#f0f2ff',
+					100: '#e0e7ff',
+					500: '#6366f1',
+					600: '#5b5bd6',
+					700: '#4f46e5'
 				},
 				secondary: {
-					DEFAULT: '#f1f5f9',
-					foreground: '#334155'
+					DEFAULT: 'hsl(var(--secondary))',
+					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				success: {
-					DEFAULT: '#10b981',
-					50: '#ecfdf5',
-					100: '#d1fae5',
-					500: '#10b981',
-					600: '#059669'
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))',
+					light: 'hsl(var(--success-light))',
+					50: '#f0fdf4',
+					100: '#dcfce7',
+					500: '#22c55e',
+					600: '#16a34a'
 				},
 				warning: {
-					DEFAULT: '#f59e0b',
-					50: '#fffbeb',
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(var(--warning-foreground))',
+					light: 'hsl(var(--warning-light))',
+					50: '#fefce8',
 					100: '#fef3c7',
-					500: '#f59e0b',
-					600: '#d97706'
+					500: '#eab308',
+					600: '#ca8a04'
 				},
 				danger: {
-					DEFAULT: '#ef4444',
+					DEFAULT: 'hsl(var(--destructive))',
+					foreground: 'hsl(var(--destructive-foreground))',
 					50: '#fef2f2',
 					100: '#fee2e2',
 					500: '#ef4444',
 					600: '#dc2626'
 				},
-				hr: {
-					primary: '#2563eb',
-					secondary: '#64748b',
-					accent: '#0ea5e9',
-					neutral: '#f8fafc',
-					dark: '#1e293b'
+				teams: {
+					purple: '#5B5FC7',
+					blue: '#6264A7',
+					indigo: '#464775',
+					surface: '#F3F2F1',
+					neutral: '#8A8886'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',

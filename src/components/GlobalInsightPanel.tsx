@@ -303,103 +303,196 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
   const aiAnalysis = generateAIAnalysis();
 
   return (
-    <Card className={`border-l-4 ${overallStatus.color} mb-6`}>
-      <CardHeader>
+    <Card className="teams-card-elevated border-0 mb-6">
+      <CardHeader className="pb-4 pt-5 px-5">
         <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Brain className="h-5 w-5 text-primary" />
-            <span>Analyse IA des Ressources Humaines</span>
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-8 bg-teams-purple rounded-full" />
+            <Brain className="h-5 w-5 text-teams-purple" />
+            <span className="text-lg font-semibold text-foreground">Analyse IA sur les ressources humaines</span>
             {overallStatus.icon}
           </div>
           <div className="flex items-center space-x-2">
             <Button 
               onClick={exportToPDF}
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="flex items-center space-x-2"
+              className="text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10 border border-border"
             >
-              <FileText className="h-4 w-4" />
-              <Download className="h-4 w-4" />
-              <span>Export PDF</span>
+              <FileText className="h-4 w-4 mr-2" />
+              <span className="text-sm font-medium">Exporter l'analyse</span>
             </Button>
             <Button 
               onClick={onGenerateInsight}
               disabled={isLoading}
-              variant="outline"
+              variant="ghost"
               size="sm"
+              className="text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
             >
               {isLoading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teams-purple mr-2" />
               ) : (
                 <MessageSquare className="h-4 w-4 mr-2" />
               )}
-              {isLoading ? 'Analyse...' : 'Actualiser'}
+              <span className="text-sm font-medium">{isLoading ? 'Actualiser l\'analyse' : 'Actualiser'}</span>
             </Button>
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6" id="ai-analysis-content">
-        {/* Vue d'ensemble simplifiée */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
+      <CardContent className="space-y-6 px-5 pb-5" id="ai-analysis-content">
+        {/* Vue d'ensemble */}
+        <div className="teams-card p-5">
           <div className="flex items-center space-x-2 mb-4">
-            <Target className="h-5 w-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-blue-900">Vue d'Ensemble</h3>
+            <Target className="h-5 w-5 text-teams-blue" />
+            <h3 className="text-base font-semibold text-foreground">Vue d'Ensemble</h3>
           </div>
           
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-green-100 rounded-lg">
-              <div className="text-2xl font-bold text-green-700">{stats.positive}</div>
-              <div className="text-sm text-green-600">Indicateurs positifs</div>
+            <div className="text-center p-4 bg-success-light rounded-lg border border-success/20">
+              <div className="text-2xl font-semibold text-success">{stats.positive}</div>
+              <div className="text-sm text-success font-medium">Indicateurs positifs</div>
             </div>
-            <div className="text-center p-3 bg-red-100 rounded-lg">
-              <div className="text-2xl font-bold text-red-700">{stats.negative}</div>
-              <div className="text-sm text-red-600">Points d'attention</div>
+            <div className="text-center p-4 bg-warning-light rounded-lg border border-warning/20">
+              <div className="text-2xl font-semibold text-warning">{stats.negative}</div>
+              <div className="text-sm text-warning font-medium">Points d'attention</div>
             </div>
-            <div className="text-center p-3 bg-blue-100 rounded-lg">
-              <div className="text-2xl font-bold text-blue-700">{stats.neutral}</div>
-              <div className="text-sm text-blue-600">Indicateurs neutres</div>
+            <div className="text-center p-4 bg-teams-blue/10 rounded-lg border border-teams-blue/20">
+              <div className="text-2xl font-semibold text-teams-blue">{stats.neutral}</div>
+              <div className="text-sm text-teams-blue font-medium">Indicateurs neutres</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Statut global */}
+        <div className={`teams-card p-4 border-l-4 ${
+          stats.negative > stats.positive 
+            ? 'border-l-danger bg-danger/5' 
+            : stats.positive > stats.negative 
+              ? 'border-l-success bg-success/5' 
+              : 'border-l-teams-blue bg-teams-blue/5'
+        }`}>
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-full bg-background">
+              {overallStatus.icon}
+            </div>
+            <div>
+              <h4 className="font-semibold text-foreground text-sm">Statut global : {overallStatus.status}</h4>
+              <p className="text-xs text-muted-foreground font-medium mt-1">
+                La majorité des indicateurs sont positifs, ce qui indique une bonne performance globale.
+              </p>
             </div>
           </div>
         </div>
 
         {/* Synthèse IA */}
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
+        <div className="teams-card p-4">
           <div className="flex items-start space-x-3">
-            <Brain className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+            <div className="p-2 bg-teams-purple/10 rounded-full">
+              <Brain className="h-4 w-4 text-teams-purple" />
+            </div>
             <div className="flex-1">
-              <h4 className="font-medium text-gray-800 mb-2">Synthèse IA</h4>
-              <p className="text-gray-700 leading-relaxed">
+              <h4 className="font-semibold text-foreground text-sm mb-2">Synthèse IA</h4>
+              <p className="text-muted-foreground text-sm leading-relaxed font-medium">
                 {insight || "Actualisez l'analyse pour obtenir une synthèse IA de vos indicateurs RH."}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Analyse de l'Effectif */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border border-purple-200">
-          <div className="flex items-center space-x-2 mb-4">
-            <Users className="h-5 w-5 text-purple-600" />
-            <h3 className="text-lg font-semibold text-purple-900">{aiAnalysis.insights.workforce.title}</h3>
+        {/* Analyses sectorielles */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Analyse de l'Effectif */}
+          <div className="teams-card p-4">
+            <div className="flex items-center space-x-2 mb-3">
+              <Users className="h-4 w-4 text-teams-purple" />
+              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.workforce.title}</h3>
+            </div>
+            
+            <div className="bg-muted/30 p-3 rounded-md border-l-2 border-teams-purple/50 mb-3">
+              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.workforce.content}</p>
+              <div className="space-y-1">
+                {aiAnalysis.insights.workforce.metrics.slice(0, 3).map((metric, index) => (
+                  <div key={index} className="flex items-center text-xs text-muted-foreground">
+                    <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
+                      aiAnalysis.insights.workforce.status === 'positive' ? 'bg-success' : 
+                      aiAnalysis.insights.workforce.status === 'negative' ? 'bg-danger' : 'bg-teams-blue'
+                    }`}></div>
+                    {metric}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          
-          <div className="bg-white p-4 rounded-lg border-l-4 border-purple-400 mb-4">
-            <p className="text-gray-700 text-sm leading-relaxed mb-3">{aiAnalysis.insights.workforce.content}</p>
-            <div className="grid md:grid-cols-2 gap-2">
-              {aiAnalysis.insights.workforce.metrics.map((metric, index) => (
-                <div key={index} className="flex items-center text-sm text-gray-600">
-                  <div className={`w-2 h-2 rounded-full mr-3 ${
-                    aiAnalysis.insights.workforce.status === 'positive' ? 'bg-green-500' : 
-                    aiAnalysis.insights.workforce.status === 'negative' ? 'bg-red-500' : 'bg-blue-500'
-                  }`}></div>
-                  {metric}
-                </div>
-              ))}
+
+          {/* Performance Opérationnelle */}
+          <div className="teams-card p-4">
+            <div className="flex items-center space-x-2 mb-3">
+              <BarChart3 className="h-4 w-4 text-teams-indigo" />
+              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.productivity.title}</h3>
+            </div>
+            
+            <div className="bg-muted/30 p-3 rounded-md border-l-2 border-teams-indigo/50 mb-3">
+              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.productivity.content}</p>
+              <div className="space-y-1">
+                {aiAnalysis.insights.productivity.metrics.slice(0, 3).map((metric, index) => (
+                  <div key={index} className="flex items-center text-xs text-muted-foreground">
+                    <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
+                      aiAnalysis.insights.productivity.status === 'positive' ? 'bg-success' : 
+                      aiAnalysis.insights.productivity.status === 'negative' ? 'bg-danger' : 'bg-teams-blue'
+                    }`}></div>
+                    {metric}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Gestion des Présences */}
+          <div className="teams-card p-4">
+            <div className="flex items-center space-x-2 mb-3">
+              <Clock className="h-4 w-4 text-teams-blue" />
+              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.attendance.title}</h3>
+            </div>
+            
+            <div className="bg-muted/30 p-3 rounded-md border-l-2 border-teams-blue/50">
+              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.attendance.content}</p>
+              <div className="space-y-1">
+                {aiAnalysis.insights.attendance.metrics.slice(0, 3).map((metric, index) => (
+                  <div key={index} className="flex items-center text-xs text-muted-foreground">
+                    <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
+                      aiAnalysis.insights.attendance.status === 'positive' ? 'bg-success' : 
+                      aiAnalysis.insights.attendance.status === 'negative' ? 'bg-danger' : 'bg-teams-blue'
+                    }`}></div>
+                    {metric}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Impact Budgétaire */}
+          <div className="teams-card p-4">
+            <div className="flex items-center space-x-2 mb-3">
+              <DollarSign className="h-4 w-4 text-success" />
+              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.financial.title}</h3>
+            </div>
+            
+            <div className="bg-muted/30 p-3 rounded-md border-l-2 border-success/50">
+              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.financial.content}</p>
+              <div className="space-y-1">
+                {aiAnalysis.insights.financial.metrics.map((metric, index) => (
+                  <div key={index} className="flex items-center text-xs text-muted-foreground">
+                    <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
+                      aiAnalysis.insights.financial.status === 'positive' ? 'bg-success' : 
+                      aiAnalysis.insights.financial.status === 'negative' ? 'bg-danger' : 'bg-teams-blue'
+                    }`}></div>
+                    {metric}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Performance Opérationnelle */}
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg border border-green-200">
           <div className="flex items-center space-x-2 mb-4">
             <Zap className="h-5 w-5 text-green-600" />
             <h3 className="text-lg font-semibold text-green-900">{aiAnalysis.insights.productivity.title}</h3>
