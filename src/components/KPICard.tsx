@@ -15,34 +15,20 @@ interface KPICardProps {
 const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, onChartClick, showInsight = true }) => {
   const getTrendIcon = () => {
     if (kpi.trend === null) return null;
-    if (kpi.trend > 0) return <TrendingUp className="h-4 w-4 text-success" />;
-    if (kpi.trend < 0) return <TrendingDown className="h-4 w-4 text-danger" />;
+    if (kpi.trend > 0) return <TrendingUp className="h-4 w-4 text-muted-foreground" />;
+    if (kpi.trend < 0) return <TrendingDown className="h-4 w-4 text-muted-foreground" />;
     return <Minus className="h-4 w-4 text-muted-foreground" />;
   };
 
-  const getCategoryBadgeStyle = () => {
-    switch (kpi.category) {
-      case 'positive': return 'status-positive';
-      case 'negative': return 'status-attention';
-      default: return 'status-neutral';
-    }
-  };
-
   const getTrendColor = () => {
-    if (kpi.trend === null) return 'text-muted-foreground';
-    if (kpi.trend > 0) return 'text-success';
-    if (kpi.trend < 0) return 'text-danger';
     return 'text-muted-foreground';
   };
 
   return (
-    <Card className="teams-card border-0">
+    <Card className="teams-card border border-teams-purple/30">
       <CardHeader className="flex flex-row items-start justify-between pb-3 pt-4 px-4">
         <div className="flex items-start space-x-3">
-          <div className={`w-1 h-12 rounded-full ${
-            kpi.category === 'positive' ? 'bg-success' : 
-            kpi.category === 'negative' ? 'bg-danger' : 'bg-teams-blue'
-          }`} />
+          <div className="w-1 h-12 rounded-full bg-teams-purple" />
           <div className="space-y-1">
             <CardTitle className="text-sm font-semibold text-foreground leading-tight">
               {kpi.name}
@@ -62,7 +48,7 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, onChartClick, showI
             variant="ghost"
             size="sm"
             onClick={onChartClick}
-            className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-blue hover:bg-teams-blue/10"
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
             title="Voir les graphiques"
           >
             <BarChart3 className="h-4 w-4" />
@@ -71,7 +57,7 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, onChartClick, showI
             variant="ghost"
             size="sm"
             onClick={onInfoClick}
-            className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-blue hover:bg-teams-blue/10"
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
             title="Voir les détails"
           >
             <Info className="h-4 w-4" />
@@ -92,7 +78,7 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, onChartClick, showI
 
           {/* Insight IA - affiché seulement si showInsight est true */}
           {showInsight && kpi.insight && (
-            <div className="mt-3 p-3 bg-muted/30 rounded-md border-0">
+            <div className="mt-3 p-3 bg-teams-purple/5 rounded-md border border-teams-purple/20">
               <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                 {kpi.insight}
               </p>

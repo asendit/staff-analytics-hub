@@ -20,15 +20,12 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
 }) => {
   const getTrendIcon = () => {
     if (data.trend === null) return null;
-    if (data.trend > 0) return <TrendingUp className="h-4 w-4 text-success" />;
-    if (data.trend < 0) return <TrendingDown className="h-4 w-4 text-danger" />;
+    if (data.trend > 0) return <TrendingUp className="h-4 w-4 text-muted-foreground" />;
+    if (data.trend < 0) return <TrendingDown className="h-4 w-4 text-muted-foreground" />;
     return <Minus className="h-4 w-4 text-muted-foreground" />;
   };
 
   const getTrendColor = () => {
-    if (data.trend === null) return 'text-muted-foreground';
-    if (data.trend > 0) return 'text-success';
-    if (data.trend < 0) return 'text-danger';
     return 'text-muted-foreground';
   };
 
@@ -40,7 +37,7 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
   }));
 
   return (
-    <Card className="teams-card-elevated border-0 col-span-full lg:col-span-4 xl:col-span-4">
+    <Card className="teams-card border border-teams-purple/30 col-span-full lg:col-span-4 xl:col-span-4">
       <CardHeader className="flex flex-row items-center justify-between pb-4 pt-5 px-5">
         <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3">
           <div className="w-2 h-8 bg-teams-purple rounded-full" />
@@ -74,9 +71,9 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
           <div className="space-y-4">
             {/* Effectif total et ETP */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="teams-card p-4">
+              <div className="teams-card p-4 border border-teams-purple/20">
                 <div className="flex items-center space-x-2 mb-3">
-                  <Users className="h-4 w-4 text-teams-blue" />
+                  <Users className="h-4 w-4 text-teams-purple" />
                   <span className="text-sm font-semibold text-foreground">Effectif total</span>
                 </div>
                 <div className="text-2xl font-semibold text-foreground">
@@ -85,9 +82,9 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                 <div className="text-sm text-muted-foreground font-medium">collaborateurs</div>
               </div>
 
-              <div className="teams-card p-4">
+              <div className="teams-card p-4 border border-teams-purple/20">
                 <div className="flex items-center space-x-2 mb-3">
-                  <Clock className="h-4 w-4 text-teams-indigo" />
+                  <Clock className="h-4 w-4 text-teams-purple" />
                   <span className="text-sm font-semibold text-foreground">ETP</span>
                 </div>
                 <div className="text-2xl font-semibold text-foreground">
@@ -99,23 +96,23 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
 
             {/* Mouvements de personnel */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="teams-card p-4">
+              <div className="teams-card p-4 border border-teams-purple/20">
                 <div className="flex items-center space-x-2 mb-3">
-                  <UserPlus className="h-4 w-4 text-success" />
+                  <UserPlus className="h-4 w-4 text-teams-purple" />
                   <span className="text-sm font-semibold text-foreground">Nouvelles arrivées</span>
                 </div>
-                <div className="text-xl font-semibold text-success">
+                <div className="text-xl font-semibold text-foreground">
                   +{data.newHires}
                 </div>
                 <div className="text-sm text-muted-foreground font-medium">sur la période</div>
               </div>
 
-              <div className="teams-card p-4">
+              <div className="teams-card p-4 border border-teams-purple/20">
                 <div className="flex items-center space-x-2 mb-3">
-                  <UserMinus className="h-4 w-4 text-danger" />
+                  <UserMinus className="h-4 w-4 text-teams-purple" />
                   <span className="text-sm font-semibold text-foreground">Départs</span>
                 </div>
-                <div className="text-xl font-semibold text-danger">
+                <div className="text-xl font-semibold text-foreground">
                   -{data.departures}
                 </div>
                 <div className="text-sm text-muted-foreground font-medium">sur la période</div>
@@ -124,7 +121,7 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
 
             {/* Tendance globale */}
             {data.trend !== null && (
-              <div className="teams-card p-4">
+              <div className="teams-card p-4 border border-teams-purple/20">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     {getTrendIcon()}
@@ -144,9 +141,9 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
           </div>
 
           {/* Graphique département */}
-          <div className="teams-card p-4">
+          <div className="teams-card p-4 border border-teams-purple/20">
             <div className="flex items-center space-x-2 mb-4">
-              <BarChart3 className="h-4 w-4 text-teams-indigo" />
+              <BarChart3 className="h-4 w-4 text-teams-purple" />
               <span className="text-sm font-semibold text-foreground">Top 5 Départements</span>
             </div>
             <div className="h-48">
@@ -187,7 +184,7 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
 
         {/* Insight IA */}
         {showInsight && data.insight && (
-          <div className="mt-4 p-4 bg-teams-purple/5 rounded-lg border-0">
+          <div className="mt-4 p-4 bg-teams-purple/5 rounded-lg border border-teams-purple/20">
             <div className="flex items-start space-x-3">
               <div className="p-1.5 bg-teams-purple/10 rounded-full">
                 <BarChart3 className="h-3 w-3 text-teams-purple" />

@@ -204,51 +204,45 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
       </CardHeader>
       <CardContent className="space-y-6 px-5 pb-5" id="ai-analysis-content">
         {/* Vue d'ensemble */}
-        <div className="teams-card p-5">
+        <div className="teams-card p-5 border border-teams-purple/30">
           <div className="flex items-center space-x-2 mb-4">
-            <Target className="h-5 w-5 text-teams-blue" />
+            <Target className="h-5 w-5 text-teams-purple" />
             <h3 className="text-base font-semibold text-foreground">Vue d'Ensemble</h3>
           </div>
           
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-success-light rounded-lg border border-success/20">
-              <div className="text-2xl font-semibold text-success">{stats.positive}</div>
-              <div className="text-sm text-success font-medium">Indicateurs positifs</div>
+            <div className="text-center p-4 bg-teams-purple/5 rounded-lg border border-teams-purple/20">
+              <div className="text-2xl font-semibold text-foreground">{stats.positive}</div>
+              <div className="text-sm text-muted-foreground font-medium">Indicateurs positifs</div>
             </div>
-            <div className="text-center p-4 bg-warning-light rounded-lg border border-warning/20">
-              <div className="text-2xl font-semibold text-warning">{stats.negative}</div>
-              <div className="text-sm text-warning font-medium">Points d'attention</div>
+            <div className="text-center p-4 bg-teams-purple/5 rounded-lg border border-teams-purple/20">
+              <div className="text-2xl font-semibold text-foreground">{stats.negative}</div>
+              <div className="text-sm text-muted-foreground font-medium">Points d'attention</div>
             </div>
-            <div className="text-center p-4 bg-teams-blue/10 rounded-lg border border-teams-blue/20">
-              <div className="text-2xl font-semibold text-teams-blue">{stats.neutral}</div>
-              <div className="text-sm text-teams-blue font-medium">Indicateurs neutres</div>
+            <div className="text-center p-4 bg-teams-purple/5 rounded-lg border border-teams-purple/20">
+              <div className="text-2xl font-semibold text-foreground">{stats.neutral}</div>
+              <div className="text-sm text-muted-foreground font-medium">Indicateurs neutres</div>
             </div>
           </div>
         </div>
 
         {/* Statut global */}
-        <div className={`teams-card p-4 border-l-4 ${
-          stats.negative > stats.positive 
-            ? 'border-l-danger bg-danger/5' 
-            : stats.positive > stats.negative 
-              ? 'border-l-success bg-success/5' 
-              : 'border-l-teams-blue bg-teams-blue/5'
-        }`}>
+        <div className="teams-card p-4 border border-teams-purple/30">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-full bg-background">
+            <div className="p-2 rounded-full bg-teams-purple/10">
               {overallStatus.icon}
             </div>
             <div>
               <h4 className="font-semibold text-foreground text-sm">Statut global : {overallStatus.status}</h4>
               <p className="text-xs text-muted-foreground font-medium mt-1">
-                La majorité des indicateurs sont positifs, ce qui indique une bonne performance globale.
+                Analyse basée sur l'ensemble des indicateurs RH disponibles.
               </p>
             </div>
           </div>
         </div>
 
         {/* Synthèse IA */}
-        <div className="teams-card p-4">
+        <div className="teams-card p-4 border border-teams-purple/30">
           <div className="flex items-start space-x-3">
             <div className="p-2 bg-teams-purple/10 rounded-full">
               <Brain className="h-4 w-4 text-teams-purple" />
@@ -265,21 +259,18 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
         {/* Analyses sectorielles */}
         <div className="grid md:grid-cols-2 gap-4">
           {/* Analyse de l'Effectif */}
-          <div className="teams-card p-4">
+          <div className="teams-card p-4 border border-teams-purple/30">
             <div className="flex items-center space-x-2 mb-3">
               <Users className="h-4 w-4 text-teams-purple" />
               <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.workforce.title}</h3>
             </div>
             
-            <div className="bg-muted/30 p-3 rounded-md border-l-2 border-teams-purple/50 mb-3">
+            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20 mb-3">
               <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.workforce.content}</p>
               <div className="space-y-1">
                 {aiAnalysis.insights.workforce.metrics.slice(0, 3).map((metric, index) => (
                   <div key={index} className="flex items-center text-xs text-muted-foreground">
-                    <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
-                      aiAnalysis.insights.workforce.status === 'positive' ? 'bg-success' : 
-                      aiAnalysis.insights.workforce.status === 'negative' ? 'bg-danger' : 'bg-teams-blue'
-                    }`}></div>
+                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
                     {metric}
                   </div>
                 ))}
@@ -288,21 +279,18 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
           </div>
 
           {/* Performance Opérationnelle */}
-          <div className="teams-card p-4">
+          <div className="teams-card p-4 border border-teams-purple/30">
             <div className="flex items-center space-x-2 mb-3">
-              <BarChart3 className="h-4 w-4 text-teams-indigo" />
+              <BarChart3 className="h-4 w-4 text-teams-purple" />
               <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.productivity.title}</h3>
             </div>
             
-            <div className="bg-muted/30 p-3 rounded-md border-l-2 border-teams-indigo/50 mb-3">
+            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20 mb-3">
               <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.productivity.content}</p>
               <div className="space-y-1">
                 {aiAnalysis.insights.productivity.metrics.slice(0, 3).map((metric, index) => (
                   <div key={index} className="flex items-center text-xs text-muted-foreground">
-                    <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
-                      aiAnalysis.insights.productivity.status === 'positive' ? 'bg-success' : 
-                      aiAnalysis.insights.productivity.status === 'negative' ? 'bg-danger' : 'bg-teams-blue'
-                    }`}></div>
+                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
                     {metric}
                   </div>
                 ))}
@@ -311,21 +299,18 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
           </div>
 
           {/* Gestion des Présences */}
-          <div className="teams-card p-4">
+          <div className="teams-card p-4 border border-teams-purple/30">
             <div className="flex items-center space-x-2 mb-3">
-              <Clock className="h-4 w-4 text-teams-blue" />
+              <Clock className="h-4 w-4 text-teams-purple" />
               <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.attendance.title}</h3>
             </div>
             
-            <div className="bg-muted/30 p-3 rounded-md border-l-2 border-teams-blue/50">
+            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20">
               <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.attendance.content}</p>
               <div className="space-y-1">
                 {aiAnalysis.insights.attendance.metrics.slice(0, 3).map((metric, index) => (
                   <div key={index} className="flex items-center text-xs text-muted-foreground">
-                    <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
-                      aiAnalysis.insights.attendance.status === 'positive' ? 'bg-success' : 
-                      aiAnalysis.insights.attendance.status === 'negative' ? 'bg-danger' : 'bg-teams-blue'
-                    }`}></div>
+                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
                     {metric}
                   </div>
                 ))}
@@ -334,21 +319,18 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
           </div>
 
           {/* Impact Budgétaire */}
-          <div className="teams-card p-4">
+          <div className="teams-card p-4 border border-teams-purple/30">
             <div className="flex items-center space-x-2 mb-3">
-              <DollarSign className="h-4 w-4 text-success" />
+              <DollarSign className="h-4 w-4 text-teams-purple" />
               <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.financial.title}</h3>
             </div>
             
-            <div className="bg-muted/30 p-3 rounded-md border-l-2 border-success/50">
+            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20">
               <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.financial.content}</p>
               <div className="space-y-1">
                 {aiAnalysis.insights.financial.metrics.map((metric, index) => (
                   <div key={index} className="flex items-center text-xs text-muted-foreground">
-                    <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
-                      aiAnalysis.insights.financial.status === 'positive' ? 'bg-success' : 
-                      aiAnalysis.insights.financial.status === 'negative' ? 'bg-danger' : 'bg-teams-blue'
-                    }`}></div>
+                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
                     {metric}
                   </div>
                 ))}
@@ -359,9 +341,9 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
 
         {/* Actions prioritaires */}
         {stats.negative > 0 && (
-          <div className="teams-card p-4 border-l-4 border-l-warning bg-warning/5">
+          <div className="teams-card p-4 border border-teams-purple/30 bg-teams-purple/5">
             <div className="flex items-start space-x-3">
-              <AlertCircle className="h-5 w-5 text-warning mt-0.5 flex-shrink-0" />
+              <AlertCircle className="h-5 w-5 text-teams-purple mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <h4 className="font-semibold text-foreground text-sm mb-1">Actions prioritaires détectées</h4>
                 <ul className="text-xs text-muted-foreground space-y-1 font-medium">
