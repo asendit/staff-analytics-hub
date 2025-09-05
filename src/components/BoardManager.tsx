@@ -13,6 +13,7 @@ export interface Board {
   name: string;
   description: string;
   kpis: string[];
+  kpiOrder: string[]; // Ordre des KPIs pour le drag & drop
   createdAt: string;
   isDefault: boolean;
 }
@@ -56,6 +57,7 @@ const BoardManager: React.FC<BoardManagerProps> = ({
       name: newBoardName,
       description: newBoardDescription,
       kpis: selectedKPIs,
+      kpiOrder: selectedKPIs, // L'ordre initial est le même que la liste des KPIs
       isDefault: false
     };
 
@@ -95,6 +97,7 @@ const BoardManager: React.FC<BoardManagerProps> = ({
       name: `${board.name} (Copie)`,
       description: board.description,
       kpis: [...board.kpis],
+      kpiOrder: [...(board.kpiOrder || board.kpis)], // Copier l'ordre ou utiliser l'ordre des KPIs
       isDefault: false
     };
 

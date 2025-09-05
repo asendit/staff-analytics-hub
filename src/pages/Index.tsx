@@ -4,6 +4,7 @@ import { convertHRData } from '../utils/dataConverter';
 import { HRAnalytics, KPIData, KPIChartData, FilterOptions, HRData, ExtendedHeadcountData } from '../services/hrAnalytics';
 import KPICard from '../components/KPICard';
 import HeadcountCard from '../components/HeadcountCard';
+import DraggableKPIGrid from '../components/DraggableKPIGrid';
 import KPIDetailModal from '../components/KPIDetailModal';
 import KPIChartModal from '../components/KPIChartModal';
 import FilterPanel from '../components/FilterPanel';
@@ -44,6 +45,10 @@ const Index = () => {
       description: 'Vue d\'ensemble de tous les indicateurs RH',
       kpis: [
         'absenteeism', 'turnover', 'headcount', 'overtime-hours', 'remote-work',
+        'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
+      ],
+      kpiOrder: [
+        'absenteeism', 'turnover', 'overtime-hours', 'remote-work',
         'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
       ],
       createdAt: new Date().toISOString(),
@@ -163,6 +168,13 @@ const Index = () => {
   const handleBoardUpdate = (updatedBoard: Board) => {
     setBoards(boards.map(board => board.id === updatedBoard.id ? updatedBoard : board));
     setCurrentBoard(updatedBoard);
+  };
+
+  const handleKPIOrderChange = (newOrder: string[]) => {
+    if (currentBoard) {
+      const updatedBoard = { ...currentBoard, kpiOrder: newOrder };
+      handleBoardUpdate(updatedBoard);
+    }
   };
 
   const handleBoardDelete = (boardId: string) => {
