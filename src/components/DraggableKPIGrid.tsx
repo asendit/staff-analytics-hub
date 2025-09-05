@@ -36,17 +36,6 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
     }
   });
   
-  // Ajouter les KPIs selon l'ordre défini
-  kpiOrder.forEach(kpiId => {
-    const kpi = kpis.find(k => k.id === kpiId);
-    if (kpi) {
-      allItems.push({
-        id: kpi.id,
-        type: 'kpi',
-        data: kpi
-      });
-    }
-  });
   
   // Ajouter les éléments non présents dans l'ordre (nouveaux KPIs ou headcount)
   if (headcountData && !allItems.find(item => item.id === 'headcount')) {
@@ -82,7 +71,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
   });
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
+    <DragDropContext onDragStart={() => (document.body.style.cursor = 'grabbing')} onDragEnd={(result) => { document.body.style.cursor = ''; handleDragEnd(result); }}>
       <Droppable droppableId="kpi-grid" direction="vertical">
         {(provided, snapshot) => (
           <div
