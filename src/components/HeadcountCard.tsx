@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, TrendingUp, TrendingDown, Minus, Info, BarChart3, UserPlus, UserMinus, Clock } from 'lucide-react';
@@ -18,6 +19,11 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
   onChartClick, 
   showInsight = true 
 }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate('/kpi-details/headcount');
+  };
   const getTrendIcon = () => {
     if (data.trend === null) return null;
     if (data.trend > 0) return <TrendingUp className="h-4 w-4 text-success" />;
@@ -40,7 +46,10 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
   }));
 
   return (
-    <Card className="teams-card border border-teams-purple/30 col-span-full lg:col-span-4 xl:col-span-4">
+    <Card 
+      className="teams-card border border-teams-purple/30 col-span-full lg:col-span-4 xl:col-span-4 cursor-pointer hover:border-teams-purple/50 transition-colors" 
+      onClick={handleCardClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between pb-4 pt-5 px-5">
         <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3">
           <div className="w-2 h-8 bg-teams-purple rounded-full" />
