@@ -118,7 +118,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
     );
   }
 
-  // Mode réorganisation activé - Grid adaptatif pour un meilleur drag & drop
+  // Mode réorganisation activé avec repositionnement visuel pendant le drag
   return (
     <DragDropContext
       onDragStart={() => (document.body.style.cursor = 'grabbing')}
@@ -132,8 +132,8 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
           <div
             {...provided.droppableProps}
             ref={provided.innerRef}
-            className={`grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 transition-all duration-200 ${
-              snapshot.isDraggingOver ? 'bg-muted/50 rounded-lg p-2' : ''
+            className={`grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 transition-all duration-300 ${
+              snapshot.isDraggingOver ? 'bg-muted/30 rounded-xl p-3' : ''
             }`}
           >
             {allItems.map((item, index) => {
@@ -147,37 +147,59 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
 
               return (
                 <Draggable key={item.id} draggableId={item.id} index={index}>
-                  {(provided, snapshot) => (
-                    <>
-                      {/* Indicateur de drop visuel avant la carte */}
-                      {snapshot.isDragging && index === 0 && (
-                        <div className="col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2 h-4 border-2 border-dashed border-primary/50 rounded bg-primary/10 animate-pulse" />
-                      )}
-
+                  {(provided, snapshot) => {
+                    const isDragging = snapshot.isDragging;
+                    const isDraggedOver = snapshot.combineTargetFor !== null;
+                    
+                    return (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className={`relative animate-fade-in transition-all duration-200 select-none ${
-                          snapshot.isDragging 
-                            ? 'scale-105 shadow-2xl z-50 rotate-2' 
-                            : 'hover:shadow-lg'
+                        className={`relative animate-fade-in transition-all duration-300 ease-out select-none ${
+                          isDragging 
+                            ? 'scale-110 shadow-2xl z-50 rotate-1 opacity-90' 
+                            : isDraggedOver 
+                              ? 'scale-95 opacity-70 transform translate-x-2'
+                              : 'hover:shadow-lg scale-100 opacity-100'
                         } ${getColSpan()}`}
                         style={{
                           ...provided.draggableProps.style,
                           animationDelay: `${index * 100}ms`,
+                          transform: isDragging 
+                            ? `${provided.draggableProps.style?.transform || ''} rotate(2deg) scale(1.05)` 
+                            : provided.draggableProps.style?.transform,
                         }}
                       >
-                        {/* Poignée de drag avec indicateur visuel */}
+                        {/* Zone de drop visible entre les éléments */}
+                        {!isDragging && (
+                          <div className="absolute -left-2 top-0 bottom-0 w-4 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                            <div className="w-1 h-full bg-gradient-to-b from-primary/20 via-primary/60 to-primary/20 rounded-full" />
+                          </div>
+                        )}
+
+                        {/* Poignée de drag avec feedback amélioré */}
                         <div
-                          className={`absolute inset-0 z-20 transition-opacity ${
-                            snapshot.isDragging 
-                              ? 'cursor-grabbing bg-primary/10 border-2 border-primary/30 rounded-lg' 
+                          className={`absolute inset-0 z-20 transition-all duration-200 ${
+                            isDragging 
+                              ? 'cursor-grabbing bg-gradient-to-br from-primary/20 to-primary/10 border-2 border-primary/40 rounded-xl backdrop-blur-sm' 
                               : 'cursor-grab hover:bg-primary/5 rounded-lg opacity-0 hover:opacity-100'
                           }`}
                           {...provided.dragHandleProps}
                           aria-label="Déplacer la carte"
-                          title="Cliquez et glissez pour déplacer"
-                        />
+                          title="Cliquez et maintenez pour déplacer"
+                        >
+                          {/* Indicateur de grip subtil */}
+                          {!isDragging && (
+                            <div className="absolute top-3 right-3 opacity-0 hover:opacity-60 transition-opacity">
+                              <div className="grid grid-cols-2 gap-1">
+                                <div className="w-1 h-1 bg-muted-foreground rounded-full" />
+                                <div className="w-1 h-1 bg-muted-foreground rounded-full" />
+                                <div className="w-1 h-1 bg-muted-foreground rounded-full" />
+                                <div className="w-1 h-1 bg-muted-foreground rounded-full" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
 
                         {item.type === 'headcount' ? (
                           <HeadcountCard
@@ -195,24 +217,33 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                           />
                         )}
 
-                        {/* Indicateur de déplacement amélioré */}
-                        {snapshot.isDragging && (
-                          <div className="absolute -top-2 -right-2 z-30 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full shadow-lg border-2 border-background">
-                            ✋ Glisser
+                        {/* Indicateur de position pendant le drag */}
+                        {isDragging && (
+                          <div className="absolute -top-3 -right-3 z-30 bg-primary text-primary-foreground text-xs px-3 py-1.5 rounded-full shadow-xl border border-primary-foreground/20 animate-bounce">
+                            <span className="flex items-center gap-1">
+                              <span>📍</span>
+                              Déplacer ici
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Zone de drop visible à droite */}
+                        {!isDragging && (
+                          <div className="absolute -right-2 top-0 bottom-0 w-4 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200">
+                            <div className="w-1 h-full bg-gradient-to-b from-primary/20 via-primary/60 to-primary/20 rounded-full" />
                           </div>
                         )}
                       </div>
-
-                      {/* Indicateur de drop visuel après chaque carte */}
-                      {snapshot.isDragging && (
-                        <div className="col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2 h-4 border-2 border-dashed border-primary/50 rounded bg-primary/10 animate-pulse" />
-                      )}
-                    </>
-                  )}
+                    );
+                  }}
                 </Draggable>
               );
             })}
-            {provided.placeholder}
+            {provided.placeholder && (
+              <div className="col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2 min-h-[100px] border-2 border-dashed border-primary/30 rounded-xl bg-primary/5 flex items-center justify-center">
+                <span className="text-muted-foreground text-sm">Déposez ici</span>
+              </div>
+            )}
           </div>
         )}
       </Droppable>
