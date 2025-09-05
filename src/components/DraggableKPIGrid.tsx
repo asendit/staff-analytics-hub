@@ -142,9 +142,9 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                   <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    className={`relative animate-fade-in transition-transform select-none ${
+                    className={`relative z-0 animate-fade-in transition-transform select-none ${
                       snapshot.isDragging ? 'scale-105 shadow-xl' : ''
-                    } ${item.id === 'headcount' ? 'col-span-full lg:col-span-4 xl:col-span-4' : ''}`}
+                    } ${item.id === 'headcount' ? 'col-span-full lg:col-span-4 xl:col-span-4' : 'col-span-1 lg:col-span-1 xl:col-span-1'}`}
                     style={{
                       ...provided.draggableProps.style,
                       animationDelay: `${index * 100}ms`,

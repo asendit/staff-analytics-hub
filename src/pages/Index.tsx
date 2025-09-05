@@ -257,14 +257,6 @@ const Index = () => {
                 />
                 {isAIEnabled && <Sparkles className="h-4 w-4 text-primary" />}
               </div>
-              <div className="flex items-center space-x-3">
-                <GripVertical className="h-4 w-4" />
-                <span>Réorganiser</span>
-                <Switch
-                  checked={isReorderMode}
-                  onCheckedChange={setIsReorderMode}
-                />
-              </div>
             </div>
           </div>
         </div>
@@ -297,8 +289,15 @@ const Index = () => {
             <h2 className="text-2xl font-bold text-gray-900">
               {currentBoard.name}
             </h2>
-            <div className="text-sm text-gray-500">
-              {(kpis.length + (headcountData ? 1 : 0))} indicateur{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''} affiché{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''}
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-500">
+                {(kpis.length + (headcountData ? 1 : 0))} indicateur{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''} affiché{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''}
+              </div>
+              <div className="hidden sm:flex items-center space-x-2">
+                <GripVertical className="h-4 w-4" />
+                <span className="text-sm text-gray-600">Réorganiser</span>
+                <Switch checked={isReorderMode} onCheckedChange={setIsReorderMode} />
+              </div>
             </div>
           </div>
 
