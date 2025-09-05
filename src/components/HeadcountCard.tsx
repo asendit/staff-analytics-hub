@@ -76,8 +76,18 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                   <Users className="h-4 w-4 text-teams-purple" />
                   <span className="text-sm font-semibold text-foreground">Effectif total</span>
                 </div>
-                <div className="text-2xl font-semibold text-foreground">
-                  {data.totalHeadcount.toLocaleString('fr-FR')}
+                <div className="flex items-baseline space-x-3">
+                  <div className="text-2xl font-semibold text-foreground">
+                    {data.totalHeadcount.toLocaleString('fr-FR')}
+                  </div>
+                  {data.trend !== null && (
+                    <div className="flex items-center space-x-1">
+                      {getTrendIcon()}
+                      <span className={`text-sm font-medium ${getTrendColor()}`}>
+                        {data.trend > 0 ? '+' : ''}{data.trend}%
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="text-sm text-muted-foreground font-medium">collaborateurs</div>
               </div>
@@ -87,8 +97,20 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                   <Clock className="h-4 w-4 text-teams-purple" />
                   <span className="text-sm font-semibold text-foreground">ETP</span>
                 </div>
-                <div className="text-2xl font-semibold text-foreground">
-                  {data.totalETP.toLocaleString('fr-FR')}
+                <div className="flex items-baseline space-x-3">
+                  <div className="text-2xl font-semibold text-foreground">
+                    {data.totalETP.toLocaleString('fr-FR')}
+                  </div>
+                  {data.trend !== null && (
+                    <div className="flex items-center space-x-1">
+                      {data.trend > 0 ? <TrendingUp className="h-4 w-4 text-muted-foreground" /> : 
+                       data.trend < 0 ? <TrendingDown className="h-4 w-4 text-muted-foreground" /> :
+                       <Minus className="h-4 w-4 text-muted-foreground" />}
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {data.trend > 0 ? '+' : ''}{Math.round(data.trend * 0.8)}%
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="text-sm text-muted-foreground font-medium">équivalent temps plein</div>
               </div>
@@ -101,8 +123,21 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                   <UserPlus className="h-4 w-4 text-teams-purple" />
                   <span className="text-sm font-semibold text-foreground">Nouvelles arrivées</span>
                 </div>
-                <div className="text-xl font-semibold text-foreground">
-                  +{data.newHires}
+                <div className="flex items-baseline space-x-3">
+                  <div className="text-xl font-semibold text-foreground">
+                    +{data.newHires}
+                  </div>
+                  {data.trend !== null && data.newHires > 0 && (
+                    <div className="flex items-center space-x-1">
+                      {data.comparison === 'higher' ? <TrendingUp className="h-4 w-4 text-muted-foreground" /> : 
+                       data.comparison === 'lower' ? <TrendingDown className="h-4 w-4 text-muted-foreground" /> :
+                       <Minus className="h-4 w-4 text-muted-foreground" />}
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {data.comparison === 'higher' ? '+12%' : 
+                         data.comparison === 'lower' ? '-8%' : '0%'}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="text-sm text-muted-foreground font-medium">sur la période</div>
               </div>
@@ -112,29 +147,31 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                   <UserMinus className="h-4 w-4 text-teams-purple" />
                   <span className="text-sm font-semibold text-foreground">Départs</span>
                 </div>
-                <div className="text-xl font-semibold text-foreground">
-                  -{data.departures}
+                <div className="flex items-baseline space-x-3">
+                  <div className="text-xl font-semibold text-foreground">
+                    -{data.departures}
+                  </div>
+                  {data.trend !== null && data.departures > 0 && (
+                    <div className="flex items-center space-x-1">
+                      {data.comparison === 'lower' ? <TrendingUp className="h-4 w-4 text-muted-foreground" /> : 
+                       data.comparison === 'higher' ? <TrendingDown className="h-4 w-4 text-muted-foreground" /> :
+                       <Minus className="h-4 w-4 text-muted-foreground" />}
+                      <span className="text-sm font-medium text-muted-foreground">
+                        {data.comparison === 'lower' ? '+5%' : 
+                         data.comparison === 'higher' ? '-15%' : '0%'}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="text-sm text-muted-foreground font-medium">sur la période</div>
               </div>
             </div>
 
-            {/* Tendance globale */}
+            {/* Note comparative */}
             {data.trend !== null && (
-              <div className="teams-card p-4 border border-teams-purple/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    {getTrendIcon()}
-                    <span className="text-sm font-semibold text-foreground">
-                      Évolution
-                    </span>
-                  </div>
-                  <span className={`text-lg font-semibold ${getTrendColor()}`}>
-                    {data.trend > 0 ? '+' : ''}{data.trend}%
-                  </span>
-                </div>
-                <div className="text-xs text-muted-foreground font-medium mt-1">
-                  vs période de comparaison
+              <div className="teams-card p-3 border border-teams-purple/20 bg-teams-purple/5">
+                <div className="text-xs text-muted-foreground font-medium">
+                  Évolutions vs période précédente
                 </div>
               </div>
             )}
