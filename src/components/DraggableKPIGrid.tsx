@@ -26,14 +26,15 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
   // Créer une liste ordonnée des éléments (incluant headcount si présent)
   const allItems: Array<{id: string, type: 'kpi' | 'headcount', data: KPIData | ExtendedHeadcountData}> = [];
   
-  // Ajouter headcount en premier si présent
-  if (headcountData) {
-    allItems.push({
-      id: 'headcount',
-      type: 'headcount',
-      data: headcountData
-    });
-  }
+  // Construire la liste en respectant l'ordre défini (incluant 'headcount')
+  kpiOrder.forEach(id => {
+    if (id === 'headcount' && headcountData) {
+      allItems.push({ id: 'headcount', type: 'headcount', data: headcountData });
+    } else {
+      const kpi = kpis.find(k => k.id === id);
+      if (kpi) allItems.push({ id: kpi.id, type: 'kpi', data: kpi });
+    }
+  });
   
   // Ajouter les KPIs selon l'ordre défini
   kpiOrder.forEach(kpiId => {
@@ -47,14 +48,13 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
     }
   });
   
-  // Ajouter les KPIs qui ne sont pas dans l'ordre (nouveaux KPIs)
+  // Ajouter les éléments non présents dans l'ordre (nouveaux KPIs ou headcount)
+  if (headcountData && !allItems.find(item => item.id === 'headcount')) {
+    allItems.push({ id: 'headcount', type: 'headcount', data: headcountData });
+  }
   kpis.forEach(kpi => {
-    if (!kpiOrder.includes(kpi.id) && !allItems.find(item => item.id === kpi.id)) {
-      allItems.push({
-        id: kpi.id,
-        type: 'kpi',
-        data: kpi
-      });
+    if (!allItems.find(item => item.id === kpi.id)) {
+      allItems.push({ id: kpi.id, type: 'kpi', data: kpi });
     }
   });
 
@@ -65,11 +65,8 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    // Mettre à jour l'ordre (exclure headcount car il est géré séparément)
-    const newOrder = items
-      .filter(item => item.type === 'kpi')
-      .map(item => item.id);
-    
+    // Mettre à jour l'ordre (incluant headcount)
+    const newOrder = items.map(item => item.id);
     onOrderChange(newOrder);
   };
 
@@ -86,7 +83,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="kpi-grid" direction="horizontal">
+      <Droppable droppableId="kpi-grid" direction="vertical">
         {(provided, snapshot) => (
           <div
             {...provided.droppableProps}
