@@ -1,5 +1,5 @@
 import React from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { KPIData, ExtendedHeadcountData } from '../services/hrAnalytics';
 import KPICard from './KPICard';
 import HeadcountCard from './HeadcountCard';
@@ -99,13 +99,15 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
-                    className={`animate-fade-in transition-transform ${
+                    className={`relative animate-fade-in transition-transform cursor-grab active:cursor-grabbing select-none ${
                       snapshot.isDragging ? 'scale-105 rotate-2 shadow-xl' : ''
                     } ${item.id === 'headcount' ? 'col-span-full lg:col-span-4 xl:col-span-4' : ''}`}
                     style={{
                       ...provided.draggableProps.style,
                       animationDelay: `${index * 100}ms`
                     }}
+                    title="Déplacer cette carte"
+                    aria-label="Déplacer cette carte"
                   >
                     {item.type === 'headcount' ? (
                       <HeadcountCard
@@ -122,10 +124,8 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                         showInsight={isAIEnabled}
                       />
                     )}
-                    
-                    {/* Indicateur de drag */}
                     {snapshot.isDragging && (
-                      <div className="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full opacity-75">
+                      <div className="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full opacity-80">
                         Déplacer
                       </div>
                     )}

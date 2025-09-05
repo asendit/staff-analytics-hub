@@ -283,7 +283,9 @@ const Index = () => {
         />
 
         {/* Grille des KPIs */}
-        <div className="space-y-6 mb-8">
+        <div className="space-y-2 mb-8">
+          <div className="text-xs text-muted-foreground">Astuce: maintenez et glissez les cartes pour les réorganiser</div>
+
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">
               {currentBoard.name}
