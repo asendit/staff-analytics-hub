@@ -282,56 +282,78 @@ const Index = () => {
           </div>
 
           {(kpis.length > 0 || headcountData) ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-              {/* Carte d'effectif étendue */}
+            <>
+              {/* Première ligne: Carte d'effectif */}
               {headcountData && (
-                <div className="animate-fade-in" style={{ animationDelay: '0ms' }}>
-                  <HeadcountCard 
-                    data={headcountData}
-                    onInfoClick={() => {
-                      // Créer un KPIData temporaire pour la modale
-                      const tempKPI: KPIData = {
-                        id: 'headcount',
-                        name: 'Effectif - Vue d\'ensemble',
-                        value: headcountData.totalHeadcount,
-                        unit: 'collaborateurs',
-                        trend: headcountData.trend,
-                        comparison: headcountData.comparison,
-                        category: headcountData.category,
-                        insight: headcountData.insight
-                      };
-                      handleKPIInfoClick(tempKPI);
-                    }}
-                    onChartClick={() => {
-                      const tempKPI: KPIData = {
-                        id: 'headcount',
-                        name: 'Effectif - Vue d\'ensemble',
-                        value: headcountData.totalHeadcount,
-                        unit: 'collaborateurs',
-                        trend: headcountData.trend,
-                        comparison: headcountData.comparison,
-                        category: headcountData.category,
-                        insight: headcountData.insight
-                      };
-                      handleKPIChartClick(tempKPI);
-                    }}
-                    showInsight={isAIEnabled}
-                  />
+                <div className="mb-6">
+                  <div className="animate-fade-in" style={{ animationDelay: '0ms' }}>
+                    <HeadcountCard 
+                      data={headcountData}
+                      onInfoClick={() => {
+                        // Créer un KPIData temporaire pour la modale
+                        const tempKPI: KPIData = {
+                          id: 'headcount',
+                          name: 'Effectif - Vue d\'ensemble',
+                          value: headcountData.totalHeadcount,
+                          unit: 'collaborateurs',
+                          trend: headcountData.trend,
+                          comparison: headcountData.comparison,
+                          category: headcountData.category,
+                          insight: headcountData.insight
+                        };
+                        handleKPIInfoClick(tempKPI);
+                      }}
+                      onChartClick={() => {
+                        const tempKPI: KPIData = {
+                          id: 'headcount',
+                          name: 'Effectif - Vue d\'ensemble',
+                          value: headcountData.totalHeadcount,
+                          unit: 'collaborateurs',
+                          trend: headcountData.trend,
+                          comparison: headcountData.comparison,
+                          category: headcountData.category,
+                          insight: headcountData.insight
+                        };
+                        handleKPIChartClick(tempKPI);
+                      }}
+                      showInsight={isAIEnabled}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Deuxième ligne: Turnover et Heures supplémentaires */}
+              {kpis.filter(kpi => kpi.id === 'turnover' || kpi.id === 'overtime-hours').length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6 mb-6">
+                  {kpis.filter(kpi => kpi.id === 'turnover' || kpi.id === 'overtime-hours').map((kpi, index) => (
+                    <div key={kpi.id} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
+                      <KPICard 
+                        kpi={kpi} 
+                        onInfoClick={() => handleKPIInfoClick(kpi)}
+                        onChartClick={() => handleKPIChartClick(kpi)}
+                        showInsight={isAIEnabled}
+                      />
+                    </div>
+                  ))}
                 </div>
               )}
               
-              {/* Autres KPIs */}
-              {kpis.map((kpi, index) => (
-                <div key={kpi.id} className="animate-fade-in" style={{ animationDelay: `${(index + (headcountData ? 1 : 0)) * 100}ms` }}>
-                  <KPICard 
-                    kpi={kpi} 
-                    onInfoClick={() => handleKPIInfoClick(kpi)}
-                    onChartClick={() => handleKPIChartClick(kpi)}
-                    showInsight={isAIEnabled}
-                  />
+              {/* Autres KPIs (excluant turnover et overtime) */}
+              {kpis.filter(kpi => kpi.id !== 'turnover' && kpi.id !== 'overtime-hours').length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+                  {kpis.filter(kpi => kpi.id !== 'turnover' && kpi.id !== 'overtime-hours').map((kpi, index) => (
+                    <div key={kpi.id} className="animate-fade-in" style={{ animationDelay: `${(index + 3) * 100}ms` }}>
+                      <KPICard 
+                        kpi={kpi} 
+                        onInfoClick={() => handleKPIInfoClick(kpi)}
+                        onChartClick={() => handleKPIChartClick(kpi)}
+                        showInsight={isAIEnabled}
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-12">
               <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
