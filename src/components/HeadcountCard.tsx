@@ -20,12 +20,15 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
 }) => {
   const getTrendIcon = () => {
     if (data.trend === null) return null;
-    if (data.trend > 0) return <TrendingUp className="h-4 w-4 text-muted-foreground" />;
-    if (data.trend < 0) return <TrendingDown className="h-4 w-4 text-muted-foreground" />;
+    if (data.trend > 0) return <TrendingUp className="h-4 w-4 text-success" />;
+    if (data.trend < 0) return <TrendingDown className="h-4 w-4 text-danger" />;
     return <Minus className="h-4 w-4 text-muted-foreground" />;
   };
 
   const getTrendColor = () => {
+    if (data.trend === null) return 'text-muted-foreground';
+    if (data.trend > 0) return 'text-success';
+    if (data.trend < 0) return 'text-danger';
     return 'text-muted-foreground';
   };
 
@@ -103,10 +106,13 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                   </div>
                   {data.trend !== null && (
                     <div className="flex items-center space-x-1">
-                      {data.trend > 0 ? <TrendingUp className="h-4 w-4 text-muted-foreground" /> : 
-                       data.trend < 0 ? <TrendingDown className="h-4 w-4 text-muted-foreground" /> :
+                      {data.trend > 0 ? <TrendingUp className="h-4 w-4 text-success" /> : 
+                       data.trend < 0 ? <TrendingDown className="h-4 w-4 text-danger" /> :
                        <Minus className="h-4 w-4 text-muted-foreground" />}
-                      <span className="text-sm font-medium text-muted-foreground">
+                      <span className={`text-sm font-medium ${
+                        data.trend > 0 ? 'text-success' : 
+                        data.trend < 0 ? 'text-danger' : 'text-muted-foreground'
+                      }`}>
                         {data.trend > 0 ? '+' : ''}{Math.round(data.trend * 0.8)}%
                       </span>
                     </div>
@@ -129,10 +135,13 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                   </div>
                   {data.trend !== null && data.newHires > 0 && (
                     <div className="flex items-center space-x-1">
-                      {data.comparison === 'higher' ? <TrendingUp className="h-4 w-4 text-muted-foreground" /> : 
-                       data.comparison === 'lower' ? <TrendingDown className="h-4 w-4 text-muted-foreground" /> :
+                      {data.comparison === 'higher' ? <TrendingUp className="h-4 w-4 text-success" /> : 
+                       data.comparison === 'lower' ? <TrendingDown className="h-4 w-4 text-danger" /> :
                        <Minus className="h-4 w-4 text-muted-foreground" />}
-                      <span className="text-sm font-medium text-muted-foreground">
+                      <span className={`text-sm font-medium ${
+                        data.comparison === 'higher' ? 'text-success' : 
+                        data.comparison === 'lower' ? 'text-danger' : 'text-muted-foreground'
+                      }`}>
                         {data.comparison === 'higher' ? '+12%' : 
                          data.comparison === 'lower' ? '-8%' : '0%'}
                       </span>
@@ -153,10 +162,13 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                   </div>
                   {data.trend !== null && data.departures > 0 && (
                     <div className="flex items-center space-x-1">
-                      {data.comparison === 'lower' ? <TrendingUp className="h-4 w-4 text-muted-foreground" /> : 
-                       data.comparison === 'higher' ? <TrendingDown className="h-4 w-4 text-muted-foreground" /> :
+                      {data.comparison === 'lower' ? <TrendingUp className="h-4 w-4 text-success" /> : 
+                       data.comparison === 'higher' ? <TrendingDown className="h-4 w-4 text-danger" /> :
                        <Minus className="h-4 w-4 text-muted-foreground" />}
-                      <span className="text-sm font-medium text-muted-foreground">
+                      <span className={`text-sm font-medium ${
+                        data.comparison === 'lower' ? 'text-success' : 
+                        data.comparison === 'higher' ? 'text-danger' : 'text-muted-foreground'
+                      }`}>
                         {data.comparison === 'lower' ? '+5%' : 
                          data.comparison === 'higher' ? '-15%' : '0%'}
                       </span>
@@ -166,15 +178,6 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                 <div className="text-sm text-muted-foreground font-medium">sur la période</div>
               </div>
             </div>
-
-            {/* Note comparative */}
-            {data.trend !== null && (
-              <div className="teams-card p-3 border border-teams-purple/20 bg-teams-purple/5">
-                <div className="text-xs text-muted-foreground font-medium">
-                  Évolutions vs période précédente
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Graphique département */}
