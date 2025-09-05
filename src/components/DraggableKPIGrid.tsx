@@ -118,7 +118,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
     );
   }
 
-  // Mode réorganisation activé
+  // Mode réorganisation activé - Grid adaptatif pour un meilleur drag & drop
   return (
     <DragDropContext
       onDragStart={() => (document.body.style.cursor = 'grabbing')}
@@ -127,63 +127,91 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
         handleDragEnd(result);
       }}
     >
-      <Droppable droppableId="kpi-grid" direction="vertical">
+      <Droppable droppableId="kpi-grid">
         {(provided, snapshot) => (
           <div
             {...provided.droppableProps}
             ref={provided.innerRef}
-            className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6 transition-colors ${
-              snapshot.isDraggingOver ? 'bg-blue-50' : ''
+            className={`grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 transition-all duration-200 ${
+              snapshot.isDraggingOver ? 'bg-muted/50 rounded-lg p-2' : ''
             }`}
           >
-            {allItems.map((item, index) => (
-              <Draggable key={item.id} draggableId={item.id} index={index}>
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    className={`relative z-0 animate-fade-in transition-transform select-none ${
-                      snapshot.isDragging ? 'scale-105 shadow-xl' : ''
-                    } ${item.id === 'headcount' ? 'col-span-full lg:col-span-4 xl:col-span-4' : 'col-span-1 lg:col-span-1 xl:col-span-1'}`}
-                    style={{
-                      ...provided.draggableProps.style,
-                      animationDelay: `${index * 100}ms`,
-                    }}
-                  >
-                    {/* Calque poignée couvrant toute la carte */}
-                    <div
-                      className="absolute inset-0 z-20 cursor-grab active:cursor-grabbing"
-                      {...provided.dragHandleProps}
-                      aria-label="Déplacer la carte"
-                      title="Déplacer la carte"
-                    />
+            {allItems.map((item, index) => {
+              // Calculer le nombre de colonnes selon le type et la taille d'écran
+              const getColSpan = () => {
+                if (item.id === 'headcount') {
+                  return 'col-span-2 md:col-span-4 lg:col-span-6 xl:col-span-8'; // Toute la largeur
+                }
+                return 'col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2'; // 2 colonnes sur la grille fine
+              };
 
-                    {item.type === 'headcount' ? (
-                      <HeadcountCard
-                        data={item.data as ExtendedHeadcountData}
-                        onInfoClick={() => onKPIInfoClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
-                        onChartClick={() => onKPIChartClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
-                        showInsight={isAIEnabled}
-                      />
-                    ) : (
-                      <KPICard
-                        kpi={item.data as KPIData}
-                        onInfoClick={() => onKPIInfoClick(item.data as KPIData)}
-                        onChartClick={() => onKPIChartClick(item.data as KPIData)}
-                        showInsight={isAIEnabled}
-                      />
-                    )}
+              return (
+                <Draggable key={item.id} draggableId={item.id} index={index}>
+                  {(provided, snapshot) => (
+                    <>
+                      {/* Indicateur de drop visuel avant la carte */}
+                      {snapshot.isDragging && index === 0 && (
+                        <div className="col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2 h-4 border-2 border-dashed border-primary/50 rounded bg-primary/10 animate-pulse" />
+                      )}
 
-                    {/* Badge indicateur en mode drag */}
-                    {snapshot.isDragging && (
-                      <div className="absolute top-2 right-2 z-30 bg-primary text-white text-xs px-2 py-1 rounded-full opacity-90">
-                        Déplacer
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        className={`relative animate-fade-in transition-all duration-200 select-none ${
+                          snapshot.isDragging 
+                            ? 'scale-105 shadow-2xl z-50 rotate-2' 
+                            : 'hover:shadow-lg'
+                        } ${getColSpan()}`}
+                        style={{
+                          ...provided.draggableProps.style,
+                          animationDelay: `${index * 100}ms`,
+                        }}
+                      >
+                        {/* Poignée de drag avec indicateur visuel */}
+                        <div
+                          className={`absolute inset-0 z-20 transition-opacity ${
+                            snapshot.isDragging 
+                              ? 'cursor-grabbing bg-primary/10 border-2 border-primary/30 rounded-lg' 
+                              : 'cursor-grab hover:bg-primary/5 rounded-lg opacity-0 hover:opacity-100'
+                          }`}
+                          {...provided.dragHandleProps}
+                          aria-label="Déplacer la carte"
+                          title="Cliquez et glissez pour déplacer"
+                        />
+
+                        {item.type === 'headcount' ? (
+                          <HeadcountCard
+                            data={item.data as ExtendedHeadcountData}
+                            onInfoClick={() => onKPIInfoClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
+                            onChartClick={() => onKPIChartClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
+                            showInsight={isAIEnabled}
+                          />
+                        ) : (
+                          <KPICard
+                            kpi={item.data as KPIData}
+                            onInfoClick={() => onKPIInfoClick(item.data as KPIData)}
+                            onChartClick={() => onKPIChartClick(item.data as KPIData)}
+                            showInsight={isAIEnabled}
+                          />
+                        )}
+
+                        {/* Indicateur de déplacement amélioré */}
+                        {snapshot.isDragging && (
+                          <div className="absolute -top-2 -right-2 z-30 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full shadow-lg border-2 border-background">
+                            ✋ Glisser
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                )}
-              </Draggable>
-            ))}
+
+                      {/* Indicateur de drop visuel après chaque carte */}
+                      {snapshot.isDragging && (
+                        <div className="col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2 h-4 border-2 border-dashed border-primary/50 rounded bg-primary/10 animate-pulse" />
+                      )}
+                    </>
+                  )}
+                </Draggable>
+              );
+            })}
             {provided.placeholder}
           </div>
         )}
