@@ -132,7 +132,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
           <div
             {...provided.droppableProps}
             ref={provided.innerRef}
-            className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6 transition-colors ${
+            className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 gap-4 md:gap-5 transition-colors ${
               snapshot.isDraggingOver ? 'bg-blue-50' : ''
             }`}
           >
@@ -142,9 +142,9 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                   <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    className={`relative z-0 animate-fade-in transition-transform select-none ${
+                    className={`relative z-0 animate-fade-in transition-transform select-none min-h-[160px] ${
                       snapshot.isDragging ? 'scale-105 shadow-xl' : ''
-                    } ${item.id === 'headcount' ? 'col-span-full lg:col-span-4 xl:col-span-4' : 'col-span-1 lg:col-span-1 xl:col-span-1'}`}
+                    } col-span-1`}
                     style={{
                       ...provided.draggableProps.style,
                       animationDelay: `${index * 100}ms`,
