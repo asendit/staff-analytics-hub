@@ -48,7 +48,7 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
   }));
 
   return (
-    <Card className={`hover:shadow-lg transition-all duration-200 border-l-4 ${getCategoryColor()} col-span-full md:col-span-2 lg:col-span-3`}>
+    <Card className={`hover:shadow-lg transition-all duration-200 border-l-4 ${getCategoryColor()} col-span-full lg:col-span-2 xl:col-span-2`}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <Users className="h-5 w-5" />
