@@ -9,11 +9,13 @@ export interface Employee {
   position: string;
   salary: number;
   hireDate: Date;
+  terminationDate?: Date;
   status: 'active' | 'inactive' | 'terminated';
   performanceScore: number;
   trainingHours: number;
   remoteWork: boolean;
   address: string;
+  workingTimeRate: number; // Taux d'activité pour calculer l'ETP (0.5 = 50%, 1.0 = 100%)
   gender?: 'homme' | 'femme';
   birthDate?: Date;
 }
@@ -37,6 +39,18 @@ export interface KPIData {
   value: number | string;
   unit: string;
   trend: number | null;
+  comparison: 'higher' | 'lower' | 'stable';
+  category: 'positive' | 'negative' | 'neutral';
+  insight: string;
+}
+
+export interface ExtendedHeadcountData {
+  totalHeadcount: number;
+  totalETP: number;
+  newHires: number;
+  departures: number;
+  trend: number | null;
+  departmentBreakdown: Array<{ department: string; count: number; etp: number }>;
   comparison: 'higher' | 'lower' | 'stable';
   category: 'positive' | 'negative' | 'neutral';
   insight: string;
@@ -152,6 +166,70 @@ export class HRAnalytics {
           { name: 'Freelance', value: faker.number.int({ min: 5, max: 15 }) }
         ]
       }
+    };
+  }
+
+  getExtendedHeadcount(filters: FilterOptions): ExtendedHeadcountData {
+    const employees = this.filterEmployees(filters);
+    const periodStart = this.getPeriodStartDate(filters.period);
+    const periodEnd = new Date();
+    
+    // Calculer l'effectif total à la date de fin de période
+    const activeEmployees = employees.filter(employee => {
+      const hireDate = new Date(employee.hireDate);
+      const terminationDate = employee.terminationDate ? new Date(employee.terminationDate) : null;
+      
+      return employee.status === 'active' && 
+             hireDate <= periodEnd && 
+             (!terminationDate || terminationDate > periodEnd);
+    });
+    
+    const totalHeadcount = activeEmployees.length;
+    
+    // Calculer l'ETP (Equivalent Temps Plein)
+    const totalETP = activeEmployees.reduce((sum, employee) => {
+      return sum + (employee.workingTimeRate || 1.0);
+    }, 0);
+    
+    // Calculer les nouvelles arrivées sur la période
+    const newHires = employees.filter(employee => {
+      const hireDate = new Date(employee.hireDate);
+      return hireDate >= periodStart && hireDate <= periodEnd;
+    }).length;
+    
+    // Calculer les départs sur la période
+    const departures = employees.filter(employee => {
+      const terminationDate = employee.terminationDate ? new Date(employee.terminationDate) : null;
+      return terminationDate && terminationDate >= periodStart && terminationDate <= periodEnd;
+    }).length;
+    
+    // Répartition par département (top 5)
+    const departmentCounts = new Map<string, { count: number; etp: number }>();
+    activeEmployees.forEach(employee => {
+      const current = departmentCounts.get(employee.department) || { count: 0, etp: 0 };
+      departmentCounts.set(employee.department, {
+        count: current.count + 1,
+        etp: current.etp + (employee.workingTimeRate || 1.0)
+      });
+    });
+    
+    const departmentBreakdown = Array.from(departmentCounts.entries())
+      .map(([department, data]) => ({ department, ...data }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+    
+    const trend = this.calculateTrend(filters);
+    
+    return {
+      totalHeadcount,
+      totalETP: Math.round(totalETP * 10) / 10,
+      newHires,
+      departures,
+      trend,
+      departmentBreakdown,
+      comparison: this.getTrendComparison(trend),
+      category: totalHeadcount < 100 ? 'negative' : 'positive',
+      insight: `Effectif de ${totalHeadcount} collaborateurs (${totalETP.toFixed(1)} ETP). ${newHires} arrivée${newHires > 1 ? 's' : ''} et ${departures} départ${departures > 1 ? 's' : ''} sur la période. ${trend && trend > 0 ? '📈 Croissance de l\'effectif' : trend && trend < 0 ? '📉 Réduction de l\'effectif' : '📊 Effectif stable'}.`
     };
   }
 

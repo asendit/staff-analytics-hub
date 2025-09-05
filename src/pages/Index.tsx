@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { generateHRData } from '../data/hrDataGenerator';
 import { convertHRData } from '../utils/dataConverter';
-import { HRAnalytics, KPIData, KPIChartData, FilterOptions, HRData } from '../services/hrAnalytics';
+import { HRAnalytics, KPIData, KPIChartData, FilterOptions, HRData, ExtendedHeadcountData } from '../services/hrAnalytics';
 import KPICard from '../components/KPICard';
+import HeadcountCard from '../components/HeadcountCard';
 import KPIDetailModal from '../components/KPIDetailModal';
 import KPIChartModal from '../components/KPIChartModal';
 import FilterPanel from '../components/FilterPanel';
@@ -16,6 +17,7 @@ const Index = () => {
   const [hrData, setHrData] = useState<HRData | null>(null);
   const [analytics, setAnalytics] = useState<HRAnalytics | null>(null);
   const [kpis, setKpis] = useState<KPIData[]>([]);
+  const [headcountData, setHeadcountData] = useState<ExtendedHeadcountData | null>(null);
   const [filters, setFilters] = useState<FilterOptions>({ period: 'year' });
   const [globalInsight, setGlobalInsight] = useState<string>('');
   const [isLoadingInsight, setIsLoadingInsight] = useState(false);
@@ -63,9 +65,19 @@ const Index = () => {
       console.log('Calcul des KPIs avec filtres:', filters);
       const allKPIs = analytics.getAllKPIs(filters);
       
-      // Filtrer les KPIs selon le board actuel
-      const filteredKPIs = allKPIs.filter(kpi => currentBoard.kpis.includes(kpi.id));
+      // Filtrer les KPIs selon le board actuel (exclure headcount qui est traité séparément)
+      const filteredKPIs = allKPIs.filter(kpi => 
+        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount'
+      );
       setKpis(filteredKPIs);
+
+      // Calculer les données d'effectif étendues si headcount est dans le board
+      if (currentBoard.kpis.includes('headcount')) {
+        const extendedHeadcountData = analytics.getExtendedHeadcount(filters);
+        setHeadcountData(extendedHeadcountData);
+      } else {
+        setHeadcountData(null);
+      }
 
       // Génération de l'insight global
       const insight = analytics.generateGlobalInsight(filteredKPIs, filters);
@@ -119,8 +131,16 @@ const Index = () => {
   const handleRefresh = () => {
     if (analytics && currentBoard) {
       const allKPIs = analytics.getAllKPIs(filters);
-      const filteredKPIs = allKPIs.filter(kpi => currentBoard.kpis.includes(kpi.id));
+      const filteredKPIs = allKPIs.filter(kpi => 
+        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount'
+      );
       setKpis(filteredKPIs);
+      
+      // Recalculer les données d'effectif étendues si nécessaire
+      if (currentBoard.kpis.includes('headcount')) {
+        const extendedHeadcountData = analytics.getExtendedHeadcount(filters);
+        setHeadcountData(extendedHeadcountData);
+      }
       
       toast({
         title: "Données actualisées",
@@ -257,14 +277,52 @@ const Index = () => {
               {currentBoard.name}
             </h2>
             <div className="text-sm text-gray-500">
-              {kpis.length} indicateur{kpis.length > 1 ? 's' : ''} affiché{kpis.length > 1 ? 's' : ''}
+              {(kpis.length + (headcountData ? 1 : 0))} indicateur{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''} affiché{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''}
             </div>
           </div>
 
-          {kpis.length > 0 ? (
+          {(kpis.length > 0 || headcountData) ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {/* Carte d'effectif étendue */}
+              {headcountData && (
+                <div className="animate-fade-in" style={{ animationDelay: '0ms' }}>
+                  <HeadcountCard 
+                    data={headcountData}
+                    onInfoClick={() => {
+                      // Créer un KPIData temporaire pour la modale
+                      const tempKPI: KPIData = {
+                        id: 'headcount',
+                        name: 'Effectif - Vue d\'ensemble',
+                        value: headcountData.totalHeadcount,
+                        unit: 'collaborateurs',
+                        trend: headcountData.trend,
+                        comparison: headcountData.comparison,
+                        category: headcountData.category,
+                        insight: headcountData.insight
+                      };
+                      handleKPIInfoClick(tempKPI);
+                    }}
+                    onChartClick={() => {
+                      const tempKPI: KPIData = {
+                        id: 'headcount',
+                        name: 'Effectif - Vue d\'ensemble',
+                        value: headcountData.totalHeadcount,
+                        unit: 'collaborateurs',
+                        trend: headcountData.trend,
+                        comparison: headcountData.comparison,
+                        category: headcountData.category,
+                        insight: headcountData.insight
+                      };
+                      handleKPIChartClick(tempKPI);
+                    }}
+                    showInsight={isAIEnabled}
+                  />
+                </div>
+              )}
+              
+              {/* Autres KPIs */}
               {kpis.map((kpi, index) => (
-                <div key={kpi.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                <div key={kpi.id} className="animate-fade-in" style={{ animationDelay: `${(index + (headcountData ? 1 : 0)) * 100}ms` }}>
                   <KPICard 
                     kpi={kpi} 
                     onInfoClick={() => handleKPIInfoClick(kpi)}

@@ -13,11 +13,15 @@ export function convertHRData(generatedData: GeneratedHRData): HRData {
       position: emp.position,
       salary: emp.salary,
       hireDate: new Date(emp.hireDate),
+      terminationDate: emp.terminationDate ? new Date(emp.terminationDate) : undefined,
       status: emp.status,
       performanceScore: emp.performanceScore,
       trainingHours: emp.trainingHours,
       remoteWork: emp.remoteWork,
-      address: emp.address
+      address: emp.address,
+      workingTimeRate: emp.workingTimeRate,
+      gender: emp.gender,
+      birthDate: emp.birthDate ? new Date(emp.birthDate) : undefined
     };
   });
 

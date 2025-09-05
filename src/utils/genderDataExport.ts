@@ -1,10 +1,14 @@
 
-import { generateKPIChartData } from '../services/hrAnalytics';
+import { HRAnalytics, FilterOptions } from '../services/hrAnalytics';
 
 export const downloadGenderDataAsJSON = async () => {
   try {
+    // Créer une instance temporaire avec des données vides pour le calcul
+    const analytics = new HRAnalytics({ employees: [], expenses: [] });
+    const filters: FilterOptions = { period: 'year' };
+    
     // Générer les données de graphique pour l'effectif
-    const chartData = await generateKPIChartData({ id: 'headcount' } as any);
+    const chartData = analytics.getHeadcountChartData(filters);
     
     if (!chartData.genderDistribution) {
       console.warn('Aucune donnée de répartition par genre disponible');

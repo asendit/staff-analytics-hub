@@ -10,11 +10,15 @@ export interface Employee {
   position: string;
   salary: number;
   hireDate: Date;
+  terminationDate?: Date;
   status: 'active' | 'inactive' | 'terminated';
   performanceScore: number;
   trainingHours: number;
   remoteWork: boolean;
   address: string;
+  workingTimeRate: number; // Taux d'activité pour calculer l'ETP (0.5 = 50%, 1.0 = 100%)
+  gender?: 'homme' | 'femme';
+  birthDate?: Date;
 }
 
 export interface Expense {
@@ -79,6 +83,12 @@ export const generateHRData = (): GeneratedHRData => {
     const firstName = faker.helpers.arrayElement(firstNames);
     const lastName = faker.helpers.arrayElement(lastNames);
     
+    const status = faker.helpers.weightedArrayElement([
+      { weight: 85, value: 'active' as const },
+      { weight: 10, value: 'inactive' as const },
+      { weight: 5, value: 'terminated' as const }
+    ]);
+
     const employee: Employee = {
       id: `emp-${i + 1}`,
       firstName,
@@ -88,15 +98,20 @@ export const generateHRData = (): GeneratedHRData => {
       position,
       salary: faker.number.int({ min: 30000, max: 120000 }),
       hireDate: faker.date.between({ from: '2020-01-01', to: '2024-01-01' }),
-      status: faker.helpers.weightedArrayElement([
-        { weight: 85, value: 'active' as const },
-        { weight: 10, value: 'inactive' as const },
-        { weight: 5, value: 'terminated' as const }
-      ]),
+      terminationDate: status === 'terminated' ? faker.date.between({ from: '2024-01-01', to: '2024-12-31' }) : undefined,
+      status,
       performanceScore: faker.number.int({ min: 1, max: 5 }),
       trainingHours: faker.number.int({ min: 0, max: 80 }),
       remoteWork: faker.datatype.boolean({ probability: 0.6 }),
-      address: `${faker.location.streetAddress()}, ${faker.location.city()}, France`
+      address: `${faker.location.streetAddress()}, ${faker.location.city()}, France`,
+      workingTimeRate: faker.helpers.weightedArrayElement([
+        { weight: 70, value: 1.0 },    // 70% à temps plein
+        { weight: 20, value: 0.8 },    // 20% à 80%
+        { weight: 8, value: 0.6 },     // 8% à 60%
+        { weight: 2, value: 0.5 }      // 2% à mi-temps
+      ]),
+      gender: faker.helpers.arrayElement(['homme', 'femme']),
+      birthDate: faker.date.birthdate({ min: 22, max: 65, mode: 'age' })
     };
     
     employees.push(employee);
