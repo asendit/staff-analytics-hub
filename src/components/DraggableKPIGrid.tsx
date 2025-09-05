@@ -8,6 +8,7 @@ interface DraggableKPIGridProps {
   kpis: KPIData[];
   headcountData: ExtendedHeadcountData | null;
   kpiOrder: string[];
+  enabled?: boolean;
   onOrderChange: (newOrder: string[]) => void;
   onKPIInfoClick: (kpi: KPIData) => void;
   onKPIChartClick: (kpi: KPIData) => void;
@@ -18,34 +19,50 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
   kpis,
   headcountData,
   kpiOrder,
+  enabled = false,
   onOrderChange,
   onKPIInfoClick,
   onKPIChartClick,
   isAIEnabled
 }) => {
-  // Créer une liste ordonnée des éléments (incluant headcount si présent)
-  const allItems: Array<{id: string, type: 'kpi' | 'headcount', data: KPIData | ExtendedHeadcountData}> = [];
-  
-  // Construire la liste en respectant l'ordre défini (incluant 'headcount')
-  kpiOrder.forEach(id => {
-    if (id === 'headcount' && headcountData) {
-      allItems.push({ id: 'headcount', type: 'headcount', data: headcountData });
-    } else {
-      const kpi = kpis.find(k => k.id === id);
-      if (kpi) allItems.push({ id: kpi.id, type: 'kpi', data: kpi });
+  // Construit la liste des éléments dans l'ordre souhaité
+  const buildAllItems = () => {
+    const items: Array<{ id: string; type: 'kpi' | 'headcount'; data: KPIData | ExtendedHeadcountData }> = [];
+
+    const pushed = new Set<string>();
+
+    // 1) Respecter l'ordre fourni (incluant 'headcount')
+    (kpiOrder || []).forEach((id) => {
+      if (id === 'headcount' && headcountData) {
+        items.push({ id: 'headcount', type: 'headcount', data: headcountData });
+        pushed.add('headcount');
+      } else {
+        const kpi = kpis.find((k) => k.id === id);
+        if (kpi) {
+          items.push({ id: kpi.id, type: 'kpi', data: kpi });
+          pushed.add(kpi.id);
+        }
+      }
+    });
+
+    // 2) Ajouter headcount s'il n'est pas encore dans la liste
+    if (headcountData && !pushed.has('headcount')) {
+      items.push({ id: 'headcount', type: 'headcount', data: headcountData });
+      pushed.add('headcount');
     }
-  });
-  
-  
-  // Ajouter les éléments non présents dans l'ordre (nouveaux KPIs ou headcount)
-  if (headcountData && !allItems.find(item => item.id === 'headcount')) {
-    allItems.push({ id: 'headcount', type: 'headcount', data: headcountData });
-  }
-  kpis.forEach(kpi => {
-    if (!allItems.find(item => item.id === kpi.id)) {
-      allItems.push({ id: kpi.id, type: 'kpi', data: kpi });
-    }
-  });
+
+    // 3) Ajouter les autres KPIs non présents
+    kpis.forEach((kpi) => {
+      if (!pushed.has(kpi.id)) {
+        items.push({ id: kpi.id, type: 'kpi', data: kpi });
+        pushed.add(kpi.id);
+      }
+    });
+
+    return items;
+  };
+
+  const allItems = buildAllItems();
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -54,24 +71,62 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    // Mettre à jour l'ordre (incluant headcount)
-    const newOrder = items.map(item => item.id);
+    // Mettre à jour l'ordre incluant éventuellement 'headcount'
+    const newOrder = items.map((item) => item.id);
     onOrderChange(newOrder);
   };
 
   const createTempKPIFromHeadcount = (data: ExtendedHeadcountData): KPIData => ({
     id: 'headcount',
-    name: 'Effectif - Vue d\'ensemble',
+    name: "Effectif - Vue d'ensemble",
     value: data.totalHeadcount,
     unit: 'collaborateurs',
     trend: data.trend,
     comparison: data.comparison,
     category: data.category,
-    insight: data.insight
+    insight: data.insight,
   });
 
+  // Rendu statique quand le mode réorganisation n'est pas activé
+  if (!enabled) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+        {allItems.map((item, index) => (
+          <div
+            key={item.id}
+            className={`relative animate-fade-in ${item.id === 'headcount' ? 'col-span-full lg:col-span-4 xl:col-span-4' : ''}`}
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            {item.type === 'headcount' ? (
+              <HeadcountCard
+                data={item.data as ExtendedHeadcountData}
+                onInfoClick={() => onKPIInfoClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
+                onChartClick={() => onKPIChartClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
+                showInsight={isAIEnabled}
+              />
+            ) : (
+              <KPICard
+                kpi={item.data as KPIData}
+                onInfoClick={() => onKPIInfoClick(item.data as KPIData)}
+                onChartClick={() => onKPIChartClick(item.data as KPIData)}
+                showInsight={isAIEnabled}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Mode réorganisation activé
   return (
-    <DragDropContext onDragStart={() => (document.body.style.cursor = 'grabbing')} onDragEnd={(result) => { document.body.style.cursor = ''; handleDragEnd(result); }}>
+    <DragDropContext
+      onDragStart={() => (document.body.style.cursor = 'grabbing')}
+      onDragEnd={(result) => {
+        document.body.style.cursor = '';
+        handleDragEnd(result);
+      }}
+    >
       <Droppable droppableId="kpi-grid" direction="vertical">
         {(provided, snapshot) => (
           <div
@@ -87,17 +142,22 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                   <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    className={`relative animate-fade-in transition-transform cursor-grab active:cursor-grabbing select-none ${
-                      snapshot.isDragging ? 'scale-105 rotate-2 shadow-xl' : ''
+                    className={`relative animate-fade-in transition-transform select-none ${
+                      snapshot.isDragging ? 'scale-105 shadow-xl' : ''
                     } ${item.id === 'headcount' ? 'col-span-full lg:col-span-4 xl:col-span-4' : ''}`}
                     style={{
                       ...provided.draggableProps.style,
-                      animationDelay: `${index * 100}ms`
+                      animationDelay: `${index * 100}ms`,
                     }}
-                    title="Déplacer cette carte"
-                    aria-label="Déplacer cette carte"
                   >
+                    {/* Calque poignée couvrant toute la carte */}
+                    <div
+                      className="absolute inset-0 z-20 cursor-grab active:cursor-grabbing"
+                      {...provided.dragHandleProps}
+                      aria-label="Déplacer la carte"
+                      title="Déplacer la carte"
+                    />
+
                     {item.type === 'headcount' ? (
                       <HeadcountCard
                         data={item.data as ExtendedHeadcountData}
@@ -113,8 +173,10 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                         showInsight={isAIEnabled}
                       />
                     )}
+
+                    {/* Badge indicateur en mode drag */}
                     {snapshot.isDragging && (
-                      <div className="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full opacity-80">
+                      <div className="absolute top-2 right-2 z-30 bg-primary text-white text-xs px-2 py-1 rounded-full opacity-90">
                         Déplacer
                       </div>
                     )}

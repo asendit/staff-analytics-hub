@@ -10,7 +10,7 @@ import KPIChartModal from '../components/KPIChartModal';
 import FilterPanel from '../components/FilterPanel';
 import BoardManager, { Board } from '../components/BoardManager';
 import GlobalInsightPanel from '../components/GlobalInsightPanel';
-import { Users, BarChart3, Brain, Sparkles } from 'lucide-react';
+import { Users, BarChart3, Brain, Sparkles, GripVertical } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 
@@ -29,6 +29,7 @@ const Index = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isChartModalOpen, setIsChartModalOpen] = useState(false);
   const [isAIEnabled, setIsAIEnabled] = useState(true);
+  const [isReorderMode, setIsReorderMode] = useState(false);
 
   // Initialisation des données
   useEffect(() => {
@@ -256,6 +257,14 @@ const Index = () => {
                 />
                 {isAIEnabled && <Sparkles className="h-4 w-4 text-primary" />}
               </div>
+              <div className="flex items-center space-x-3">
+                <GripVertical className="h-4 w-4" />
+                <span>Réorganiser</span>
+                <Switch
+                  checked={isReorderMode}
+                  onCheckedChange={setIsReorderMode}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -284,8 +293,6 @@ const Index = () => {
 
         {/* Grille des KPIs */}
         <div className="space-y-2 mb-8">
-          <div className="text-xs text-muted-foreground">Astuce: maintenez et glissez les cartes pour les réorganiser</div>
-
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">
               {currentBoard.name}
@@ -295,79 +302,21 @@ const Index = () => {
             </div>
           </div>
 
-          {(kpis.length > 0 || headcountData) ? (
-            <>
-              {/* Première ligne: Carte d'effectif */}
-              {headcountData && (
-                <div className="mb-6">
-                  <div className="animate-fade-in" style={{ animationDelay: '0ms' }}>
-                    <HeadcountCard 
-                      data={headcountData}
-                      onInfoClick={() => {
-                        // Créer un KPIData temporaire pour la modale
-                        const tempKPI: KPIData = {
-                          id: 'headcount',
-                          name: 'Effectif - Vue d\'ensemble',
-                          value: headcountData.totalHeadcount,
-                          unit: 'collaborateurs',
-                          trend: headcountData.trend,
-                          comparison: headcountData.comparison,
-                          category: headcountData.category,
-                          insight: headcountData.insight
-                        };
-                        handleKPIInfoClick(tempKPI);
-                      }}
-                      onChartClick={() => {
-                        const tempKPI: KPIData = {
-                          id: 'headcount',
-                          name: 'Effectif - Vue d\'ensemble',
-                          value: headcountData.totalHeadcount,
-                          unit: 'collaborateurs',
-                          trend: headcountData.trend,
-                          comparison: headcountData.comparison,
-                          category: headcountData.category,
-                          insight: headcountData.insight
-                        };
-                        handleKPIChartClick(tempKPI);
-                      }}
-                      showInsight={isAIEnabled}
-                    />
-                  </div>
-                </div>
-              )}
+          {isReorderMode && (
+            <div className="text-xs text-muted-foreground">Astuce: maintenez et glissez les cartes pour les réorganiser</div>
+          )}
 
-              {/* Deuxième ligne: Turnover et Heures supplémentaires */}
-              {kpis.filter(kpi => kpi.id === 'turnover' || kpi.id === 'overtime-hours').length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6 mb-6">
-                  {kpis.filter(kpi => kpi.id === 'turnover' || kpi.id === 'overtime-hours').map((kpi, index) => (
-                    <div key={kpi.id} className="animate-fade-in" style={{ animationDelay: `${(index + 1) * 100}ms` }}>
-                      <KPICard 
-                        kpi={kpi} 
-                        onInfoClick={() => handleKPIInfoClick(kpi)}
-                        onChartClick={() => handleKPIChartClick(kpi)}
-                        showInsight={isAIEnabled}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              {/* Autres KPIs (excluant turnover et overtime) */}
-              {kpis.filter(kpi => kpi.id !== 'turnover' && kpi.id !== 'overtime-hours').length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-                  {kpis.filter(kpi => kpi.id !== 'turnover' && kpi.id !== 'overtime-hours').map((kpi, index) => (
-                    <div key={kpi.id} className="animate-fade-in" style={{ animationDelay: `${(index + 3) * 100}ms` }}>
-                      <KPICard 
-                        kpi={kpi} 
-                        onInfoClick={() => handleKPIInfoClick(kpi)}
-                        onChartClick={() => handleKPIChartClick(kpi)}
-                        showInsight={isAIEnabled}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
+          {(kpis.length > 0 || headcountData) ? (
+            <DraggableKPIGrid
+              kpis={kpis}
+              headcountData={headcountData}
+              kpiOrder={currentBoard.kpiOrder || []}
+              enabled={isReorderMode}
+              onOrderChange={handleKPIOrderChange}
+              onKPIInfoClick={handleKPIInfoClick}
+              onKPIChartClick={handleKPIChartClick}
+              isAIEnabled={isAIEnabled}
+            />
           ) : (
             <div className="text-center py-12">
               <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
