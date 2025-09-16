@@ -67,7 +67,7 @@ const Index = () => {
         'headcount', 'turnover', 'hr-expenses', 'absenteeism', 'onboarding'
       ],
       createdAt: new Date().toISOString(),
-      isDefault: false
+      isDefault: true
     };
 
     const managerBoard: Board = {
@@ -81,7 +81,7 @@ const Index = () => {
         'headcount', 'absenteeism', 'overtime-hours', 'remote-work', 'task-completion', 'age-seniority'
       ],
       createdAt: new Date().toISOString(),
-      isDefault: false
+      isDefault: true
     };
 
     const defaultBoards = [hrMainBoard, ceoBoard, managerBoard];
