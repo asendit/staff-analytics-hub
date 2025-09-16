@@ -42,7 +42,7 @@ const Index = () => {
     // Création des boards par défaut
     const hrMainBoard: Board = {
       id: 'hr-main',
-      name: 'Tableau de bord principal RH',
+      name: 'Tableau de bord principal (RH)',
       description: 'Vue d\'ensemble complète de tous les indicateurs RH',
       kpis: [
         'absenteeism', 'turnover', 'headcount', 'overtime-hours', 'remote-work',
@@ -58,7 +58,7 @@ const Index = () => {
 
     const ceoBoard: Board = {
       id: 'ceo-view',
-      name: 'Vue CEO',
+      name: 'Tableau de bord CEO',
       description: 'Indicateurs stratégiques pour la direction générale',
       kpis: [
         'headcount', 'turnover', 'hr-expenses', 'absenteeism', 'onboarding'
@@ -72,7 +72,7 @@ const Index = () => {
 
     const managerBoard: Board = {
       id: 'manager-view',
-      name: 'Vue Manager',
+      name: 'Tableau de bord Manager',
       description: 'Indicateurs opérationnels pour les managers',
       kpis: [
         'headcount', 'absenteeism', 'overtime-hours', 'remote-work', 'task-completion', 'age-seniority'
