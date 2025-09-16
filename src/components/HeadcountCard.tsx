@@ -52,8 +52,7 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
     >
       <CardHeader className="flex flex-row items-center justify-between pb-4 pt-5 px-5">
         <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3">
-          <div className="w-2 h-8 bg-teams-purple rounded-full" />
-          <Users className="h-5 w-5 text-teams-purple" />
+          <div className="w-1 h-6 bg-teams-purple rounded-full" />
           Effectif - Vue d'ensemble
         </CardTitle>
         <div className="flex space-x-1">
