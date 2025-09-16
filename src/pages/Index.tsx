@@ -39,11 +39,11 @@ const Index = () => {
     setHrData(convertedData);
     setAnalytics(new HRAnalytics(convertedData));
 
-    // Création du board par défaut
-    const defaultBoard: Board = {
-      id: 'default',
-      name: 'Tableau de Bord Principal',
-      description: 'Vue d\'ensemble de tous les indicateurs RH',
+    // Création des boards par défaut
+    const hrMainBoard: Board = {
+      id: 'hr-main',
+      name: 'Tableau de bord principal RH',
+      description: 'Vue d\'ensemble complète de tous les indicateurs RH',
       kpis: [
         'absenteeism', 'turnover', 'headcount', 'overtime-hours', 'remote-work',
         'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
@@ -56,8 +56,37 @@ const Index = () => {
       isDefault: true
     };
 
-    setBoards([defaultBoard]);
-    setCurrentBoard(defaultBoard);
+    const ceoBoard: Board = {
+      id: 'ceo-view',
+      name: 'Vue CEO',
+      description: 'Indicateurs stratégiques pour la direction générale',
+      kpis: [
+        'headcount', 'turnover', 'hr-expenses', 'absenteeism', 'onboarding'
+      ],
+      kpiOrder: [
+        'headcount', 'turnover', 'hr-expenses', 'absenteeism', 'onboarding'
+      ],
+      createdAt: new Date().toISOString(),
+      isDefault: false
+    };
+
+    const managerBoard: Board = {
+      id: 'manager-view',
+      name: 'Vue Manager',
+      description: 'Indicateurs opérationnels pour les managers',
+      kpis: [
+        'headcount', 'absenteeism', 'overtime-hours', 'remote-work', 'task-completion', 'age-seniority'
+      ],
+      kpiOrder: [
+        'headcount', 'absenteeism', 'overtime-hours', 'remote-work', 'task-completion', 'age-seniority'
+      ],
+      createdAt: new Date().toISOString(),
+      isDefault: false
+    };
+
+    const defaultBoards = [hrMainBoard, ceoBoard, managerBoard];
+    setBoards(defaultBoards);
+    setCurrentBoard(hrMainBoard);
 
     toast({
       title: "Module RH initialisé",
