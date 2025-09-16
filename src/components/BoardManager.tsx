@@ -154,9 +154,16 @@ const BoardManager: React.FC<BoardManagerProps> = ({
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary-600">
+              <Button 
+                className="bg-primary hover:bg-primary-600 relative" 
+                disabled
+                title="Fonctionnalité disponible prochainement"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Nouveau Board
+                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full text-[10px] font-medium">
+                  Soon
+                </span>
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
