@@ -88,13 +88,24 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   return (
     <Card className="mb-6">
       <CardHeader className="pb-4">
-        <CardTitle className="text-lg font-semibold flex items-center space-x-2">
-          <Filter className="h-5 w-5" />
-          <span>Filtres et Options</span>
+        <CardTitle className="text-lg font-semibold flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Filter className="h-5 w-5" />
+            <span>Filtres et Options</span>
+          </div>
+          <Button 
+            onClick={onRefresh}
+            variant="outline" 
+            size="sm"
+            className="h-8"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Actualiser
+          </Button>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Période */}
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium text-gray-700">Période</label>
@@ -220,19 +231,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 <SelectItem value="year-ago">vs année précédente</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          {/* Actions */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 opacity-0">Actions</label>
-            <Button 
-              onClick={onRefresh}
-              variant="outline" 
-              className="w-full"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Actualiser
-            </Button>
           </div>
         </div>
 
