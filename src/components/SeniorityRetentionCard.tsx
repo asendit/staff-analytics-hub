@@ -39,21 +39,17 @@ const SeniorityRetentionCard: React.FC<SeniorityRetentionCardProps> = ({
 
   return (
     <Card className="teams-card border border-teams-purple/30">
-      <CardHeader className="flex flex-row items-start justify-between pb-3 pt-4 px-4">
-        <div className="flex items-start space-x-3">
-          <div className="w-1 h-12 rounded-full bg-teams-purple" />
-          <div className="space-y-1">
-            <CardTitle className="text-sm font-semibold text-foreground leading-tight">
-              Ancienneté et rétention
-            </CardTitle>
-          </div>
-        </div>
+      <CardHeader className="flex flex-row items-center justify-between pb-4 pt-5 px-5">
+        <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3">
+          <div className="w-1 h-6 bg-teams-purple rounded-full" />
+          Ancienneté et rétention
+        </CardTitle>
         <div className="flex space-x-1">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => onChartClick(data.averageSeniority)}
-            className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
             title="Voir les graphiques"
           >
             <BarChart3 className="h-4 w-4" />
@@ -62,61 +58,59 @@ const SeniorityRetentionCard: React.FC<SeniorityRetentionCardProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => onInfoClick(data.averageSeniority)}
-            className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
             title="Voir les détails"
           >
             <Info className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="pt-0 px-4 pb-4">
+      <CardContent className="px-5 pb-5">
         <div className="space-y-4">
           {/* Deux sous-KPI côte à côte */}
           <div className="grid grid-cols-2 gap-4">
             {/* Ancienneté moyenne */}
-            <div className="space-y-2">
-              <div className="space-y-1">
-                <h4 className="text-xs font-medium text-muted-foreground">Ancienneté moyenne</h4>
+            <div className="teams-card p-4 border border-teams-purple/20">
+              <div className="flex items-center space-x-2 mb-3">
+                <Brain className="h-4 w-4 text-teams-purple" />
+                <span className="text-sm font-semibold text-foreground">Ancienneté moyenne</span>
+              </div>
+              <div className="flex items-baseline space-x-3">
+                <div className="text-2xl font-semibold text-foreground">
+                  {typeof data.averageSeniority.value === 'number' ? data.averageSeniority.value.toLocaleString('fr-FR') : data.averageSeniority.value}
+                </div>
                 {data.averageSeniority.trend !== null && (
                   <div className="flex items-center space-x-1">
                     {getTrendIcon(data.averageSeniority.trend)}
-                    <span className={`text-xs font-medium ${getTrendColor()}`}>
+                    <span className={`text-sm font-medium ${getTrendColor()}`}>
                       {data.averageSeniority.trend > 0 ? '+' : ''}{data.averageSeniority.trend}%
                     </span>
                   </div>
                 )}
               </div>
-              <div className="flex items-baseline space-x-2">
-                <div className="text-xl font-semibold text-foreground">
-                  {typeof data.averageSeniority.value === 'number' ? data.averageSeniority.value.toLocaleString('fr-FR') : data.averageSeniority.value}
-                </div>
-                <div className="text-xs text-muted-foreground font-medium">
-                  {data.averageSeniority.unit}
-                </div>
-              </div>
+              <div className="text-sm text-muted-foreground font-medium">{data.averageSeniority.unit}</div>
             </div>
 
             {/* Taux de rétention */}
-            <div className="space-y-2">
-              <div className="space-y-1">
-                <h4 className="text-xs font-medium text-muted-foreground">+5 ans d'ancienneté</h4>
+            <div className="teams-card p-4 border border-teams-purple/20">
+              <div className="flex items-center space-x-2 mb-3">
+                <RotateCcw className="h-4 w-4 text-teams-purple" />
+                <span className="text-sm font-semibold text-foreground">+5 ans d'ancienneté</span>
+              </div>
+              <div className="flex items-baseline space-x-3">
+                <div className="text-2xl font-semibold text-foreground">
+                  {typeof data.retentionRate.value === 'number' ? data.retentionRate.value.toLocaleString('fr-FR') : data.retentionRate.value}
+                </div>
                 {data.retentionRate.trend !== null && (
                   <div className="flex items-center space-x-1">
                     {getTrendIcon(data.retentionRate.trend)}
-                    <span className={`text-xs font-medium ${getTrendColor()}`}>
+                    <span className={`text-sm font-medium ${getTrendColor()}`}>
                       {data.retentionRate.trend > 0 ? '+' : ''}{data.retentionRate.trend}%
                     </span>
                   </div>
                 )}
               </div>
-              <div className="flex items-baseline space-x-2">
-                <div className="text-xl font-semibold text-foreground">
-                  {typeof data.retentionRate.value === 'number' ? data.retentionRate.value.toLocaleString('fr-FR') : data.retentionRate.value}
-                </div>
-                <div className="text-xs text-muted-foreground font-medium">
-                  {data.retentionRate.unit}
-                </div>
-              </div>
+              <div className="text-sm text-muted-foreground font-medium">{data.retentionRate.unit}</div>
             </div>
           </div>
 
