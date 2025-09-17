@@ -224,7 +224,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
           {/* Actions */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Actions</label>
+            <label className="text-sm font-medium text-gray-700 opacity-0">Actions</label>
             <Button 
               onClick={onRefresh}
               variant="outline" 
