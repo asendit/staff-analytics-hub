@@ -524,9 +524,9 @@ const Index = () => {
 
         {/* Grille des KPIs */}
         <div className="space-y-2 mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-bold text-gray-900">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {currentBoard.name}
               </h2>
               <DropdownMenu>
@@ -556,15 +556,15 @@ const Index = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="flex items-center gap-6">
-              <div className="text-sm text-gray-500">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+              <div className="text-sm text-gray-500 order-2 sm:order-1">
                 {(kpis.length + (headcountData ? 1 : 0))} indicateur{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''} affiché{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''}
               </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-600 order-3 sm:order-2">
                 <Users className="h-4 w-4" />
                 <span>{hrData.employees.filter(emp => emp.status === 'active').length} collaborateurs actifs</span>
               </div>
-              <div className="flex items-center space-x-3 text-sm text-gray-600">
+              <div className="flex items-center space-x-3 text-sm text-gray-600 order-1 sm:order-3">
                 <Brain className="h-4 w-4" />
                 <span>IA</span>
                 <Switch
