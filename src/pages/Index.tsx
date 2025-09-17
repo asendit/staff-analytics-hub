@@ -10,11 +10,13 @@ import KPIChartModal from '../components/KPIChartModal';
 import FilterPanel from '../components/FilterPanel';
 import BoardManager, { Board } from '../components/BoardManager';
 import GlobalInsightPanel from '../components/GlobalInsightPanel';
-import { Users, BarChart3, Brain, Sparkles, GripVertical, Settings, X } from 'lucide-react';
+import { Users, BarChart3, Brain, Sparkles, GripVertical, Settings, X, Download, FileText, FileSpreadsheet, FileBarChart } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from '@/hooks/use-toast';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
 
 const Index = () => {
   const [hrData, setHrData] = useState<HRData | null>(null);
@@ -260,6 +262,197 @@ const Index = () => {
     }
   };
 
+  // Fonctions d'export
+  const exportToCSV = () => {
+    try {
+      const csvData = kpis.map(kpi => ({
+        'Indicateur': kpi.name,
+        'Valeur': kpi.value,
+        'Unité': kpi.unit,
+        'Tendance': kpi.trend ? `${kpi.trend > 0 ? '+' : ''}${kpi.trend}%` : 'N/A',
+        'Statut': kpi.category === 'positive' ? 'Positif' : kpi.category === 'negative' ? 'Négatif' : 'Neutre',
+        'Analyse': kpi.insight || 'N/A'
+      }));
+
+      // Ajouter les données d'effectif si disponibles
+      if (headcountData) {
+        csvData.unshift({
+          'Indicateur': 'Effectif total',
+          'Valeur': headcountData.totalHeadcount,
+          'Unité': 'collaborateurs',
+          'Tendance': 'N/A',
+          'Statut': 'Neutre',
+          'Analyse': `${headcountData.totalETP} ETP, ${headcountData.newHires} nouvelles arrivées`
+        });
+      }
+
+      const csv = [
+        Object.keys(csvData[0]).join(','),
+        ...csvData.map(row => Object.values(row).map(val => `"${val}"`).join(','))
+      ].join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `tableau-de-bord-${currentBoard.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast({
+        title: "Export CSV réussi",
+        description: "Le tableau de bord a été exporté en CSV"
+      });
+    } catch (error) {
+      console.error('Erreur export CSV:', error);
+      toast({
+        title: "Erreur d'export",
+        description: "Impossible d'exporter en CSV",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const exportToExcel = () => {
+    try {
+      const excelData = kpis.map(kpi => ({
+        'Indicateur': kpi.name,
+        'Valeur': kpi.value,
+        'Unité': kpi.unit,
+        'Tendance (%)': kpi.trend || 0,
+        'Statut': kpi.category === 'positive' ? 'Positif' : kpi.category === 'negative' ? 'Négatif' : 'Neutre',
+        'Analyse IA': kpi.insight || 'N/A'
+      }));
+
+      // Ajouter les données d'effectif si disponibles
+      if (headcountData) {
+        excelData.unshift({
+          'Indicateur': 'Effectif total',
+          'Valeur': headcountData.totalHeadcount,
+          'Unité': 'collaborateurs',
+          'Tendance (%)': 0,
+          'Statut': 'Neutre',
+          'Analyse IA': `${headcountData.totalETP} ETP équivalent temps plein, ${headcountData.newHires} nouvelles arrivées récentes`
+        });
+      }
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Tableau de bord');
+      
+      // Ajuster la largeur des colonnes
+      const colWidths = [
+        { wch: 25 }, // Indicateur
+        { wch: 12 }, // Valeur
+        { wch: 15 }, // Unité
+        { wch: 12 }, // Tendance
+        { wch: 10 }, // Statut
+        { wch: 50 }  // Analyse IA
+      ];
+      worksheet['!cols'] = colWidths;
+
+      XLSX.writeFile(workbook, `tableau-de-bord-${currentBoard.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.xlsx`);
+
+      toast({
+        title: "Export Excel réussi",
+        description: "Le tableau de bord a été exporté en Excel"
+      });
+    } catch (error) {
+      console.error('Erreur export Excel:', error);
+      toast({
+        title: "Erreur d'export",
+        description: "Impossible d'exporter en Excel",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const exportToPDF = () => {
+    try {
+      const pdf = new jsPDF();
+      let currentY = 20;
+
+      // En-tête
+      pdf.setFillColor(59, 130, 246);
+      pdf.rect(0, 0, 210, 40, 'F');
+      
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(18);
+      pdf.text("TABLEAU DE BORD RH", 20, 25);
+      pdf.setFontSize(12);
+      pdf.text(currentBoard.name, 20, 35);
+      
+      currentY = 60;
+      pdf.setTextColor(0, 0, 0);
+      
+      // Informations générales
+      pdf.setFontSize(14);
+      pdf.text("SYNTHÈSE GÉNÉRALE", 20, currentY);
+      currentY += 15;
+      
+      pdf.setFontSize(10);
+      pdf.text(`Date d'export: ${new Date().toLocaleDateString('fr-FR')}`, 20, currentY);
+      currentY += 7;
+      pdf.text(`Période analysée: ${filters.period}`, 20, currentY);
+      currentY += 7;
+      if (headcountData) {
+        pdf.text(`Effectif total: ${headcountData.totalHeadcount} collaborateurs (${headcountData.totalETP} ETP)`, 20, currentY);
+        currentY += 7;
+      }
+      pdf.text(`Nombre d'indicateurs: ${kpis.length}`, 20, currentY);
+      currentY += 15;
+
+      // Indicateurs
+      pdf.setFontSize(14);
+      pdf.text("INDICATEURS CLÉS", 20, currentY);
+      currentY += 15;
+
+      kpis.slice(0, 15).forEach((kpi, index) => {
+        if (currentY > 250) {
+          pdf.addPage();
+          currentY = 30;
+        }
+
+        pdf.setFontSize(12);
+        pdf.text(`${kpi.name}`, 20, currentY);
+        pdf.text(`${kpi.value} ${kpi.unit}`, 120, currentY);
+        
+        if (kpi.trend !== null) {
+          pdf.text(`${kpi.trend > 0 ? '+' : ''}${kpi.trend}%`, 160, currentY);
+        }
+        
+        currentY += 8;
+        
+        if (kpi.insight) {
+          pdf.setFontSize(8);
+          const splitText = pdf.splitTextToSize(kpi.insight, 170);
+          pdf.text(splitText, 25, currentY);
+          currentY += splitText.length * 3 + 5;
+        }
+        
+        currentY += 3;
+      });
+
+      const fileName = `tableau-de-bord-${currentBoard.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+      
+      toast({
+        title: "Export PDF réussi",
+        description: "Le tableau de bord a été exporté en PDF"
+      });
+      
+    } catch (error) {
+      console.error('Erreur export PDF:', error);
+      toast({
+        title: "Erreur d'export",
+        description: "Impossible d'exporter en PDF",
+        variant: "destructive"
+      });
+    }
+  };
+
   const availableKPIs = [
     { id: 'absenteeism', name: 'Taux d\'absentéisme' },
     { id: 'turnover', name: 'Turnover' },
@@ -344,6 +537,19 @@ const Index = () => {
                   <DropdownMenuItem onClick={() => setIsReorderMode(!isReorderMode)}>
                     <GripVertical className="h-4 w-4 mr-2" />
                     {isReorderMode ? 'Arrêter' : 'Activer'} la réorganisation
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={exportToCSV}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Exporter en CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={exportToExcel}>
+                    <FileSpreadsheet className="h-4 w-4 mr-2" />
+                    Exporter en Excel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={exportToPDF}>
+                    <FileBarChart className="h-4 w-4 mr-2" />
+                    Exporter en PDF
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
