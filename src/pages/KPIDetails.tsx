@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, TrendingUp, TrendingDown, Minus, Users, BarChart3, PieChart, Activity } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 import { HRAnalytics, ExtendedHeadcountData, FilterOptions } from '../services/hrAnalytics';
+import FilterPanel from '../components/FilterPanel';
 
 interface KPIDetailsProps {
   analytics: HRAnalytics | null;
@@ -25,6 +26,18 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
   const [searchParams] = useSearchParams();
   const [detailData, setDetailData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  // Données fictives pour les filtres
+  const departments = ['RH', 'Commercial', 'Technique', 'Marketing', 'Finance', 'Support'];
+  const agencies = ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nantes', 'Bordeaux'];
+
+  const handleRefresh = () => {
+    setLoading(true);
+    // Simuler un rechargement des données
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  };
 
   useEffect(() => {
     if (!analytics || !kpiId) return;
@@ -169,6 +182,15 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
       </div>
 
       <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Section Filtres et Options */}
+        <FilterPanel
+          filters={filters}
+          onFiltersChange={onFiltersChange}
+          departments={departments}
+          agencies={agencies}
+          onRefresh={handleRefresh}
+        />
+
         {/* Valeurs principales */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="teams-card">
