@@ -278,9 +278,13 @@ const Index = () => {
                 <span>{hrData.employees.filter(emp => emp.status === 'active').length} collaborateurs actifs</span>
               </div>
               <div className="flex items-center space-x-3">
-                <GripVertical className="h-4 w-4" />
-                <span>Réorganiser</span>
-                <Switch checked={isReorderMode} onCheckedChange={setIsReorderMode} />
+                <Brain className="h-4 w-4" />
+                <span>IA</span>
+                <Switch
+                  checked={isAIEnabled}
+                  onCheckedChange={handleAIToggle}
+                />
+                {isAIEnabled && <Sparkles className="h-4 w-4 text-primary" />}
               </div>
             </div>
           </div>
@@ -311,23 +315,17 @@ const Index = () => {
         {/* Grille des KPIs */}
         <div className="space-y-2 mb-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {currentBoard.name}
-              </h2>
-              <div className="flex items-center space-x-3 text-sm">
-                <Brain className="h-4 w-4 text-gray-600" />
-                <span className="text-gray-600">IA</span>
-                <Switch
-                  checked={isAIEnabled}
-                  onCheckedChange={handleAIToggle}
-                />
-                {isAIEnabled && <Sparkles className="h-4 w-4 text-primary" />}
-              </div>
-            </div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {currentBoard.name}
+            </h2>
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-500">
                 {(kpis.length + (headcountData ? 1 : 0))} indicateur{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''} affiché{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''}
+              </div>
+              <div className="hidden sm:flex items-center space-x-2">
+                <GripVertical className="h-4 w-4" />
+                <span className="text-sm text-gray-600">Réorganiser</span>
+                <Switch checked={isReorderMode} onCheckedChange={setIsReorderMode} />
               </div>
             </div>
           </div>
