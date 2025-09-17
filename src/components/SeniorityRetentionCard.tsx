@@ -70,53 +70,49 @@ const SeniorityRetentionCard: React.FC<SeniorityRetentionCardProps> = ({
         </div>
       </CardHeader>
       <CardContent className="pt-0 px-4 pb-4">
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Deux sous-KPI côte à côte */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             {/* Ancienneté moyenne */}
-            <div className="space-y-2">
-              <div className="space-y-1">
-                <h4 className="text-xs font-medium text-muted-foreground">Ancienneté moyenne</h4>
-                {data.averageSeniority.trend !== null && (
-                  <div className="flex items-center space-x-1">
-                    {getTrendIcon(data.averageSeniority.trend)}
-                    <span className={`text-xs font-medium ${getTrendColor()}`}>
-                      {data.averageSeniority.trend > 0 ? '+' : ''}{data.averageSeniority.trend}%
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="flex items-baseline space-x-2">
-                <div className="text-xl font-semibold text-foreground">
+            <div className="space-y-1">
+              <h4 className="text-xs font-medium text-muted-foreground">Ancienneté moyenne</h4>
+              <div className="flex items-baseline space-x-1">
+                <div className="text-2xl font-semibold text-foreground">
                   {typeof data.averageSeniority.value === 'number' ? data.averageSeniority.value.toLocaleString('fr-FR') : data.averageSeniority.value}
                 </div>
-                <div className="text-xs text-muted-foreground font-medium">
+                <div className="text-sm text-muted-foreground font-medium">
                   {data.averageSeniority.unit}
                 </div>
               </div>
+              {data.averageSeniority.trend !== null && (
+                <div className="flex items-center space-x-1">
+                  {getTrendIcon(data.averageSeniority.trend)}
+                  <span className={`text-xs font-medium ${getTrendColor()}`}>
+                    {data.averageSeniority.trend > 0 ? '+' : ''}{data.averageSeniority.trend}%
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Taux de rétention */}
-            <div className="space-y-2">
-              <div className="space-y-1">
-                <h4 className="text-xs font-medium text-muted-foreground">+5 ans d'ancienneté</h4>
-                {data.retentionRate.trend !== null && (
-                  <div className="flex items-center space-x-1">
-                    {getTrendIcon(data.retentionRate.trend)}
-                    <span className={`text-xs font-medium ${getTrendColor()}`}>
-                      {data.retentionRate.trend > 0 ? '+' : ''}{data.retentionRate.trend}%
-                    </span>
-                  </div>
-                )}
-              </div>
-              <div className="flex items-baseline space-x-2">
-                <div className="text-xl font-semibold text-foreground">
+            <div className="space-y-1">
+              <h4 className="text-xs font-medium text-muted-foreground">+5 ans d'ancienneté</h4>
+              <div className="flex items-baseline space-x-1">
+                <div className="text-2xl font-semibold text-foreground">
                   {typeof data.retentionRate.value === 'number' ? data.retentionRate.value.toLocaleString('fr-FR') : data.retentionRate.value}
                 </div>
-                <div className="text-xs text-muted-foreground font-medium">
+                <div className="text-sm text-muted-foreground font-medium">
                   {data.retentionRate.unit}
                 </div>
               </div>
+              {data.retentionRate.trend !== null && (
+                <div className="flex items-center space-x-1">
+                  {getTrendIcon(data.retentionRate.trend)}
+                  <span className={`text-xs font-medium ${getTrendColor()}`}>
+                    {data.retentionRate.trend > 0 ? '+' : ''}{data.retentionRate.trend}%
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
