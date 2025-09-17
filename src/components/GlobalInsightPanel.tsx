@@ -56,7 +56,7 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
     const absenteeism = kpis.find(kpi => kpi.id === 'absenteeism');
     const turnover = kpis.find(kpi => kpi.id === 'turnover');
     const headcount = kpis.find(kpi => kpi.id === 'headcount');
-    const overtime = kpis.find(kpi => kpi.id === 'overtime-hours');
+    
     const expenses = kpis.find(kpi => kpi.id === 'hr-expenses');
     const ageSeniority = kpis.find(kpi => kpi.id === 'age-seniority');
     const tasks = kpis.find(kpi => kpi.id === 'task-completion');
@@ -83,9 +83,7 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
           title: "Performance Opérationnelle",
           content: `Les tâches RH affichent un taux de ${tasks?.value || 'N/A'}% de complétion, tandis que les dossiers collaborateurs atteignent ${documents?.value || 'N/A'}% de complétude.`,
           metrics: [
-            `Tâches RH complétées: ${tasks?.value || 'N/A'}${tasks?.unit || ''}`,
-            `Documents à jour: ${documents?.value || 'N/A'}${documents?.unit || ''}`,
-            `Heures supplémentaires: ${overtime?.value || 'N/A'} ${overtime?.unit || ''}`
+            `Documents à jour: ${documents?.value || 'N/A'}${documents?.unit || ''}`
           ],
           status: tasks?.category || 'neutral'
         },
@@ -94,7 +92,6 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
           content: `Le taux d'absentéisme de ${absenteeism?.value || 'N/A'}% ${Number(absenteeism?.value) > 5 ? 'nécessite une attention immédiate' : 'reste dans les normes acceptables'}.`,
           metrics: [
             `Absentéisme: ${absenteeism?.value || 'N/A'}${absenteeism?.unit || ''}`,
-            `Heures supplémentaires: ${overtime?.value || 'N/A'} ${overtime?.unit || ''}`,
             `Tendance: ${absenteeism?.trend ? (absenteeism.trend > 0 ? '+' : '') + absenteeism.trend + '%' : 'Stable'}`
           ],
           status: absenteeism?.category || 'neutral'

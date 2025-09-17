@@ -50,11 +50,11 @@ const Index = () => {
       name: 'Tableau de bord principal (RH)',
       description: 'Vue d\'ensemble complète de tous les indicateurs RH',
       kpis: [
-        'absenteeism', 'turnover', 'seniority-and-retention', 'headcount', 'overtime-hours', 'remote-work',
+        'absenteeism', 'turnover', 'seniority-and-retention', 'headcount', 'remote-work',
         'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
       ],
       kpiOrder: [
-        'headcount', 'turnover', 'seniority-and-retention', 'overtime-hours', 'remote-work',
+        'headcount', 'turnover', 'seniority-and-retention', 'remote-work',
         'absenteeism', 'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
       ],
       createdAt: new Date().toISOString(),
@@ -80,10 +80,10 @@ const Index = () => {
       name: 'Tableau de bord Manager',
       description: 'Indicateurs opérationnels pour les managers',
       kpis: [
-        'headcount', 'absenteeism', 'overtime-hours', 'remote-work', 'task-completion', 'age-seniority'
+        'headcount', 'absenteeism', 'remote-work', 'task-completion', 'age-seniority'
       ],
       kpiOrder: [
-        'headcount', 'absenteeism', 'overtime-hours', 'remote-work', 'task-completion', 'age-seniority'
+        'headcount', 'absenteeism', 'remote-work', 'task-completion', 'age-seniority'
       ],
       createdAt: new Date().toISOString(),
       isDefault: true
@@ -457,7 +457,7 @@ const Index = () => {
     { id: 'absenteeism', name: 'Taux d\'absentéisme' },
     { id: 'turnover', name: 'Turnover' },
     { id: 'headcount', name: 'Effectif actif' },
-    { id: 'overtime-hours', name: 'Heures supplémentaires' },
+    
     { id: 'remote-work', name: 'Télétravail' },
     { id: 'onboarding', name: 'Nouvelles arrivées' },
     { id: 'hr-expenses', name: 'Dépenses RH' },

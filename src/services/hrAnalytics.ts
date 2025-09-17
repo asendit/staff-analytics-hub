@@ -315,50 +315,7 @@ export class HRAnalytics {
     };
   }
 
-  getOvertimeHours(filters: FilterOptions): KPIData {
-    const employees = this.filterEmployees(filters);
-    const totalOvertimeHours = employees.reduce(() => faker.number.int({ min: 0, max: 15 }), 0);
-    const averageOvertimePerEmployee = totalOvertimeHours / employees.length;
 
-    const trend = this.calculateTrend(filters);
-
-    return {
-      id: 'overtime-hours',
-      name: 'Heures supplémentaires',
-      value: Math.round(totalOvertimeHours),
-      unit: 'heures',
-      trend,
-      comparison: this.getTrendComparison(trend),
-      category: totalOvertimeHours > (employees.length * 10) ? 'negative' : 'neutral',
-      insight: `${totalOvertimeHours} heures supplémentaires sur la période (${averageOvertimePerEmployee.toFixed(1)}h/collaborateur en moyenne). ${totalOvertimeHours > (employees.length * 10) ? '⚠️ Volume élevé, attention à la charge de travail.' : '📊 Volume dans la normale.'}`
-    };
-  }
-
-  getOvertimeHoursChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
-    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
-    
-    return {
-      timeEvolution: months.map(month => ({
-        month,
-        value: faker.number.int({ min: 50, max: 300 })
-      })),
-      departmentBreakdown: departments.map(dept => ({
-        department: dept,
-        value: faker.number.int({ min: 20, max: 120 })
-      })),
-      specificBreakdown: {
-        title: 'Répartition par motif',
-        data: [
-          { name: 'Projets urgents', value: faker.number.int({ min: 30, max: 45 }) },
-          { name: 'Pics d\'activité', value: faker.number.int({ min: 25, max: 35 }) },
-          { name: 'Formations', value: faker.number.int({ min: 10, max: 20 }) },
-          { name: 'Support client', value: faker.number.int({ min: 15, max: 25 }) },
-          { name: 'Autre', value: faker.number.int({ min: 5, max: 15 }) }
-        ]
-      }
-    };
-  }
 
   getRemoteWorkAdoption(filters: FilterOptions): KPIData {
     const employees = this.filterEmployees(filters);
@@ -787,7 +744,7 @@ export class HRAnalytics {
       case 'absenteeism': return this.getAbsenteeismChartData(filters);
       case 'turnover': return this.getTurnoverChartData(filters);
       case 'headcount': return this.getHeadcountChartData(filters);
-      case 'overtime-hours': return this.getOvertimeHoursChartData(filters);
+      
       case 'remote-work': return this.getRemoteWorkChartData(filters);
       case 'onboarding': return this.getOnboardingChartData(filters);
       case 'hr-expenses': return this.getHRExpensesChartData(filters);
@@ -831,7 +788,7 @@ export class HRAnalytics {
       this.getAbsenteeismRate(filters),
       this.getTurnoverRate(filters),
       this.getHeadcount(filters),
-      this.getOvertimeHours(filters),
+      
       this.getRemoteWorkAdoption(filters),
       this.getOnboardingDuration(filters),
       this.getHRExpenses(filters),
