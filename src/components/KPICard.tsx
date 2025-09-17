@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, TrendingDown, Minus, Info, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Info, BarChart3, Brain, RotateCcw } from 'lucide-react';
 import { KPIData } from '../services/hrAnalytics';
 
 interface KPICardProps {
@@ -10,9 +10,18 @@ interface KPICardProps {
   onInfoClick: () => void;
   onChartClick: () => void;
   showInsight?: boolean;
+  isLoadingInsight?: boolean;
+  onRefreshInsight?: () => void;
 }
 
-const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, onChartClick, showInsight = true }) => {
+const KPICard: React.FC<KPICardProps> = ({ 
+  kpi, 
+  onInfoClick, 
+  onChartClick, 
+  showInsight = true,
+  isLoadingInsight = false,
+  onRefreshInsight
+}) => {
   const getTrendIcon = () => {
     if (kpi.trend === null) return null;
     if (kpi.trend > 0) return <TrendingUp className="h-4 w-4 text-muted-foreground" />;
@@ -77,11 +86,39 @@ const KPICard: React.FC<KPICardProps> = ({ kpi, onInfoClick, onChartClick, showI
           </div>
 
           {/* Insight IA - affiché seulement si showInsight est true */}
-          {showInsight && kpi.insight && (
+          {showInsight && (
             <div className="mt-3 p-3 bg-teams-purple/5 rounded-md border border-teams-purple/20">
-              <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                {kpi.insight}
-              </p>
+              <div className="flex items-start justify-between space-x-2">
+                <div className="flex-1">
+                  {isLoadingInsight ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-teams-purple" />
+                      <p className="text-xs text-muted-foreground font-medium">
+                        Génération de l'analyse IA...
+                      </p>
+                    </div>
+                  ) : kpi.insight ? (
+                    <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+                      {kpi.insight}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground font-medium">
+                      Aucune analyse IA disponible
+                    </p>
+                  )}
+                </div>
+                {onRefreshInsight && !isLoadingInsight && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onRefreshInsight}
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10 flex-shrink-0"
+                    title="Rafraîchir l'analyse IA"
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
             </div>
           )}
         </div>

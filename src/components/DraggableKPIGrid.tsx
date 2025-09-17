@@ -13,6 +13,8 @@ interface DraggableKPIGridProps {
   onKPIInfoClick: (kpi: KPIData) => void;
   onKPIChartClick: (kpi: KPIData) => void;
   isAIEnabled: boolean;
+  loadingKPIs?: Set<string>;
+  onRefreshKPIInsight?: (kpiId: string) => void;
 }
 
 const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
@@ -23,7 +25,9 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
   onOrderChange,
   onKPIInfoClick,
   onKPIChartClick,
-  isAIEnabled
+  isAIEnabled,
+  loadingKPIs = new Set(),
+  onRefreshKPIInsight
 }) => {
   // Construit la liste des éléments dans l'ordre souhaité
   const buildAllItems = () => {
@@ -110,6 +114,8 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                 onInfoClick={() => onKPIInfoClick(item.data as KPIData)}
                 onChartClick={() => onKPIChartClick(item.data as KPIData)}
                 showInsight={isAIEnabled}
+                isLoadingInsight={loadingKPIs.has(item.id)}
+                onRefreshInsight={onRefreshKPIInsight ? () => onRefreshKPIInsight(item.id) : undefined}
               />
             )}
           </div>
@@ -189,6 +195,8 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                             onInfoClick={() => onKPIInfoClick(item.data as KPIData)}
                             onChartClick={() => onKPIChartClick(item.data as KPIData)}
                             showInsight={isAIEnabled}
+                            isLoadingInsight={loadingKPIs.has(item.id)}
+                            onRefreshInsight={onRefreshKPIInsight ? () => onRefreshKPIInsight(item.id) : undefined}
                           />
                         )}
 

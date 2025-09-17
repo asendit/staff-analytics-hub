@@ -24,6 +24,7 @@ const Index = () => {
   const [filters, setFilters] = useState<FilterOptions>({ period: 'year' });
   const [globalInsight, setGlobalInsight] = useState<string>('');
   const [isLoadingInsight, setIsLoadingInsight] = useState(false);
+  const [loadingKPIs, setLoadingKPIs] = useState<Set<string>>(new Set());
   const [boards, setBoards] = useState<Board[]>([]);
   const [currentBoard, setCurrentBoard] = useState<Board | null>(null);
   const [selectedKPI, setSelectedKPI] = useState<KPIData | null>(null);
@@ -140,6 +141,33 @@ const Index = () => {
         description: "Les insights ont été régénérés avec succès"
       });
     }, 2000);
+  };
+
+  const handleRefreshKPIInsight = async (kpiId: string) => {
+    if (!isAIEnabled || !analytics) return;
+    
+    setLoadingKPIs(prev => new Set(prev).add(kpiId));
+    
+    // Simulation d'un appel à l'API IA pour un KPI spécifique
+    setTimeout(() => {
+      // Régénérer tous les KPIs pour avoir les insights mis à jour
+      const allKPIs = analytics.getAllKPIs(filters);
+      const filteredKPIs = currentBoard 
+        ? allKPIs.filter(kpi => currentBoard.kpis.includes(kpi.id))
+        : allKPIs;
+      
+      setKpis(filteredKPIs);
+      setLoadingKPIs(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(kpiId);
+        return newSet;
+      });
+      
+      toast({
+        title: "Insight KPI mis à jour",
+        description: "L'analyse IA de cet indicateur a été régénérée"
+      });
+    }, 1500);
   };
 
   const handleAIToggle = (enabled: boolean) => {
@@ -376,6 +404,8 @@ const Index = () => {
               onKPIInfoClick={handleKPIInfoClick}
               onKPIChartClick={handleKPIChartClick}
               isAIEnabled={isAIEnabled}
+              loadingKPIs={loadingKPIs}
+              onRefreshKPIInsight={handleRefreshKPIInsight}
             />
           ) : (
             <div className="text-center py-12">

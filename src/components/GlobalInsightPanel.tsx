@@ -249,7 +249,30 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
             </div>
             <div className="flex-1">
               <h4 className="font-semibold text-foreground text-sm mb-3">Synthèse IA</h4>
-              {insight ? (
+              {isLoading ? (
+                <div className="space-y-3 animate-pulse">
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teams-purple" />
+                    <span className="text-sm text-muted-foreground font-medium">Analyse en cours...</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-3 bg-teams-purple/10 rounded w-full"></div>
+                    <div className="h-3 bg-teams-purple/10 rounded w-3/4"></div>
+                    <div className="h-3 bg-teams-purple/10 rounded w-5/6"></div>
+                  </div>
+                  <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20">
+                    <div className="space-y-2">
+                      <div className="h-2 bg-teams-purple/10 rounded w-1/2"></div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="h-2 bg-teams-purple/10 rounded"></div>
+                        <div className="h-2 bg-teams-purple/10 rounded"></div>
+                        <div className="h-2 bg-teams-purple/10 rounded"></div>
+                        <div className="h-2 bg-teams-purple/10 rounded"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : insight ? (
                 <div className="space-y-3">
                   <p className="text-muted-foreground text-sm leading-relaxed font-medium">
                     {insight}
