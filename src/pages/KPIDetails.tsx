@@ -3,7 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, TrendingUp, TrendingDown, Minus, Users, BarChart3, PieChart, Activity } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Minus, Users, BarChart3, PieChart, Activity, UserPlus, UserMinus } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 import { HRAnalytics, ExtendedHeadcountData, FilterOptions } from '../services/hrAnalytics';
 import FilterPanel from '../components/FilterPanel';
@@ -252,9 +252,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-2 bg-success/10 rounded-full">
-                  <TrendingUp className="h-4 w-4 text-success" />
-                </div>
+                <UserPlus className="h-8 w-8 text-success" />
               </div>
             </CardContent>
           </Card>
@@ -274,9 +272,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     </div>
                   </div>
                 </div>
-                <div className="p-2 bg-destructive/10 rounded-full">
-                  <TrendingDown className="h-4 w-4 text-destructive" />
-                </div>
+                <UserMinus className="h-8 w-8 text-destructive" />
               </div>
             </CardContent>
           </Card>
