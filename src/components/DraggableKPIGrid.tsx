@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { KPIData, ExtendedHeadcountData } from '../services/hrAnalytics';
 import KPICard from './KPICard';
 import HeadcountCard from './HeadcountCard';
+import SeniorityRetentionCard from './SeniorityRetentionCard';
 
 interface DraggableKPIGridProps {
   kpis: KPIData[];
@@ -15,6 +16,7 @@ interface DraggableKPIGridProps {
   isAIEnabled: boolean;
   loadingKPIs?: Set<string>;
   onRefreshKPIInsight?: (kpiId: string) => void;
+  seniorityRetentionData?: any;
 }
 
 const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
@@ -27,19 +29,23 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
   onKPIChartClick,
   isAIEnabled,
   loadingKPIs = new Set(),
-  onRefreshKPIInsight
+  onRefreshKPIInsight,
+  seniorityRetentionData
 }) => {
   // Construit la liste des éléments dans l'ordre souhaité
   const buildAllItems = () => {
-    const items: Array<{ id: string; type: 'kpi' | 'headcount'; data: KPIData | ExtendedHeadcountData }> = [];
+    const items: Array<{ id: string; type: 'kpi' | 'headcount' | 'seniority-retention'; data: any }> = [];
 
     const pushed = new Set<string>();
 
-    // 1) Respecter l'ordre fourni (incluant 'headcount')
+    // 1) Respecter l'ordre fourni (incluant 'headcount' et 'seniority-and-retention')
     (kpiOrder || []).forEach((id) => {
       if (id === 'headcount' && headcountData) {
         items.push({ id: 'headcount', type: 'headcount', data: headcountData });
         pushed.add('headcount');
+      } else if (id === 'seniority-and-retention' && seniorityRetentionData) {
+        items.push({ id: 'seniority-and-retention', type: 'seniority-retention', data: seniorityRetentionData });
+        pushed.add('seniority-and-retention');
       } else {
         const kpi = kpis.find((k) => k.id === id);
         if (kpi) {
@@ -55,7 +61,13 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
       pushed.add('headcount');
     }
 
-    // 3) Ajouter les autres KPIs non présents
+    // 3) Ajouter seniority-and-retention s'il n'est pas encore dans la liste
+    if (seniorityRetentionData && !pushed.has('seniority-and-retention')) {
+      items.push({ id: 'seniority-and-retention', type: 'seniority-retention', data: seniorityRetentionData });
+      pushed.add('seniority-and-retention');
+    }
+
+    // 4) Ajouter les autres KPIs non présents
     kpis.forEach((kpi) => {
       if (!pushed.has(kpi.id)) {
         items.push({ id: kpi.id, type: 'kpi', data: kpi });
@@ -98,7 +110,11 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
         {allItems.map((item, index) => (
           <div
             key={item.id}
-            className={`relative animate-fade-in ${item.id === 'headcount' ? 'col-span-full lg:col-span-4 xl:col-span-4' : ''}`}
+            className={`relative animate-fade-in ${
+              item.id === 'headcount' ? 'col-span-full lg:col-span-4 xl:col-span-4' : 
+              item.id === 'seniority-and-retention' ? 'col-span-full md:col-span-2 lg:col-span-2 xl:col-span-2' : 
+              ''
+            }`}
             style={{ animationDelay: `${index * 100}ms` }}
           >
             {item.type === 'headcount' ? (
@@ -107,6 +123,15 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                 onInfoClick={() => onKPIInfoClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
                 onChartClick={() => onKPIChartClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
                 showInsight={isAIEnabled}
+              />
+            ) : item.type === 'seniority-retention' ? (
+              <SeniorityRetentionCard
+                data={item.data}
+                onInfoClick={onKPIInfoClick}
+                onChartClick={onKPIChartClick}
+                showInsight={isAIEnabled}
+                isLoadingInsight={loadingKPIs.has(item.id)}
+                onRefreshInsight={onRefreshKPIInsight ? () => onRefreshKPIInsight(item.id) : undefined}
               />
             ) : (
               <KPICard
@@ -148,6 +173,9 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                 if (item.id === 'headcount') {
                   return 'col-span-2 md:col-span-4 lg:col-span-6 xl:col-span-8'; // Toute la largeur
                 }
+                if (item.id === 'seniority-and-retention') {
+                  return 'col-span-2 md:col-span-4 lg:col-span-4 xl:col-span-4'; // Taille double
+                }
                 return 'col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2'; // 2 colonnes sur la grille fine
               };
 
@@ -188,6 +216,15 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                             onInfoClick={() => onKPIInfoClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
                             onChartClick={() => onKPIChartClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
                             showInsight={isAIEnabled}
+                          />
+                        ) : item.type === 'seniority-retention' ? (
+                          <SeniorityRetentionCard
+                            data={item.data}
+                            onInfoClick={onKPIInfoClick}
+                            onChartClick={onKPIChartClick}
+                            showInsight={isAIEnabled}
+                            isLoadingInsight={loadingKPIs.has(item.id)}
+                            onRefreshInsight={onRefreshKPIInsight ? () => onRefreshKPIInsight(item.id) : undefined}
                           />
                         ) : (
                           <KPICard

@@ -502,6 +502,65 @@ export class HRAnalytics {
     };
   }
 
+  // Ancienneté moyenne des collaborateurs
+  getAverageSeniority(filters: FilterOptions): KPIData {
+    const employees = this.filterEmployees(filters);
+    const averageSeniority = employees.reduce((sum, employee) => {
+      const hireDate = new Date(employee.hireDate);
+      const now = new Date();
+      const diff = now.getTime() - hireDate.getTime();
+      return sum + (diff / (1000 * 3600 * 24 * 365.25));
+    }, 0) / employees.length;
+
+    const trend = this.calculateTrend(filters);
+
+    return {
+      id: 'average-seniority',
+      name: 'Ancienneté moyenne',
+      value: averageSeniority.toFixed(1),
+      unit: 'ans',
+      trend,
+      comparison: this.getTrendComparison(trend),
+      category: averageSeniority > 3 ? 'positive' : 'neutral',
+      insight: `L'ancienneté moyenne est de ${averageSeniority.toFixed(1)} ans. ${averageSeniority > 3 ? '✅ Une bonne rétention des talents.' : 'ℹ️ Ancienneté modérée, équilibre entre expérience et renouvellement.'}`
+    };
+  }
+
+  // Taux de collaborateurs ayant plus de 5 ans d'ancienneté  
+  getSeniorityRetentionRate(filters: FilterOptions): KPIData {
+    const employees = this.filterEmployees(filters);
+    const now = new Date();
+    const seniorEmployees = employees.filter(employee => {
+      const hireDate = new Date(employee.hireDate);
+      const diff = now.getTime() - hireDate.getTime();
+      const years = diff / (1000 * 3600 * 24 * 365.25);
+      return years >= 5;
+    }).length;
+
+    const retentionRate = (seniorEmployees / employees.length) * 100;
+    const trend = this.calculateTrend(filters);
+
+    return {
+      id: 'seniority-retention',
+      name: 'Collaborateurs +5 ans',
+      value: retentionRate.toFixed(1),
+      unit: '%',
+      trend,
+      comparison: this.getTrendComparison(trend),
+      category: retentionRate > 30 ? 'positive' : 'neutral',
+      insight: `${retentionRate.toFixed(1)}% des collaborateurs ont plus de 5 ans d'ancienneté (${seniorEmployees} personnes). ${retentionRate > 30 ? '🎯 Excellente rétention des talents expérimentés.' : '📊 Taux de rétention modéré, opportunité d\'améliorer la fidélisation.'}`
+    };
+  }
+
+  // Données combinées pour la carte double
+  getSeniorityAndRetention(filters: FilterOptions) {
+    return {
+      averageSeniority: this.getAverageSeniority(filters),
+      retentionRate: this.getSeniorityRetentionRate(filters)
+    };
+  }
+
+  // Garde l'ancienne méthode pour compatibilité mais mise à jour
   getAgeAndSeniority(filters: FilterOptions): KPIData {
     const employees = this.filterEmployees(filters);
     const averageAge = employees.reduce((sum, employee) => {
@@ -529,6 +588,81 @@ export class HRAnalytics {
       comparison: this.getTrendComparison(trend),
       category: averageAge > 40 ? 'negative' : 'positive',
       insight: `L'âge moyen est de ${averageAge.toFixed(0)} ans et l'ancienneté moyenne est de ${averageSeniority.toFixed(0)} ans. ${averageAge > 40 ? 'L\'âge moyen est supérieur à la moyenne.' : 'L\'âge moyen est dans la moyenne.'}`
+    };
+  }
+
+  getAverageSeniorityChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 2.5, max: 6.8, fractionDigits: 1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 1.8, max: 8.2, fractionDigits: 1 })
+      })),
+      specificBreakdown: {
+        title: 'Répartition par ancienneté',
+        data: [
+          { name: '0-2 ans', value: faker.number.int({ min: 30, max: 45 }) },
+          { name: '2-5 ans', value: faker.number.int({ min: 25, max: 35 }) },
+          { name: '5-10 ans', value: faker.number.int({ min: 15, max: 25 }) },
+          { name: '10+ ans', value: faker.number.int({ min: 8, max: 18 }) }
+        ]
+      }
+    };
+  }
+
+  getSeniorityRetentionChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 25, max: 45, fractionDigits: 1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 18, max: 55, fractionDigits: 1 })
+      })),
+      specificBreakdown: {
+        title: 'Rétention par ancienneté',
+        data: [
+          { name: '5-7 ans', value: faker.number.int({ min: 40, max: 55 }) },
+          { name: '7-10 ans', value: faker.number.int({ min: 25, max: 35 }) },
+          { name: '10-15 ans', value: faker.number.int({ min: 10, max: 20 }) },
+          { name: '15+ ans', value: faker.number.int({ min: 5, max: 15 }) }
+        ]
+      }
+    };
+  }
+
+  getSeniorityAndRetentionChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generateMonthLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 3.2, max: 5.8, fractionDigits: 1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 2.1, max: 7.5, fractionDigits: 1 })
+      })),
+      specificBreakdown: {
+        title: 'Ancienneté et rétention',
+        data: [
+          { name: 'Ancienneté moy.', value: faker.number.int({ min: 35, max: 45 }) },
+          { name: 'Rétention +5ans', value: faker.number.int({ min: 25, max: 40 }) },
+          { name: 'Nouveaux <1an', value: faker.number.int({ min: 15, max: 25 }) },
+          { name: 'Seniors +10ans', value: faker.number.int({ min: 10, max: 20 }) }
+        ]
+      }
     };
   }
 
@@ -658,6 +792,9 @@ export class HRAnalytics {
       case 'onboarding': return this.getOnboardingChartData(filters);
       case 'hr-expenses': return this.getHRExpensesChartData(filters);
       case 'age-seniority': return this.getAgeAndSeniorityChartData(filters);
+      case 'average-seniority': return this.getAverageSeniorityChartData(filters);
+      case 'seniority-retention': return this.getSeniorityRetentionChartData(filters);
+      case 'seniority-and-retention': return this.getSeniorityAndRetentionChartData(filters);
       case 'task-completion': return this.getTaskCompletionChartData(filters);
       case 'document-completion': return this.getDocumentCompletionChartData(filters);
       default: return null;

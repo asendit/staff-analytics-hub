@@ -50,11 +50,11 @@ const Index = () => {
       name: 'Tableau de bord principal (RH)',
       description: 'Vue d\'ensemble complète de tous les indicateurs RH',
       kpis: [
-        'absenteeism', 'turnover', 'headcount', 'overtime-hours', 'remote-work',
+        'absenteeism', 'turnover', 'seniority-and-retention', 'headcount', 'overtime-hours', 'remote-work',
         'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
       ],
       kpiOrder: [
-        'headcount', 'turnover', 'overtime-hours', 'remote-work',
+        'headcount', 'turnover', 'seniority-and-retention', 'overtime-hours', 'remote-work',
         'absenteeism', 'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
       ],
       createdAt: new Date().toISOString(),
@@ -107,7 +107,7 @@ const Index = () => {
       
       // Filtrer les KPIs selon le board actuel (exclure headcount qui est traité séparément)
       const filteredKPIs = allKPIs.filter(kpi => 
-        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount'
+        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount' && kpi.id !== 'seniority-and-retention'
       );
       setKpis(filteredKPIs);
 
@@ -462,6 +462,7 @@ const Index = () => {
     { id: 'onboarding', name: 'Nouvelles arrivées' },
     { id: 'hr-expenses', name: 'Dépenses RH' },
     { id: 'age-seniority', name: 'Âge et ancienneté' },
+    { id: 'seniority-and-retention', name: 'Ancienneté et rétention' },
     { id: 'task-completion', name: 'Tâches RH' },
     { id: 'document-completion', name: 'Dossiers collaborateurs' }
   ];
@@ -614,6 +615,7 @@ const Index = () => {
               isAIEnabled={isAIEnabled}
               loadingKPIs={loadingKPIs}
               onRefreshKPIInsight={handleRefreshKPIInsight}
+              seniorityRetentionData={analytics && currentBoard.kpis.includes('seniority-and-retention') ? analytics.getSeniorityAndRetention(filters) : undefined}
             />
           ) : (
             <div className="text-center py-12">
