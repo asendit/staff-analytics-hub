@@ -166,25 +166,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             )}
           </div>
 
-          {/* Département */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Département</label>
-            <Select 
-              value={filters.department || 'all'} 
-              onValueChange={handleDepartmentChange}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous les départements</SelectItem>
-                {departments.map(dept => (
-                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Agence */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Agence</label>
@@ -199,6 +180,25 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 <SelectItem value="all">Toutes les agences</SelectItem>
                 {agencies.map(agency => (
                   <SelectItem key={agency} value={agency}>{agency}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Département */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Département</label>
+            <Select 
+              value={filters.department || 'all'} 
+              onValueChange={handleDepartmentChange}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous les départements</SelectItem>
+                {departments.map(dept => (
+                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -246,8 +246,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 filters.period === 'month' ? 'Mois en cours' : 
                 filters.period === 'quarter' ? 'Trimestre en cours' : 'Année en cours'
               }
-              {filters.department && ` • ${filters.department}`}
               {filters.agency && ` • ${filters.agency}`}
+              {filters.department && ` • ${filters.department}`}
               {filters.compareWith && ` • ${filters.compareWith === 'previous' ? 'vs période précédente' : 'vs année précédente'}`}
             </span>
           </div>
