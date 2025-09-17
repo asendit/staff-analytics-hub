@@ -274,21 +274,6 @@ const Index = () => {
                 <p className="text-sm text-gray-500">Module d'analyse et de pilotage RH</p>
               </div>
             </div>
-            <div className="flex items-center">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setIsReorderMode(!isReorderMode)}>
-                    <GripVertical className="h-4 w-4 mr-2" />
-                    {isReorderMode ? 'Arrêter' : 'Activer'} la réorganisation
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
           </div>
         </div>
       </div>
@@ -317,9 +302,24 @@ const Index = () => {
         {/* Grille des KPIs */}
         <div className="space-y-2 mb-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {currentBoard.name}
-            </h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {currentBoard.name}
+              </h2>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem onClick={() => setIsReorderMode(!isReorderMode)}>
+                    <GripVertical className="h-4 w-4 mr-2" />
+                    {isReorderMode ? 'Arrêter' : 'Activer'} la réorganisation
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             <div className="flex items-center gap-6">
               <div className="text-sm text-gray-500">
                 {(kpis.length + (headcountData ? 1 : 0))} indicateur{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''} affiché{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''}
