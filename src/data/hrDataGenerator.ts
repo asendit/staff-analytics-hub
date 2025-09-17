@@ -7,6 +7,7 @@ export interface Employee {
   lastName: string;
   email: string;
   department: string;
+  agency: string;
   position: string;
   salary: number;
   hireDate: Date;
@@ -50,6 +51,20 @@ export const generateHRData = (): GeneratedHRData => {
     'Direction'
   ];
 
+  // Agences réalistes
+  const agencies = [
+    'Paris Siège',
+    'Lyon',
+    'Marseille',
+    'Toulouse',
+    'Nantes',
+    'Bordeaux',
+    'Lille',
+    'Nice',
+    'Strasbourg',
+    'Rennes'
+  ];
+
   const positionsByDepartment: Record<string, string[]> = {
     'Ressources Humaines': ['DRH', 'Chargé RH', 'Assistant RH', 'Responsable Formation'],
     'Développement': ['Lead Developer', 'Développeur Frontend', 'Développeur Backend', 'DevOps', 'QA Engineer'],
@@ -79,6 +94,7 @@ export const generateHRData = (): GeneratedHRData => {
   // Génération des employés
   for (let i = 0; i < 250; i++) {
     const department = faker.helpers.arrayElement(departments);
+    const agency = faker.helpers.arrayElement(agencies);
     const position = faker.helpers.arrayElement(positionsByDepartment[department]);
     const firstName = faker.helpers.arrayElement(firstNames);
     const lastName = faker.helpers.arrayElement(lastNames);
@@ -95,6 +111,7 @@ export const generateHRData = (): GeneratedHRData => {
       lastName,
       email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@entreprise.fr`,
       department,
+      agency,
       position,
       salary: faker.number.int({ min: 30000, max: 120000 }),
       hireDate: faker.date.between({ from: '2020-01-01', to: '2024-01-01' }),

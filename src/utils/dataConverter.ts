@@ -10,6 +10,7 @@ export function convertHRData(generatedData: GeneratedHRData): HRData {
       lastName: emp.lastName,
       email: emp.email,
       department: emp.department,
+      agency: emp.agency,
       position: emp.position,
       salary: emp.salary,
       hireDate: new Date(emp.hireDate),

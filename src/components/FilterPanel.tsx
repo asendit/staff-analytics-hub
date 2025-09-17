@@ -15,6 +15,7 @@ interface FilterPanelProps {
   filters: FilterOptions;
   onFiltersChange: (filters: FilterOptions) => void;
   departments: string[];
+  agencies: string[];
   onRefresh: () => void;
 }
 
@@ -22,6 +23,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   filters, 
   onFiltersChange, 
   departments,
+  agencies,
   onRefresh 
 }) => {
   const [startDate, setStartDate] = useState<Date>();
@@ -44,6 +46,13 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     onFiltersChange({ 
       ...filters, 
       department: department === 'all' ? undefined : department 
+    });
+  };
+
+  const handleAgencyChange = (agency: string) => {
+    onFiltersChange({ 
+      ...filters, 
+      agency: agency === 'all' ? undefined : agency 
     });
   };
 
@@ -85,7 +94,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
           {/* Période */}
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium text-gray-700">Période</label>
@@ -176,6 +185,25 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             </Select>
           </div>
 
+          {/* Agence */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Agence</label>
+            <Select 
+              value={filters.agency || 'all'} 
+              onValueChange={handleAgencyChange}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes les agences</SelectItem>
+                {agencies.map(agency => (
+                  <SelectItem key={agency} value={agency}>{agency}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Période de comparaison */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Comparaison</label>
@@ -219,6 +247,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 filters.period === 'quarter' ? 'Trimestre en cours' : 'Année en cours'
               }
               {filters.department && ` • ${filters.department}`}
+              {filters.agency && ` • ${filters.agency}`}
               {filters.compareWith && ` • ${filters.compareWith === 'previous' ? 'vs période précédente' : 'vs année précédente'}`}
             </span>
           </div>

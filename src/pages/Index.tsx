@@ -467,6 +467,7 @@ const Index = () => {
   ];
 
   const departments = hrData ? [...new Set(hrData.employees.map(emp => emp.department))] as string[] : [];
+  const agencies = hrData ? [...new Set(hrData.employees.map(emp => emp.agency))] as string[] : [];
 
   if (!hrData || !analytics || !currentBoard) {
     return (
@@ -517,6 +518,7 @@ const Index = () => {
           filters={filters}
           onFiltersChange={setFilters}
           departments={departments}
+          agencies={agencies}
           onRefresh={handleRefresh}
         />
 

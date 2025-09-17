@@ -6,6 +6,7 @@ export interface Employee {
   lastName: string;
   email: string;
   department: string;
+  agency: string;
   position: string;
   salary: number;
   hireDate: Date;
@@ -70,6 +71,7 @@ export interface KPIChartData {
 export interface FilterOptions {
   period: 'week' | 'month' | 'quarter' | 'year' | 'custom';
   department?: string;
+  agency?: string;
   remoteWork?: boolean;
   startDate?: string;
   endDate?: string;
@@ -771,6 +773,10 @@ export class HRAnalytics {
 
     if (filters.department) {
       employees = employees.filter(employee => employee.department === filters.department);
+    }
+
+    if (filters.agency) {
+      employees = employees.filter(employee => employee.agency === filters.agency);
     }
 
     if (filters.remoteWork !== undefined) {
