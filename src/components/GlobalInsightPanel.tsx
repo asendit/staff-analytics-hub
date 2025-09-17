@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Brain, MessageSquare, TrendingUp, AlertCircle, CheckCircle2, Info, FileText, Download, Target, Zap, Users, DollarSign, Shield, Lightbulb, BarChart3, Clock, Award, Rocket } from 'lucide-react';
+import { Brain, MessageSquare, TrendingUp, AlertCircle, CheckCircle2, Info, FileText, Download, Target, Zap, Users, DollarSign, Shield, Lightbulb, BarChart3, Clock, Award, Rocket, RotateCcw } from 'lucide-react';
 import { KPIData } from '../services/hrAnalytics';
 import { toast } from '@/hooks/use-toast';
 import jsPDF from 'jspdf';
@@ -195,9 +195,9 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
               {isLoading ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teams-purple mr-2" />
               ) : (
-                <MessageSquare className="h-4 w-4 mr-2" />
+                <RotateCcw className="h-4 w-4 mr-2" />
               )}
-              <span className="text-sm font-medium">{isLoading ? 'Actualiser l\'analyse' : 'Actualiser'}</span>
+              <span className="text-sm font-medium">{isLoading ? 'Génération en cours...' : 'Regénérer l\'analyse IA'}</span>
             </Button>
           </div>
         </CardTitle>
