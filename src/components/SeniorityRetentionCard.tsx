@@ -75,9 +75,12 @@ const SeniorityRetentionCard: React.FC<SeniorityRetentionCardProps> = ({
                 <Brain className="h-4 w-4 text-teams-purple" />
                 <span className="text-sm font-semibold text-foreground">Ancienneté moyenne</span>
               </div>
-              <div className="flex items-baseline space-x-3">
+              <div className="flex items-baseline space-x-2">
                 <div className="text-2xl font-semibold text-foreground">
                   {typeof data.averageSeniority.value === 'number' ? data.averageSeniority.value.toLocaleString('fr-FR') : data.averageSeniority.value}
+                </div>
+                <div className="text-sm text-muted-foreground font-medium">
+                  {data.averageSeniority.unit}
                 </div>
                 {data.averageSeniority.trend !== null && (
                   <div className="flex items-center space-x-1">
@@ -88,7 +91,6 @@ const SeniorityRetentionCard: React.FC<SeniorityRetentionCardProps> = ({
                   </div>
                 )}
               </div>
-              <div className="text-sm text-muted-foreground font-medium">{data.averageSeniority.unit}</div>
             </div>
 
             {/* Taux de rétention */}
@@ -97,9 +99,12 @@ const SeniorityRetentionCard: React.FC<SeniorityRetentionCardProps> = ({
                 <RotateCcw className="h-4 w-4 text-teams-purple" />
                 <span className="text-sm font-semibold text-foreground">+5 ans d'ancienneté</span>
               </div>
-              <div className="flex items-baseline space-x-3">
+              <div className="flex items-baseline space-x-2">
                 <div className="text-2xl font-semibold text-foreground">
                   {typeof data.retentionRate.value === 'number' ? data.retentionRate.value.toLocaleString('fr-FR') : data.retentionRate.value}
+                </div>
+                <div className="text-sm text-muted-foreground font-medium">
+                  {data.retentionRate.unit}
                 </div>
                 {data.retentionRate.trend !== null && (
                   <div className="flex items-center space-x-1">
@@ -110,7 +115,6 @@ const SeniorityRetentionCard: React.FC<SeniorityRetentionCardProps> = ({
                   </div>
                 )}
               </div>
-              <div className="text-sm text-muted-foreground font-medium">{data.retentionRate.unit}</div>
             </div>
           </div>
 
