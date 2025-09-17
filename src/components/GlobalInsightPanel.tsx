@@ -168,39 +168,47 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
   return (
     <Card className="teams-card-elevated border-0 mb-6">
       <CardHeader className="pb-4 pt-5 px-5">
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-2 h-8 bg-teams-purple rounded-full" />
-            <Brain className="h-5 w-5 text-teams-purple" />
-            <span className="text-lg font-semibold text-foreground">Analyse IA sur les ressources humaines</span>
-            {overallStatus.icon}
+        <div className="space-y-4">
+          <div className="flex flex-col space-y-3">
+            <div className="flex items-center space-x-3">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                Analyse IA
+              </h2>
+              {overallStatus.icon}
+            </div>
+            
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+              <div className="text-sm text-gray-500">
+                Synthèse des ressources humaines générée par IA
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button 
+                  onClick={exportToPDF}
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10 border border-border"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  <span className="text-sm font-medium">Exporter l'analyse</span>
+                </Button>
+                <Button 
+                  onClick={onGenerateInsight}
+                  disabled={isLoading}
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
+                >
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teams-purple mr-2" />
+                  ) : (
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                  )}
+                  <span className="text-sm font-medium">{isLoading ? 'Génération en cours...' : 'Regénérer l\'analyse IA'}</span>
+                </Button>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Button 
-              onClick={exportToPDF}
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10 border border-border"
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              <span className="text-sm font-medium">Exporter l'analyse</span>
-            </Button>
-            <Button 
-              onClick={onGenerateInsight}
-              disabled={isLoading}
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
-            >
-              {isLoading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teams-purple mr-2" />
-              ) : (
-                <RotateCcw className="h-4 w-4 mr-2" />
-              )}
-              <span className="text-sm font-medium">{isLoading ? 'Génération en cours...' : 'Regénérer l\'analyse IA'}</span>
-            </Button>
-          </div>
-        </CardTitle>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6 px-5 pb-5" id="ai-analysis-content">
         {/* Vue d'ensemble */}
