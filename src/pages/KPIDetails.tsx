@@ -243,7 +243,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Nouvelles arrivées</p>
                   <div className="flex items-baseline space-x-2 mt-1">
-                    <span className="text-3xl font-bold text-success">
+                    <span className="text-3xl font-bold text-foreground">
                       +{detailData.newHires}
                     </span>
                     <div className="flex items-center space-x-1">
@@ -263,7 +263,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Départs</p>
                   <div className="flex items-baseline space-x-2 mt-1">
-                    <span className="text-3xl font-bold text-destructive">
+                    <span className="text-3xl font-bold text-foreground">
                       {detailData.departures}
                     </span>
                     <div className="flex items-center space-x-1">
