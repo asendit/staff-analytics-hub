@@ -10,7 +10,7 @@ import KPIChartModal from '../components/KPIChartModal';
 import FilterPanel from '../components/FilterPanel';
 import BoardManager, { Board } from '../components/BoardManager';
 import GlobalInsightPanel from '../components/GlobalInsightPanel';
-import { Users, BarChart3, Brain, Sparkles, GripVertical, Settings } from 'lucide-react';
+import { Users, BarChart3, Brain, Sparkles, GripVertical, Settings, X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -340,8 +340,30 @@ const Index = () => {
             </div>
           </div>
 
+          {/* Overlay de mode réorganisation */}
           {isReorderMode && (
-            <div className="text-xs text-muted-foreground">Astuce: maintenez et glissez les cartes pour les réorganiser</div>
+            <div className="animate-fade-in bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
+                    <GripVertical className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-blue-900">Mode réorganisation activé</h3>
+                    <p className="text-xs text-blue-700">Glissez et déposez les cartes pour les réorganiser</p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsReorderMode(false)}
+                  className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Terminer
+                </Button>
+              </div>
+            </div>
           )}
 
           {(kpis.length > 0 || headcountData) ? (
