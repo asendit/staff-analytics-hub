@@ -235,7 +235,7 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
             <div>
               <h4 className="font-semibold text-foreground text-sm">Statut global : {overallStatus.status}</h4>
               <p className="text-xs text-muted-foreground font-medium mt-1">
-                Analyse basée sur l'ensemble des indicateurs RH disponibles.
+                Comparaison par rapport aux benchmarks sectoriels et standards RH.
               </p>
             </div>
           </div>
@@ -248,127 +248,81 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
               <Brain className="h-4 w-4 text-teams-purple" />
             </div>
             <div className="flex-1">
-              <h4 className="font-semibold text-foreground text-sm mb-2">Synthèse IA</h4>
-              <p className="text-muted-foreground text-sm leading-relaxed font-medium">
-                {insight || "Actualisez l'analyse pour obtenir une synthèse IA de vos indicateurs RH."}
-              </p>
+              <h4 className="font-semibold text-foreground text-sm mb-3">Synthèse IA</h4>
+              {insight ? (
+                <div className="space-y-3">
+                  <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                    {insight}
+                  </p>
+                  
+                  {/* Métriques clés */}
+                  <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20">
+                    <h5 className="text-xs font-semibold text-foreground mb-2">Métriques clés identifiées :</h5>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <span className="text-muted-foreground">Effectif total :</span>
+                        <span className="ml-1 font-medium text-foreground">{kpis.find(k => k.id === 'headcount')?.value || 'N/A'} collaborateurs</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Absentéisme :</span>
+                        <span className="ml-1 font-medium text-foreground">{kpis.find(k => k.id === 'absenteeism')?.value || 'N/A'}%</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Turnover :</span>
+                        <span className="ml-1 font-medium text-foreground">{kpis.find(k => k.id === 'turnover')?.value || 'N/A'}%</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Frais RH :</span>
+                        <span className="ml-1 font-medium text-foreground">{kpis.find(k => k.id === 'hr-expenses')?.value || 'N/A'}€</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tendances détectées */}
+                  <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20">
+                    <h5 className="text-xs font-semibold text-foreground mb-2">Tendances détectées :</h5>
+                    <div className="space-y-1">
+                      {kpis.filter(kpi => kpi.trend && kpi.trend !== 0).slice(0, 3).map((kpi, index) => (
+                        <div key={index} className="flex items-center text-xs">
+                          <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
+                          <span className="text-muted-foreground">{kpi.name} :</span>
+                          <span className={`ml-1 font-medium ${kpi.trend && kpi.trend > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                            {kpi.trend && kpi.trend > 0 ? '+' : ''}{kpi.trend}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                  Actualisez l'analyse pour obtenir une synthèse IA détaillée de vos indicateurs RH.
+                </p>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Analyses sectorielles */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {/* Analyse de l'Effectif */}
-          <div className="teams-card p-4 border border-teams-purple/30">
-            <div className="flex items-center space-x-2 mb-3">
-              <Users className="h-4 w-4 text-teams-purple" />
-              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.workforce.title}</h3>
-            </div>
-            
-            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20 mb-3">
-              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.workforce.content}</p>
-              <div className="space-y-1">
-                {aiAnalysis.insights.workforce.metrics.slice(0, 3).map((metric, index) => (
-                  <div key={index} className="flex items-center text-xs text-muted-foreground">
-                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
-                    {metric}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Performance Opérationnelle */}
-          <div className="teams-card p-4 border border-teams-purple/30">
-            <div className="flex items-center space-x-2 mb-3">
-              <BarChart3 className="h-4 w-4 text-teams-purple" />
-              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.productivity.title}</h3>
-            </div>
-            
-            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20 mb-3">
-              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.productivity.content}</p>
-              <div className="space-y-1">
-                {aiAnalysis.insights.productivity.metrics.slice(0, 3).map((metric, index) => (
-                  <div key={index} className="flex items-center text-xs text-muted-foreground">
-                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
-                    {metric}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Gestion des Présences */}
-          <div className="teams-card p-4 border border-teams-purple/30">
-            <div className="flex items-center space-x-2 mb-3">
-              <Clock className="h-4 w-4 text-teams-purple" />
-              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.attendance.title}</h3>
-            </div>
-            
-            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20">
-              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.attendance.content}</p>
-              <div className="space-y-1">
-                {aiAnalysis.insights.attendance.metrics.slice(0, 3).map((metric, index) => (
-                  <div key={index} className="flex items-center text-xs text-muted-foreground">
-                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
-                    {metric}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Impact Budgétaire */}
-          <div className="teams-card p-4 border border-teams-purple/30">
-            <div className="flex items-center space-x-2 mb-3">
-              <DollarSign className="h-4 w-4 text-teams-purple" />
-              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.financial.title}</h3>
-            </div>
-            
-            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20">
-              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.financial.content}</p>
-              <div className="space-y-1">
-                {aiAnalysis.insights.financial.metrics.map((metric, index) => (
-                  <div key={index} className="flex items-center text-xs text-muted-foreground">
-                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
-                    {metric}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Actions prioritaires */}
+        {/* Actions prioritaires suggérées */}
         {stats.negative > 0 && (
           <div className="teams-card p-4 border border-teams-purple/30 bg-teams-purple/5">
             <div className="flex items-start space-x-3">
               <AlertCircle className="h-5 w-5 text-teams-purple mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <h4 className="font-semibold text-foreground text-sm mb-1">Actions prioritaires détectées</h4>
-                <ul className="text-xs text-muted-foreground space-y-1 font-medium">
-                  <li>• Analyser les causes des indicateurs en alerte</li>
-                  <li>• Prioriser les actions correctives selon la matrice des risques</li>
-                  <li>• Planifier un suivi rapproché des métriques critiques</li>
-                </ul>
+                <h4 className="font-semibold text-foreground text-sm mb-2">Actions prioritaires suggérées</h4>
+                <div className="space-y-2">
+                  <ul className="text-xs text-muted-foreground space-y-1 font-medium">
+                    {kpis.filter(kpi => kpi.category === 'negative').map((kpi, index) => (
+                      <li key={index}>• Investiguer les causes du {kpi.name.toLowerCase()} ({kpi.value}{kpi.unit})</li>
+                    ))}
+                    <li>• Prioriser les actions correctives selon la matrice des risques</li>
+                    <li>• Planifier un suivi rapproché des métriques critiques</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         )}
-
-        <div className="text-xs text-muted-foreground text-center pt-4 border-t border-border">
-          <div className="flex items-center justify-center space-x-4 font-medium">
-            <span>Analyse: {aiAnalysis.metadata.analysisId}</span>
-            <span>•</span>
-            <span>Mise à jour: {new Date().toLocaleDateString('fr-FR', {
-              day: 'numeric',
-              month: 'long',  
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })}</span>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );
