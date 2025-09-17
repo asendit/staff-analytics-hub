@@ -76,12 +76,14 @@ const KPICard: React.FC<KPICardProps> = ({
       <CardContent className="pt-0 px-4 pb-4">
         <div className="space-y-3">
           {/* Valeur principale */}
-          <div className="flex items-baseline space-x-2">
-            <div className="text-2xl font-semibold text-foreground">
-              {typeof kpi.value === 'number' ? kpi.value.toLocaleString('fr-FR') : kpi.value}
-            </div>
-            <div className="text-sm text-muted-foreground font-medium">
-              {kpi.unit}
+          <div className="space-y-1">
+            <div className="flex items-baseline space-x-1">
+              <div className="text-2xl font-semibold text-foreground">
+                {typeof kpi.value === 'number' ? kpi.value.toLocaleString('fr-FR') : kpi.value}
+              </div>
+              <div className="text-sm text-muted-foreground font-medium">
+                {kpi.unit}
+              </div>
             </div>
           </div>
 
