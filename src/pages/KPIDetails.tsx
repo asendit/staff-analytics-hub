@@ -252,7 +252,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     </div>
                   </div>
                 </div>
-                <UserPlus className="h-8 w-8 text-success" />
+                <UserPlus className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -272,7 +272,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     </div>
                   </div>
                 </div>
-                <UserMinus className="h-8 w-8 text-destructive" />
+                <UserMinus className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
