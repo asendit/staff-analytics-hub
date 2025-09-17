@@ -167,54 +167,208 @@ const GlobalInsightPanel: React.FC<GlobalInsightPanelProps> = ({
 
   return (
     <Card className="teams-card-elevated border-0 mb-6">
-      <CardHeader className="pb-3 pt-4 px-4">
+      <CardHeader className="pb-4 pt-5 px-5">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Brain className="h-4 w-4 text-teams-purple" />
-            <span className="text-base font-semibold text-foreground">Analyse IA</span>
+            <div className="w-2 h-8 bg-teams-purple rounded-full" />
+            <Brain className="h-5 w-5 text-teams-purple" />
+            <span className="text-lg font-semibold text-foreground">Analyse IA sur les ressources humaines</span>
             {overallStatus.icon}
           </div>
-          <Button 
-            onClick={onGenerateInsight}
-            disabled={isLoading}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
-          >
-            {isLoading ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teams-purple mr-2" />
-            ) : (
-              <MessageSquare className="h-4 w-4 mr-2" />
-            )}
-            <span className="text-sm font-medium">Actualiser</span>
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button 
+              onClick={exportToPDF}
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10 border border-border"
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              <span className="text-sm font-medium">Exporter l'analyse</span>
+            </Button>
+            <Button 
+              onClick={onGenerateInsight}
+              disabled={isLoading}
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
+            >
+              {isLoading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teams-purple mr-2" />
+              ) : (
+                <MessageSquare className="h-4 w-4 mr-2" />
+              )}
+              <span className="text-sm font-medium">{isLoading ? 'Actualiser l\'analyse' : 'Actualiser'}</span>
+            </Button>
+          </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4 px-4 pb-4">
-        {/* Synthèse rapide */}
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex space-x-4">
-            <span className="text-green-600 font-medium">{stats.positive} positifs</span>
-            <span className="text-red-600 font-medium">{stats.negative} alertes</span>
-            <span className="text-gray-600 font-medium">{stats.neutral} neutres</span>
+      <CardContent className="space-y-6 px-5 pb-5" id="ai-analysis-content">
+        {/* Vue d'ensemble */}
+        <div className="teams-card p-5 border border-teams-purple/30">
+          <div className="flex items-center space-x-2 mb-4">
+            <Target className="h-5 w-5 text-teams-purple" />
+            <h3 className="text-base font-semibold text-foreground">Vue d'Ensemble</h3>
           </div>
-          <div className="text-xs text-muted-foreground">{overallStatus.status}</div>
+          
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-teams-purple/5 rounded-lg border border-teams-purple/20">
+              <div className="text-2xl font-semibold text-foreground">{stats.positive}</div>
+              <div className="text-sm text-muted-foreground font-medium">Indicateurs positifs</div>
+            </div>
+            <div className="text-center p-4 bg-teams-purple/5 rounded-lg border border-teams-purple/20">
+              <div className="text-2xl font-semibold text-foreground">{stats.negative}</div>
+              <div className="text-sm text-muted-foreground font-medium">Points d'attention</div>
+            </div>
+            <div className="text-center p-4 bg-teams-purple/5 rounded-lg border border-teams-purple/20">
+              <div className="text-2xl font-semibold text-foreground">{stats.neutral}</div>
+              <div className="text-sm text-muted-foreground font-medium">Indicateurs neutres</div>
+            </div>
+          </div>
         </div>
 
-        {/* Insight principal */}
-        <div className="teams-card p-3 border border-teams-purple/30">
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {insight || "Actualisez l'analyse pour obtenir une synthèse IA de vos indicateurs RH."}
-          </p>
+        {/* Statut global */}
+        <div className="teams-card p-4 border border-teams-purple/30">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-full bg-teams-purple/10">
+              {overallStatus.icon}
+            </div>
+            <div>
+              <h4 className="font-semibold text-foreground text-sm">Statut global : {overallStatus.status}</h4>
+              <p className="text-xs text-muted-foreground font-medium mt-1">
+                Analyse basée sur l'ensemble des indicateurs RH disponibles.
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Actions si alertes */}
+        {/* Synthèse IA */}
+        <div className="teams-card p-4 border border-teams-purple/30">
+          <div className="flex items-start space-x-3">
+            <div className="p-2 bg-teams-purple/10 rounded-full">
+              <Brain className="h-4 w-4 text-teams-purple" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-semibold text-foreground text-sm mb-2">Synthèse IA</h4>
+              <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                {insight || "Actualisez l'analyse pour obtenir une synthèse IA de vos indicateurs RH."}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Analyses sectorielles */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Analyse de l'Effectif */}
+          <div className="teams-card p-4 border border-teams-purple/30">
+            <div className="flex items-center space-x-2 mb-3">
+              <Users className="h-4 w-4 text-teams-purple" />
+              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.workforce.title}</h3>
+            </div>
+            
+            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20 mb-3">
+              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.workforce.content}</p>
+              <div className="space-y-1">
+                {aiAnalysis.insights.workforce.metrics.slice(0, 3).map((metric, index) => (
+                  <div key={index} className="flex items-center text-xs text-muted-foreground">
+                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
+                    {metric}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Performance Opérationnelle */}
+          <div className="teams-card p-4 border border-teams-purple/30">
+            <div className="flex items-center space-x-2 mb-3">
+              <BarChart3 className="h-4 w-4 text-teams-purple" />
+              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.productivity.title}</h3>
+            </div>
+            
+            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20 mb-3">
+              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.productivity.content}</p>
+              <div className="space-y-1">
+                {aiAnalysis.insights.productivity.metrics.slice(0, 3).map((metric, index) => (
+                  <div key={index} className="flex items-center text-xs text-muted-foreground">
+                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
+                    {metric}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Gestion des Présences */}
+          <div className="teams-card p-4 border border-teams-purple/30">
+            <div className="flex items-center space-x-2 mb-3">
+              <Clock className="h-4 w-4 text-teams-purple" />
+              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.attendance.title}</h3>
+            </div>
+            
+            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20">
+              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.attendance.content}</p>
+              <div className="space-y-1">
+                {aiAnalysis.insights.attendance.metrics.slice(0, 3).map((metric, index) => (
+                  <div key={index} className="flex items-center text-xs text-muted-foreground">
+                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
+                    {metric}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Impact Budgétaire */}
+          <div className="teams-card p-4 border border-teams-purple/30">
+            <div className="flex items-center space-x-2 mb-3">
+              <DollarSign className="h-4 w-4 text-teams-purple" />
+              <h3 className="text-sm font-semibold text-foreground">{aiAnalysis.insights.financial.title}</h3>
+            </div>
+            
+            <div className="bg-teams-purple/5 p-3 rounded-md border border-teams-purple/20">
+              <p className="text-muted-foreground text-xs leading-relaxed font-medium mb-2">{aiAnalysis.insights.financial.content}</p>
+              <div className="space-y-1">
+                {aiAnalysis.insights.financial.metrics.map((metric, index) => (
+                  <div key={index} className="flex items-center text-xs text-muted-foreground">
+                    <div className="w-1.5 h-1.5 rounded-full mr-2 bg-teams-purple"></div>
+                    {metric}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Actions prioritaires */}
         {stats.negative > 0 && (
-          <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border border-orange-200">
-            <AlertCircle className="h-3 w-3 inline mr-1" />
-            {stats.negative} indicateur{stats.negative > 1 ? 's' : ''} nécessite{stats.negative > 1 ? 'nt' : ''} une attention
+          <div className="teams-card p-4 border border-teams-purple/30 bg-teams-purple/5">
+            <div className="flex items-start space-x-3">
+              <AlertCircle className="h-5 w-5 text-teams-purple mt-0.5 flex-shrink-0" />
+              <div className="flex-1">
+                <h4 className="font-semibold text-foreground text-sm mb-1">Actions prioritaires détectées</h4>
+                <ul className="text-xs text-muted-foreground space-y-1 font-medium">
+                  <li>• Analyser les causes des indicateurs en alerte</li>
+                  <li>• Prioriser les actions correctives selon la matrice des risques</li>
+                  <li>• Planifier un suivi rapproché des métriques critiques</li>
+                </ul>
+              </div>
+            </div>
           </div>
         )}
+
+        <div className="text-xs text-muted-foreground text-center pt-4 border-t border-border">
+          <div className="flex items-center justify-center space-x-4 font-medium">
+            <span>Analyse: {aiAnalysis.metadata.analysisId}</span>
+            <span>•</span>
+            <span>Mise à jour: {new Date().toLocaleDateString('fr-FR', {
+              day: 'numeric',
+              month: 'long',  
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}</span>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
