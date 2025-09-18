@@ -877,6 +877,8 @@ export class HRAnalytics {
       }
     });
 
+    console.log('Grouped education counts:', educationGroupCounts);
+
     const educationBreakdown = Object.entries(educationGroupCounts)
       .map(([level, count]) => ({
         level,
@@ -884,6 +886,8 @@ export class HRAnalytics {
         percentage: employees.length > 0 ? (count / employees.length) * 100 : 0
       }))
       .filter(item => item.count > 0); // Filtrer les groupes vides
+
+    console.log('Final education breakdown:', educationBreakdown);
 
     // Génération d'insight
     const diversity = nationalitiesCount;

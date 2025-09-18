@@ -99,20 +99,22 @@ export const generateHRData = (): GeneratedHRData => {
     'Canada', 'États-Unis', 'Brésil', 'Argentine', 'Chine', 'Japon', 'Inde', 'Russie'
   ];
 
-  const educationLevels = [
-    { weight: 3, value: 'Doctorat' as const },
-    { weight: 12, value: 'Université Master' as const },
-    { weight: 18, value: 'Université Bachelor' as const },
-    { weight: 8, value: 'Haute école spécialisée Master' as const },
-    { weight: 15, value: 'Haute école spécialisée Bachelor' as const },
-    { weight: 10, value: 'Formation professionnelle supérieure Master' as const },
-    { weight: 8, value: 'Formation professionnelle supérieure Bachelor' as const },
-    { weight: 6, value: 'Formation professionnelle supérieure' as const },
-    { weight: 4, value: 'Brevet d\'enseignement' as const },
-    { weight: 5, value: 'Maturité' as const },
-    { weight: 8, value: 'Apprentissage complet' as const },
-    { weight: 2, value: 'Formation exclusivement interne' as const },
-    { weight: 1, value: 'Scolarité obligatoire' as const }
+  type EducationLevel = { weight: number; value: 'Doctorat' | 'Université Master' | 'Université Bachelor' | 'Haute école spécialisée Master' | 'Haute école spécialisée Bachelor' | 'Formation professionnelle supérieure Master' | 'Formation professionnelle supérieure Bachelor' | 'Formation professionnelle supérieure' | 'Brevet d\'enseignement' | 'Maturité' | 'Apprentissage complet' | 'Formation exclusivement interne' | 'Scolarité obligatoire' };
+
+  const educationLevels: EducationLevel[] = [
+    { weight: 3, value: 'Doctorat' },
+    { weight: 12, value: 'Université Master' },
+    { weight: 18, value: 'Université Bachelor' },
+    { weight: 8, value: 'Haute école spécialisée Master' },
+    { weight: 15, value: 'Haute école spécialisée Bachelor' },
+    { weight: 10, value: 'Formation professionnelle supérieure Master' },
+    { weight: 8, value: 'Formation professionnelle supérieure Bachelor' },
+    { weight: 6, value: 'Formation professionnelle supérieure' },
+    { weight: 4, value: 'Brevet d\'enseignement' },
+    { weight: 5, value: 'Maturité' },
+    { weight: 8, value: 'Apprentissage complet' },
+    { weight: 2, value: 'Formation exclusivement interne' },
+    { weight: 1, value: 'Scolarité obligatoire' }
   ];
 
   // Génération des employés
@@ -123,11 +125,7 @@ export const generateHRData = (): GeneratedHRData => {
     const firstName = faker.helpers.arrayElement(firstNames);
     const lastName = faker.helpers.arrayElement(lastNames);
     
-    const status = faker.helpers.weightedArrayElement([
-      { weight: 85, value: 'active' as const },
-      { weight: 10, value: 'inactive' as const },
-      { weight: 5, value: 'terminated' as const }
-    ]);
+    const status = faker.helpers.arrayElement(['active', 'inactive', 'terminated']);
 
     const employee: Employee = {
       id: `emp-${i + 1}`,
@@ -140,24 +138,22 @@ export const generateHRData = (): GeneratedHRData => {
       salary: faker.number.int({ min: 30000, max: 120000 }),
       hireDate: faker.date.between({ from: '2020-01-01', to: '2024-01-01' }),
       terminationDate: status === 'terminated' ? faker.date.between({ from: '2024-01-01', to: '2024-12-31' }) : undefined,
-      status,
+      status: status,
       performanceScore: faker.number.int({ min: 1, max: 5 }),
       trainingHours: faker.number.int({ min: 0, max: 80 }),
       remoteWork: faker.datatype.boolean({ probability: 0.6 }),
       address: `${faker.location.streetAddress()}, ${faker.location.city()}, France`,
-      workingTimeRate: faker.helpers.weightedArrayElement([
-        { weight: 70, value: 1.0 },    // 70% à temps plein
-        { weight: 20, value: 0.8 },    // 20% à 80%
-        { weight: 8, value: 0.6 },     // 8% à 60%
-        { weight: 2, value: 0.5 }      // 2% à mi-temps
-      ]),
+      workingTimeRate: faker.helpers.arrayElement([1.0, 0.8, 0.6, 0.5]),
       gender: faker.helpers.arrayElement(['homme', 'femme']),
       birthDate: faker.date.birthdate({ min: 22, max: 65, mode: 'age' }),
-      nationality: faker.helpers.weightedArrayElement([
-        { weight: 70, value: 'France' },
-        ...nationalities.slice(1).map(nat => ({ weight: 30 / (nationalities.length - 1), value: nat }))
-      ]),
-      educationLevel: faker.helpers.weightedArrayElement(educationLevels)
+      nationality: faker.helpers.arrayElement(['France', ...nationalities.slice(1)]),
+      educationLevel: faker.helpers.arrayElement([
+        'Doctorat', 'Université Master', 'Université Bachelor', 
+        'Haute école spécialisée Master', 'Haute école spécialisée Bachelor',
+        'Formation professionnelle supérieure Master', 'Formation professionnelle supérieure Bachelor',
+        'Formation professionnelle supérieure', 'Brevet d\'enseignement', 'Maturité',
+        'Apprentissage complet', 'Formation exclusivement interne', 'Scolarité obligatoire'
+      ])
     };
     
     employees.push(employee);
