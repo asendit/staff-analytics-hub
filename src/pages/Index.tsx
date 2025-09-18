@@ -52,11 +52,11 @@ const Index = () => {
       name: 'Tableau de bord principal (RH)',
       description: 'Vue d\'ensemble complète de tous les indicateurs RH',
       kpis: [
-        'headcount', 'edi', 'turnover', 'seniority-and-retention', 'absenteeism', 'remote-work',
+        'headcount', 'turnover', 'seniority-and-retention', 'absenteeism', 'edi', 'remote-work',
         'hr-expenses', 'task-completion', 'document-completion'
       ],
       kpiOrder: [
-        'headcount', 'edi', 'turnover', 'seniority-and-retention', 'absenteeism', 'remote-work',
+        'headcount', 'turnover', 'seniority-and-retention', 'absenteeism', 'edi', 'remote-work',
         'hr-expenses', 'task-completion', 'document-completion'
       ],
       createdAt: new Date().toISOString(),
@@ -472,8 +472,8 @@ const Index = () => {
   const availableKPIs = [
     { id: 'absenteeism', name: 'Taux d\'absentéisme' },
     { id: 'turnover', name: 'Turnover' },
-    { id: 'headcount', name: 'Effectif actif' },
-    
+    { id: 'headcount', name: 'Effectif - Vue d\'ensemble' },
+    { id: 'edi', name: 'Équité, diversité et inclusion' },
     { id: 'remote-work', name: 'Télétravail' },
     { id: 'onboarding', name: 'Nouvelles arrivées' },
     { id: 'hr-expenses', name: 'Dépenses RH' },

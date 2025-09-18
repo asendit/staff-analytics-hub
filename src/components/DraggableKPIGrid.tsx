@@ -136,6 +136,13 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                 onChartClick={() => onKPIChartClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
                 showInsight={isAIEnabled}
               />
+            ) : item.type === 'edi' ? (
+              <EDICard
+                data={item.data as EDIData}
+                onInfoClick={() => {}}
+                onChartClick={() => {}}
+                showInsight={isAIEnabled}
+              />
             ) : item.type === 'seniority-retention' ? (
               <SeniorityRetentionCard
                 data={item.data}
@@ -227,6 +234,13 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                             data={item.data as ExtendedHeadcountData}
                             onInfoClick={() => onKPIInfoClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
                             onChartClick={() => onKPIChartClick(createTempKPIFromHeadcount(item.data as ExtendedHeadcountData))}
+                            showInsight={isAIEnabled}
+                          />
+                        ) : item.type === 'edi' ? (
+                          <EDICard
+                            data={item.data as EDIData}
+                            onInfoClick={() => {}}
+                            onChartClick={() => {}}
                             showInsight={isAIEnabled}
                           />
                         ) : item.type === 'seniority-retention' ? (
