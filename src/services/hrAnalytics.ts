@@ -842,11 +842,19 @@ export class HRAnalytics {
 
     // Répartition par formation
     const educationCounts = {
-      'bac': 0,
-      'bac+2': 0,
-      'bac+3': 0,
-      'bac+5': 0,
-      'doctorat': 0
+      'Doctorat': 0,
+      'Université Master': 0,
+      'Université Bachelor': 0,
+      'Haute école spécialisée Master': 0,
+      'Haute école spécialisée Bachelor': 0,
+      'Formation professionnelle supérieure Master': 0,
+      'Formation professionnelle supérieure Bachelor': 0,
+      'Formation professionnelle supérieure': 0,
+      'Brevet d\'enseignement': 0,
+      'Maturité': 0,
+      'Apprentissage complet': 0,
+      'Formation exclusivement interne': 0,
+      'Scolarité obligatoire': 0
     };
 
     employees.forEach(emp => {
@@ -855,8 +863,10 @@ export class HRAnalytics {
       }
     });
 
+    console.log('Education breakdown data:', educationCounts);
+
     const educationBreakdown = Object.entries(educationCounts).map(([level, count]) => ({
-      level: level.charAt(0).toUpperCase() + level.slice(1),
+      level,
       count,
       percentage: employees.length > 0 ? (count / employees.length) * 100 : 0
     }));
