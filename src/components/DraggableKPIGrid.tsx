@@ -1,15 +1,17 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { KPIData, ExtendedHeadcountData, EDIData } from '../services/hrAnalytics';
+import { KPIData, ExtendedHeadcountData, EDIData, SalaryData } from '../services/hrAnalytics';
 import KPICard from './KPICard';
 import HeadcountCard from './HeadcountCard';
 import EDICard from './EDICard';
+import SalaryCard from './SalaryCard';
 import SeniorityRetentionCard from './SeniorityRetentionCard';
 
 interface DraggableKPIGridProps {
   kpis: KPIData[];
   headcountData: ExtendedHeadcountData | null;
   ediData: EDIData | null;
+  salaryData: SalaryData | null;
   kpiOrder: string[];
   enabled?: boolean;
   onOrderChange: (newOrder: string[]) => void;
@@ -25,6 +27,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
   kpis,
   headcountData,
   ediData,
+  salaryData,
   kpiOrder,
   enabled = false,
   onOrderChange,

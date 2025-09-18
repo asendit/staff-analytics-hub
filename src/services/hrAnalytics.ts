@@ -68,6 +68,14 @@ export interface EDIData {
   insight: string;
 }
 
+export interface SalaryData {
+  totalSalaryMass: number;
+  salaryMassPerETP: number;
+  salaryMassToRevenueRatio: number;
+  departmentSalaryBreakdown: Array<{ department: string; totalSalary: number; averageSalary: number; employeeCount: number }>;
+  insight: string;
+}
+
 export interface KPIChartData {
   timeEvolution: Array<{ month: string; value: number }>;
   departmentBreakdown: Array<{ department: string; value: number }>;
@@ -914,6 +922,59 @@ export class HRAnalytics {
       salarygap: Math.round(salarygap * 10) / 10,
       nationalitiesCount,
       educationBreakdown,
+      insight
+    };
+  }
+
+  getSalaryData(filters: FilterOptions): SalaryData {
+    const employees = this.filterEmployees(filters).filter(emp => emp.status === 'active');
+    
+    // Masse salariale totale
+    const totalSalaryMass = employees.reduce((sum, emp) => sum + emp.salary, 0);
+    
+    // Calcul ETP total (somme des workingTimeRate)
+    const totalETP = employees.reduce((sum, emp) => sum + (emp.workingTimeRate || 1), 0);
+    
+    // Masse salariale par ETP
+    const salaryMassPerETP = totalETP > 0 ? totalSalaryMass / totalETP : 0;
+    
+    // Chiffre d'affaires fictif basé sur la masse salariale (facteur ~3x pour simulation)
+    const simulatedRevenue = totalSalaryMass * 3.2;
+    const salaryMassToRevenueRatio = (totalSalaryMass / simulatedRevenue) * 100;
+    
+    // Répartition par département
+    const departmentSalaries: { [key: string]: { total: number; count: number; employees: any[] } } = {};
+    
+    employees.forEach(emp => {
+      if (!departmentSalaries[emp.department]) {
+        departmentSalaries[emp.department] = { total: 0, count: 0, employees: [] };
+      }
+      departmentSalaries[emp.department].total += emp.salary;
+      departmentSalaries[emp.department].count += 1;
+      departmentSalaries[emp.department].employees.push(emp);
+    });
+    
+    const departmentSalaryBreakdown = Object.entries(departmentSalaries).map(([department, data]) => ({
+      department,
+      totalSalary: data.total,
+      averageSalary: Math.round(data.total / data.count),
+      employeeCount: data.count
+    })).sort((a, b) => b.totalSalary - a.totalSalary);
+    
+    // Génération d'insight
+    const topDepartment = departmentSalaryBreakdown[0];
+    const avgSalaryOverall = Math.round(totalSalaryMass / employees.length);
+    
+    let insight = `La masse salariale totale s'élève à ${(totalSalaryMass / 1000).toFixed(0)}k€. `;
+    insight += `Le salaire moyen est de ${avgSalaryOverall.toLocaleString()}€. `;
+    insight += `Le département "${topDepartment.department}" représente la plus grande part avec ${(topDepartment.totalSalary / 1000).toFixed(0)}k€. `;
+    insight += `La masse salariale représente ${salaryMassToRevenueRatio.toFixed(1)}% du chiffre d'affaires estimé.`;
+    
+    return {
+      totalSalaryMass,
+      salaryMassPerETP: Math.round(salaryMassPerETP),
+      salaryMassToRevenueRatio: Math.round(salaryMassToRevenueRatio * 10) / 10,
+      departmentSalaryBreakdown,
       insight
     };
   }

@@ -33,6 +33,10 @@
     --success-foreground: 0 0% 100%;
     --success-light: 142 71% 95%;
 
+    --teams-green: 142 71% 45%;
+    --teams-green-hover: 142 71% 38%;
+    --teams-green-light: 142 71% 95%;
+
     --warning: 35 100% 50%;
     --warning-foreground: 0 0% 100%;
     --warning-light: 35 100% 95%;
@@ -89,6 +93,10 @@
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --success-light: 142 71% 15%;
+
+    --teams-green: 142 71% 45%;
+    --teams-green-hover: 142 71% 38%;
+    --teams-green-light: 142 71% 15%;
 
     --warning: 35 100% 50%;
     --warning-foreground: 0 0% 100%;
