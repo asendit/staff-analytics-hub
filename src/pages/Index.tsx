@@ -50,12 +50,12 @@ const Index = () => {
       name: 'Tableau de bord principal (RH)',
       description: 'Vue d\'ensemble complète de tous les indicateurs RH',
       kpis: [
-        'absenteeism', 'turnover', 'seniority-and-retention', 'headcount', 'remote-work',
-        'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
+        'headcount', 'turnover', 'seniority-and-retention', 'absenteeism', 'remote-work',
+        'hr-expenses', 'task-completion', 'document-completion'
       ],
       kpiOrder: [
-        'headcount', 'turnover', 'seniority-and-retention', 'absenteeism',
-        'remote-work', 'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
+        'headcount', 'turnover', 'seniority-and-retention', 'absenteeism', 'remote-work',
+        'hr-expenses', 'task-completion', 'document-completion'
       ],
       createdAt: new Date().toISOString(),
       isDefault: true
