@@ -20,7 +20,7 @@ export interface Employee {
   gender?: 'homme' | 'femme';
   birthDate?: Date;
   nationality?: string;
-  educationLevel?: 'bac' | 'bac+2' | 'bac+3' | 'bac+5' | 'doctorat';
+  educationLevel?: 'Doctorat' | 'Université Master' | 'Université Bachelor' | 'Haute école spécialisée Master' | 'Haute école spécialisée Bachelor' | 'Formation professionnelle supérieure Master' | 'Formation professionnelle supérieure Bachelor' | 'Formation professionnelle supérieure' | 'Brevet d\'enseignement' | 'Maturité' | 'Apprentissage complet' | 'Formation exclusivement interne' | 'Scolarité obligatoire';
 }
 
 export interface Expense {

@@ -21,7 +21,7 @@ export interface Employee {
   gender?: 'homme' | 'femme';
   birthDate?: Date;
   nationality?: string;
-  educationLevel?: 'bac' | 'bac+2' | 'bac+3' | 'bac+5' | 'doctorat';
+  educationLevel?: 'Doctorat' | 'Université Master' | 'Université Bachelor' | 'Haute école spécialisée Master' | 'Haute école spécialisée Bachelor' | 'Formation professionnelle supérieure Master' | 'Formation professionnelle supérieure Bachelor' | 'Formation professionnelle supérieure' | 'Brevet d\'enseignement' | 'Maturité' | 'Apprentissage complet' | 'Formation exclusivement interne' | 'Scolarité obligatoire';
 }
 
 export interface Expense {
@@ -100,11 +100,19 @@ export const generateHRData = (): GeneratedHRData => {
   ];
 
   const educationLevels = [
-    { weight: 15, value: 'bac' as const },
-    { weight: 25, value: 'bac+2' as const },
-    { weight: 35, value: 'bac+3' as const },
-    { weight: 20, value: 'bac+5' as const },
-    { weight: 5, value: 'doctorat' as const }
+    { weight: 3, value: 'Doctorat' as const },
+    { weight: 12, value: 'Université Master' as const },
+    { weight: 18, value: 'Université Bachelor' as const },
+    { weight: 8, value: 'Haute école spécialisée Master' as const },
+    { weight: 15, value: 'Haute école spécialisée Bachelor' as const },
+    { weight: 10, value: 'Formation professionnelle supérieure Master' as const },
+    { weight: 8, value: 'Formation professionnelle supérieure Bachelor' as const },
+    { weight: 6, value: 'Formation professionnelle supérieure' as const },
+    { weight: 4, value: 'Brevet d\'enseignement' as const },
+    { weight: 5, value: 'Maturité' as const },
+    { weight: 8, value: 'Apprentissage complet' as const },
+    { weight: 2, value: 'Formation exclusivement interne' as const },
+    { weight: 1, value: 'Scolarité obligatoire' as const }
   ];
 
   // Génération des employés
