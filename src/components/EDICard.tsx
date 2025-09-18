@@ -35,6 +35,9 @@ const EDICard: React.FC<EDICardProps> = ({
     percentage: edu.percentage
   }));
 
+  console.log('EDI Card - Education breakdown data:', data.educationBreakdown);
+  console.log('EDI Card - Pie data:', pieData);
+
   return (
     <Card 
       className="teams-card border border-teams-purple/30 col-span-full lg:col-span-4 xl:col-span-4 cursor-pointer hover:border-teams-purple/50 transition-colors" 

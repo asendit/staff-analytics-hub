@@ -832,6 +832,9 @@ export class HRAnalytics {
   getEDIData(filters: FilterOptions): EDIData {
     const employees = this.filterEmployees(filters).filter(emp => emp.status === 'active');
     
+    console.log('Total active employees:', employees.length);
+    console.log('First 5 employees education levels:', employees.slice(0, 5).map(emp => ({ id: emp.id, educationLevel: emp.educationLevel })));
+    
     // Âge moyen
     const validAges = employees.filter(emp => emp.birthDate).map(emp => {
       const today = new Date();
@@ -869,8 +872,10 @@ export class HRAnalytics {
     };
 
     employees.forEach(emp => {
+      console.log('Employee education level:', emp.educationLevel);
       if (emp.educationLevel) {
         const group = this.groupEducationLevels(emp.educationLevel);
+        console.log(`Mapping ${emp.educationLevel} to ${group}`);
         if (educationGroupCounts.hasOwnProperty(group)) {
           educationGroupCounts[group]++;
         }
