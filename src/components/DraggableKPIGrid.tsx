@@ -123,7 +123,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
           <div
             key={item.id}
             className={`relative animate-fade-in ${
-              item.id === 'headcount' ? 'col-span-full lg:col-span-4 xl:col-span-4' : 
+              item.id === 'headcount' || item.id === 'edi' ? 'col-span-full lg:col-span-4 xl:col-span-4' : 
               item.id === 'seniority-and-retention' ? 'col-span-full md:col-span-2 lg:col-span-2 xl:col-span-2' : 
               ''
             }`}
@@ -189,7 +189,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
             {allItems.map((item, index) => {
               // Calculer le nombre de colonnes selon le type et la taille d'écran
               const getColSpan = () => {
-                if (item.id === 'headcount') {
+                if (item.id === 'headcount' || item.id === 'edi') {
                   return 'col-span-2 md:col-span-4 lg:col-span-6 xl:col-span-8'; // Toute la largeur
                 }
                 if (item.id === 'seniority-and-retention') {
