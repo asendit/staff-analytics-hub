@@ -19,6 +19,8 @@ export interface Employee {
   workingTimeRate: number; // Taux d'activité pour calculer l'ETP (0.5 = 50%, 1.0 = 100%)
   gender?: 'homme' | 'femme';
   birthDate?: Date;
+  nationality?: string;
+  educationLevel?: 'bac' | 'bac+2' | 'bac+3' | 'bac+5' | 'doctorat';
 }
 
 export interface Expense {
@@ -54,6 +56,15 @@ export interface ExtendedHeadcountData {
   departmentBreakdown: Array<{ department: string; count: number; etp: number }>;
   comparison: 'higher' | 'lower' | 'stable';
   category: 'positive' | 'negative' | 'neutral';
+  insight: string;
+}
+
+export interface EDIData {
+  averageAge: number;
+  genderRatio: { men: number; women: number };
+  salarygap: number;
+  nationalitiesCount: number;
+  educationBreakdown: Array<{ level: string; count: number; percentage: number }>;
   insight: string;
 }
 
@@ -796,6 +807,82 @@ export class HRAnalytics {
       this.getTaskCompletionRate(filters),
       this.getDocumentCompletionRate(filters)
     ];
+  }
+
+  getEDIData(filters: FilterOptions): EDIData {
+    const employees = this.filterEmployees(filters).filter(emp => emp.status === 'active');
+    
+    // Âge moyen
+    const validAges = employees.filter(emp => emp.birthDate).map(emp => {
+      const today = new Date();
+      const birthDate = new Date(emp.birthDate!);
+      return today.getFullYear() - birthDate.getFullYear();
+    });
+    const averageAge = validAges.length > 0 ? validAges.reduce((sum, age) => sum + age, 0) / validAges.length : 0;
+
+    // Ratio homme/femme
+    const menCount = employees.filter(emp => emp.gender === 'homme').length;
+    const womenCount = employees.filter(emp => emp.gender === 'femme').length;
+    const totalWithGender = menCount + womenCount;
+    const genderRatio = {
+      men: totalWithGender > 0 ? (menCount / totalWithGender) * 100 : 50,
+      women: totalWithGender > 0 ? (womenCount / totalWithGender) * 100 : 50
+    };
+
+    // Écart salarial homme/femme
+    const menSalaries = employees.filter(emp => emp.gender === 'homme').map(emp => emp.salary);
+    const womenSalaries = employees.filter(emp => emp.gender === 'femme').map(emp => emp.salary);
+    const avgMenSalary = menSalaries.length > 0 ? menSalaries.reduce((sum, salary) => sum + salary, 0) / menSalaries.length : 0;
+    const avgWomenSalary = womenSalaries.length > 0 ? womenSalaries.reduce((sum, salary) => sum + salary, 0) / womenSalaries.length : 0;
+    const salarygap = avgMenSalary > 0 ? ((avgMenSalary - avgWomenSalary) / avgMenSalary) * 100 : 0;
+
+    // Nombre de nationalités
+    const nationalities = new Set(employees.filter(emp => emp.nationality).map(emp => emp.nationality!));
+    const nationalitiesCount = nationalities.size;
+
+    // Répartition par formation
+    const educationCounts = {
+      'bac': 0,
+      'bac+2': 0,
+      'bac+3': 0,
+      'bac+5': 0,
+      'doctorat': 0
+    };
+
+    employees.forEach(emp => {
+      if (emp.educationLevel && educationCounts.hasOwnProperty(emp.educationLevel)) {
+        educationCounts[emp.educationLevel]++;
+      }
+    });
+
+    const educationBreakdown = Object.entries(educationCounts).map(([level, count]) => ({
+      level: level.charAt(0).toUpperCase() + level.slice(1),
+      count,
+      percentage: employees.length > 0 ? (count / employees.length) * 100 : 0
+    }));
+
+    // Génération d'insight
+    const diversity = nationalitiesCount;
+    const genderBalance = Math.abs(50 - genderRatio.men);
+    const salarygapAbs = Math.abs(salarygap);
+    
+    let insight = `L'entreprise compte ${diversity} nationalités différentes. `;
+    insight += `La répartition hommes-femmes est de ${genderRatio.men.toFixed(1)}% / ${genderRatio.women.toFixed(1)}%. `;
+    
+    if (salarygapAbs < 5) {
+      insight += `✅ L'écart salarial entre hommes et femmes est maîtrisé (${salarygapAbs.toFixed(1)}%).`;
+    } else {
+      insight += `⚠️ Un écart salarial de ${salarygapAbs.toFixed(1)}% nécessite une attention particulière.`;
+    }
+
+    return {
+      averageAge: Math.round(averageAge),
+      genderRatio,
+      salarygap: Math.round(salarygap * 10) / 10,
+      nationalitiesCount,
+      educationBreakdown,
+      insight
+    };
   }
 
   private calculateTrend(filters: FilterOptions): number | null {

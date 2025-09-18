@@ -20,6 +20,8 @@ export interface Employee {
   workingTimeRate: number; // Taux d'activité pour calculer l'ETP (0.5 = 50%, 1.0 = 100%)
   gender?: 'homme' | 'femme';
   birthDate?: Date;
+  nationality?: string;
+  educationLevel?: 'bac' | 'bac+2' | 'bac+3' | 'bac+5' | 'doctorat';
 }
 
 export interface Expense {
@@ -91,6 +93,20 @@ export const generateHRData = (): GeneratedHRData => {
     'Dupont', 'Lambert', 'Bonnet', 'François', 'Martinez', 'Legrand', 'Garnier', 'Faure'
   ];
 
+  const nationalities = [
+    'France', 'Espagne', 'Italie', 'Allemagne', 'Belgique', 'Suisse', 'Portugal', 
+    'Royaume-Uni', 'Maroc', 'Algérie', 'Tunisie', 'Sénégal', 'Mali', 'Côte d\'Ivoire',
+    'Canada', 'États-Unis', 'Brésil', 'Argentine', 'Chine', 'Japon', 'Inde', 'Russie'
+  ];
+
+  const educationLevels = [
+    { weight: 15, value: 'bac' as const },
+    { weight: 25, value: 'bac+2' as const },
+    { weight: 35, value: 'bac+3' as const },
+    { weight: 20, value: 'bac+5' as const },
+    { weight: 5, value: 'doctorat' as const }
+  ];
+
   // Génération des employés
   for (let i = 0; i < 250; i++) {
     const department = faker.helpers.arrayElement(departments);
@@ -128,7 +144,12 @@ export const generateHRData = (): GeneratedHRData => {
         { weight: 2, value: 0.5 }      // 2% à mi-temps
       ]),
       gender: faker.helpers.arrayElement(['homme', 'femme']),
-      birthDate: faker.date.birthdate({ min: 22, max: 65, mode: 'age' })
+      birthDate: faker.date.birthdate({ min: 22, max: 65, mode: 'age' }),
+      nationality: faker.helpers.weightedArrayElement([
+        { weight: 70, value: 'France' },
+        ...nationalities.slice(1).map(nat => ({ weight: 30 / (nationalities.length - 1), value: nat }))
+      ]),
+      educationLevel: faker.helpers.weightedArrayElement(educationLevels)
     };
     
     employees.push(employee);

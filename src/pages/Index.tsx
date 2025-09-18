@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { generateHRData } from '../data/hrDataGenerator';
 import { convertHRData } from '../utils/dataConverter';
-import { HRAnalytics, KPIData, KPIChartData, FilterOptions, HRData, ExtendedHeadcountData } from '../services/hrAnalytics';
+import { HRAnalytics, KPIData, KPIChartData, FilterOptions, HRData, ExtendedHeadcountData, EDIData } from '../services/hrAnalytics';
 import KPICard from '../components/KPICard';
 import HeadcountCard from '../components/HeadcountCard';
+import EDICard from '../components/EDICard';
 import DraggableKPIGrid from '../components/DraggableKPIGrid';
 import KPIDetailModal from '../components/KPIDetailModal';
 import KPIChartModal from '../components/KPIChartModal';
@@ -23,6 +24,7 @@ const Index = () => {
   const [analytics, setAnalytics] = useState<HRAnalytics | null>(null);
   const [kpis, setKpis] = useState<KPIData[]>([]);
   const [headcountData, setHeadcountData] = useState<ExtendedHeadcountData | null>(null);
+  const [ediData, setEdiData] = useState<EDIData | null>(null);
   const [filters, setFilters] = useState<FilterOptions>({ period: 'year' });
   const [globalInsight, setGlobalInsight] = useState<string>('');
   const [isLoadingInsight, setIsLoadingInsight] = useState(false);
@@ -50,11 +52,11 @@ const Index = () => {
       name: 'Tableau de bord principal (RH)',
       description: 'Vue d\'ensemble complète de tous les indicateurs RH',
       kpis: [
-        'headcount', 'turnover', 'seniority-and-retention', 'absenteeism', 'remote-work',
+        'headcount', 'edi', 'turnover', 'seniority-and-retention', 'absenteeism', 'remote-work',
         'hr-expenses', 'task-completion', 'document-completion'
       ],
       kpiOrder: [
-        'headcount', 'turnover', 'seniority-and-retention', 'absenteeism', 'remote-work',
+        'headcount', 'edi', 'turnover', 'seniority-and-retention', 'absenteeism', 'remote-work',
         'hr-expenses', 'task-completion', 'document-completion'
       ],
       createdAt: new Date().toISOString(),
@@ -105,9 +107,9 @@ const Index = () => {
       console.log('Calcul des KPIs avec filtres:', filters);
       const allKPIs = analytics.getAllKPIs(filters);
       
-      // Filtrer les KPIs selon le board actuel (exclure headcount qui est traité séparément)
+      // Filtrer les KPIs selon le board actuel (exclure headcount et edi qui sont traités séparément)
       const filteredKPIs = allKPIs.filter(kpi => 
-        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount' && kpi.id !== 'seniority-and-retention'
+        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount' && kpi.id !== 'edi' && kpi.id !== 'seniority-and-retention'
       );
       setKpis(filteredKPIs);
 
@@ -117,6 +119,14 @@ const Index = () => {
         setHeadcountData(extendedHeadcountData);
       } else {
         setHeadcountData(null);
+      }
+
+      // Calculer les données EDI si edi est dans le board
+      if (currentBoard.kpis.includes('edi')) {
+        const ediKPIData = analytics.getEDIData(filters);
+        setEdiData(ediKPIData);
+      } else {
+        setEdiData(null);
       }
 
       // Génération de l'insight global
@@ -199,7 +209,7 @@ const Index = () => {
     if (analytics && currentBoard) {
       const allKPIs = analytics.getAllKPIs(filters);
       const filteredKPIs = allKPIs.filter(kpi => 
-        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount'
+        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount' && kpi.id !== 'edi'
       );
       setKpis(filteredKPIs);
       
@@ -207,6 +217,12 @@ const Index = () => {
       if (currentBoard.kpis.includes('headcount')) {
         const extendedHeadcountData = analytics.getExtendedHeadcount(filters);
         setHeadcountData(extendedHeadcountData);
+      }
+
+      // Recalculer les données EDI si nécessaire
+      if (currentBoard.kpis.includes('edi')) {
+        const ediKPIData = analytics.getEDIData(filters);
+        setEdiData(ediKPIData);
       }
       
       toast({
@@ -559,7 +575,7 @@ const Index = () => {
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
               <div className="text-sm text-gray-500 order-2 sm:order-1">
-                {(kpis.length + (headcountData ? 1 : 0))} indicateur{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''} affiché{(kpis.length + (headcountData ? 1 : 0)) > 1 ? 's' : ''}
+                {(kpis.length + (headcountData ? 1 : 0) + (ediData ? 1 : 0))} indicateur{(kpis.length + (headcountData ? 1 : 0) + (ediData ? 1 : 0)) > 1 ? 's' : ''} affiché{(kpis.length + (headcountData ? 1 : 0) + (ediData ? 1 : 0)) > 1 ? 's' : ''}
               </div>
               <div className="hidden md:flex items-center space-x-2 text-sm text-gray-600 order-3 sm:order-2">
                 <Users className="h-4 w-4" />
@@ -603,10 +619,11 @@ const Index = () => {
             </div>
           )}
 
-          {(kpis.length > 0 || headcountData) ? (
+          {(kpis.length > 0 || headcountData || ediData) ? (
             <DraggableKPIGrid
               kpis={kpis}
               headcountData={headcountData}
+              ediData={ediData}
               kpiOrder={currentBoard.kpiOrder || []}
               enabled={isReorderMode}
               onOrderChange={handleKPIOrderChange}

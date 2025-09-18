@@ -1,13 +1,15 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { KPIData, ExtendedHeadcountData } from '../services/hrAnalytics';
+import { KPIData, ExtendedHeadcountData, EDIData } from '../services/hrAnalytics';
 import KPICard from './KPICard';
 import HeadcountCard from './HeadcountCard';
+import EDICard from './EDICard';
 import SeniorityRetentionCard from './SeniorityRetentionCard';
 
 interface DraggableKPIGridProps {
   kpis: KPIData[];
   headcountData: ExtendedHeadcountData | null;
+  ediData: EDIData | null;
   kpiOrder: string[];
   enabled?: boolean;
   onOrderChange: (newOrder: string[]) => void;
@@ -22,6 +24,7 @@ interface DraggableKPIGridProps {
 const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
   kpis,
   headcountData,
+  ediData,
   kpiOrder,
   enabled = false,
   onOrderChange,
@@ -34,15 +37,18 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
 }) => {
   // Construit la liste des éléments dans l'ordre souhaité
   const buildAllItems = () => {
-    const items: Array<{ id: string; type: 'kpi' | 'headcount' | 'seniority-retention'; data: any }> = [];
+    const items: Array<{ id: string; type: 'kpi' | 'headcount' | 'edi' | 'seniority-retention'; data: any }> = [];
 
     const pushed = new Set<string>();
 
-    // 1) Respecter l'ordre fourni (incluant 'headcount' et 'seniority-and-retention')
+    // 1) Respecter l'ordre fourni (incluant 'headcount', 'edi' et 'seniority-and-retention')
     (kpiOrder || []).forEach((id) => {
       if (id === 'headcount' && headcountData) {
         items.push({ id: 'headcount', type: 'headcount', data: headcountData });
         pushed.add('headcount');
+      } else if (id === 'edi' && ediData) {
+        items.push({ id: 'edi', type: 'edi', data: ediData });
+        pushed.add('edi');
       } else if (id === 'seniority-and-retention' && seniorityRetentionData) {
         items.push({ id: 'seniority-and-retention', type: 'seniority-retention', data: seniorityRetentionData });
         pushed.add('seniority-and-retention');
@@ -61,7 +67,13 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
       pushed.add('headcount');
     }
 
-    // 3) Ajouter seniority-and-retention s'il n'est pas encore dans la liste
+    // 3) Ajouter edi s'il n'est pas encore dans la liste
+    if (ediData && !pushed.has('edi')) {
+      items.push({ id: 'edi', type: 'edi', data: ediData });
+      pushed.add('edi');
+    }
+
+    // 4) Ajouter seniority-and-retention s'il n'est pas encore dans la liste
     if (seniorityRetentionData && !pushed.has('seniority-and-retention')) {
       items.push({ id: 'seniority-and-retention', type: 'seniority-retention', data: seniorityRetentionData });
       pushed.add('seniority-and-retention');
