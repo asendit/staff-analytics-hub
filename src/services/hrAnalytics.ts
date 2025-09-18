@@ -809,6 +809,26 @@ export class HRAnalytics {
     ];
   }
 
+  private groupEducationLevels(educationLevel: string): string {
+    const educationGroups: Record<string, string> = {
+      'Doctorat': 'Formation tertiaire',
+      'Université Master': 'Formation tertiaire',
+      'Université Bachelor': 'Formation tertiaire',
+      'Haute école spécialisée Master': 'Formation tertiaire',
+      'Haute école spécialisée Bachelor': 'Formation tertiaire',
+      'Formation professionnelle supérieure Master': 'Formation professionnelle',
+      'Formation professionnelle supérieure Bachelor': 'Formation professionnelle',
+      'Formation professionnelle supérieure': 'Formation professionnelle',
+      'Brevet d\'enseignement': 'Formation professionnelle',
+      'Apprentissage complet': 'Formation professionnelle',
+      'Maturité': 'Formation générale',
+      'Formation exclusivement interne': 'Formation de base',
+      'Scolarité obligatoire': 'Formation de base'
+    };
+    
+    return educationGroups[educationLevel] || 'Autre';
+  }
+
   getEDIData(filters: FilterOptions): EDIData {
     const employees = this.filterEmployees(filters).filter(emp => emp.status === 'active');
     
@@ -840,36 +860,30 @@ export class HRAnalytics {
     const nationalities = new Set(employees.filter(emp => emp.nationality).map(emp => emp.nationality!));
     const nationalitiesCount = nationalities.size;
 
-    // Répartition par formation
-    const educationCounts = {
-      'Doctorat': 0,
-      'Université Master': 0,
-      'Université Bachelor': 0,
-      'Haute école spécialisée Master': 0,
-      'Haute école spécialisée Bachelor': 0,
-      'Formation professionnelle supérieure Master': 0,
-      'Formation professionnelle supérieure Bachelor': 0,
-      'Formation professionnelle supérieure': 0,
-      'Brevet d\'enseignement': 0,
-      'Maturité': 0,
-      'Apprentissage complet': 0,
-      'Formation exclusivement interne': 0,
-      'Scolarité obligatoire': 0
+    // Répartition par formation - groupée en 4 catégories principales
+    const educationGroupCounts = {
+      'Formation tertiaire': 0,
+      'Formation professionnelle': 0,
+      'Formation générale': 0,
+      'Formation de base': 0
     };
 
     employees.forEach(emp => {
-      if (emp.educationLevel && educationCounts.hasOwnProperty(emp.educationLevel)) {
-        educationCounts[emp.educationLevel]++;
+      if (emp.educationLevel) {
+        const group = this.groupEducationLevels(emp.educationLevel);
+        if (educationGroupCounts.hasOwnProperty(group)) {
+          educationGroupCounts[group]++;
+        }
       }
     });
 
-    console.log('Education breakdown data:', educationCounts);
-
-    const educationBreakdown = Object.entries(educationCounts).map(([level, count]) => ({
-      level,
-      count,
-      percentage: employees.length > 0 ? (count / employees.length) * 100 : 0
-    }));
+    const educationBreakdown = Object.entries(educationGroupCounts)
+      .map(([level, count]) => ({
+        level,
+        count,
+        percentage: employees.length > 0 ? (count / employees.length) * 100 : 0
+      }))
+      .filter(item => item.count > 0); // Filtrer les groupes vides
 
     // Génération d'insight
     const diversity = nationalitiesCount;
