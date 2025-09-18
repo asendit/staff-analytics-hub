@@ -54,8 +54,8 @@ const Index = () => {
         'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
       ],
       kpiOrder: [
-        'headcount', 'turnover', 'seniority-and-retention', 'remote-work',
-        'absenteeism', 'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
+        'headcount', 'turnover', 'seniority-and-retention', 'absenteeism',
+        'remote-work', 'onboarding', 'hr-expenses', 'age-seniority', 'task-completion', 'document-completion'
       ],
       createdAt: new Date().toISOString(),
       isDefault: true
@@ -83,7 +83,7 @@ const Index = () => {
         'headcount', 'absenteeism', 'remote-work', 'task-completion', 'age-seniority'
       ],
       kpiOrder: [
-        'headcount', 'absenteeism', 'remote-work', 'task-completion', 'age-seniority'
+        'headcount', 'remote-work', 'absenteeism', 'task-completion', 'age-seniority'
       ],
       createdAt: new Date().toISOString(),
       isDefault: true
