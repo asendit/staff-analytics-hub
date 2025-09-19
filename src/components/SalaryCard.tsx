@@ -44,7 +44,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
       <CardHeader className="flex flex-row items-center justify-between pb-4 pt-5 px-5">
         <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3">
           <div className="w-1 h-6 bg-teams-green rounded-full" />
-          Masse salariale - Vue d'ensemble
+          Masse salariale
         </CardTitle>
         <div className="flex space-x-1">
           <Button
@@ -72,11 +72,11 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
           {/* Indicateurs de masse salariale */}
           <div className="space-y-4">
             {/* Masse salariale totale et par ETP */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="teams-card p-4 border border-teams-green/20">
                 <div className="flex items-center space-x-2 mb-3">
                   <DollarSign className="h-4 w-4 text-teams-green" />
-                  <span className="text-sm font-semibold text-foreground">Masse totale</span>
+                  <span className="text-sm font-semibold text-foreground">Masse salariale totale</span>
                 </div>
                 <div className="flex items-baseline space-x-3">
                   <div className="text-2xl font-semibold text-foreground">
@@ -89,7 +89,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
               <div className="teams-card p-4 border border-teams-green/20">
                 <div className="flex items-center space-x-2 mb-3">
                   <Users className="h-4 w-4 text-teams-green" />
-                  <span className="text-sm font-semibold text-foreground">Salaire par ETP</span>
+                  <span className="text-sm font-semibold text-foreground">Masse salariale par ETP</span>
                 </div>
                 <div className="flex items-baseline space-x-3">
                   <div className="text-2xl font-semibold text-foreground">
@@ -146,7 +146,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
           <div className="mt-4 p-4 bg-teams-green/5 rounded-lg border border-teams-green/20">
             <div className="flex items-start space-x-3">
               <div className="p-1.5 bg-teams-green/10 rounded-full">
-                <BarChart3 className="h-3 w-3 text-teams-green" />
+                <DollarSign className="h-3 w-3 text-teams-green" />
               </div>
               <p className="text-sm text-foreground leading-relaxed font-medium">
                 {data.insight}
