@@ -493,7 +493,7 @@ const Index = () => {
     { id: 'salary', name: 'Masse salariale' },
     { id: 'remote-work', name: 'Télétravail' },
     { id: 'onboarding', name: 'Nouvelles arrivées' },
-    { id: 'hr-expenses', name: 'Dépenses RH' },
+    { id: 'hr-expenses', name: 'Notes de frais' },
     { id: 'age-seniority', name: 'Âge et ancienneté' },
     { id: 'seniority-and-retention', name: 'Ancienneté et rétention' },
     { id: 'task-completion', name: 'Tâches RH' },

@@ -351,7 +351,7 @@ export class HRAnalytics {
       trend,
       comparison: this.getTrendComparison(trend),
       category: remoteWorkAdoptionRate < 20 ? 'negative' : 'positive',
-      insight: `Le taux d'adoption du télétravail est de ${remoteWorkAdoptionRate.toFixed(1)}%. ${remoteWorkAdoptionRate < 20 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
+      insight: `Le pourcentage de télétravail sur la période est de ${remoteWorkAdoptionRate.toFixed(1)}%. ${remoteWorkAdoptionRate < 20 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
     };
   }
 
@@ -436,18 +436,18 @@ export class HRAnalytics {
     
     return {
       id: 'hr-expenses',
-      name: 'Dépenses RH totales',
+      name: 'Notes de frais',
       value: Math.round(totalExpenses),
       unit: '€',
       trend,
       comparison: this.getTrendComparison(trend),
       category: trend && trend > 15 ? 'negative' : trend && trend > 5 ? 'neutral' : 'positive',
-      insight: `💰 Budget RH de ${Math.round(totalExpenses).toLocaleString()}€ cette période. ${
+      insight: `💰 Montant total des notes de frais : ${Math.round(totalExpenses).toLocaleString()}€ sur la période. ${
         trend && trend > 0 
-          ? `📈 Augmentation de ${Math.round(trend)}% par rapport à la période de comparaison, principalement due aux frais de formation et équipements.`
+          ? `📈 Augmentation de ${Math.round(trend)}% par rapport à la période de comparaison, principalement due aux frais de transport et repas.`
           : trend && trend < 0
-          ? `📉 Réduction de ${Math.abs(Math.round(trend))}% des dépenses par rapport à la période de comparaison.`
-          : '📊 Dépenses stables par rapport à la période de comparaison.'
+          ? `📉 Réduction de ${Math.abs(Math.round(trend))}% des notes de frais par rapport à la période de comparaison.`
+          : '📊 Notes de frais stables par rapport à la période de comparaison.'
       }`
     };
   }
@@ -724,12 +724,12 @@ export class HRAnalytics {
     return {
       id: 'document-completion',
       name: 'Dossiers collaborateurs',
-      value: completionRate.toFixed(1),
-      unit: '%',
-      trend,
-      comparison: this.getTrendComparison(trend),
-      category: completionRate < 80 ? 'negative' : 'positive',
-      insight: `Le taux de complétion des dossiers est de ${completionRate.toFixed(1)}%. ${completionRate < 80 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
+      value: 'N/A',
+      unit: '',
+      trend: null,
+      comparison: 'stable' as const,
+      category: 'neutral' as const,
+      insight: `Données indisponibles pour le moment.`
     };
   }
 
