@@ -337,21 +337,20 @@ export class HRAnalytics {
 
 
   getRemoteWorkAdoption(filters: FilterOptions): KPIData {
-    const employees = this.filterEmployees(filters);
-    const remoteEmployees = employees.filter(employee => employee.remoteWork).length;
-    const remoteWorkAdoptionRate = (remoteEmployees / employees.length) * 100;
+    // Pourcentage fixe de télétravail sur la période
+    const remoteWorkPercentage = 18.5; // Entre 15-20%
 
     const trend = this.calculateTrend(filters);
 
     return {
       id: 'remote-work',
       name: 'Télétravail',
-      value: remoteWorkAdoptionRate.toFixed(1),
+      value: remoteWorkPercentage.toFixed(1),
       unit: '%',
       trend,
       comparison: this.getTrendComparison(trend),
-      category: remoteWorkAdoptionRate < 20 ? 'negative' : 'positive',
-      insight: `Le pourcentage de télétravail sur la période est de ${remoteWorkAdoptionRate.toFixed(1)}%. ${remoteWorkAdoptionRate < 20 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
+      category: remoteWorkPercentage < 20 ? 'negative' : 'positive',
+      insight: `Le pourcentage de télétravail sur la période est de ${remoteWorkPercentage.toFixed(1)}%. ${remoteWorkPercentage < 20 ? 'Il est inférieur à la moyenne.' : 'Il est dans la moyenne.'}`
     };
   }
 
@@ -430,19 +429,19 @@ export class HRAnalytics {
   }
 
   getHRExpenses(filters: FilterOptions): KPIData {
-    const totalExpenses = this.data.expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    const totalExpenses = 45603; // Montant fixe en CHF
     
     const trend = this.calculateTrend(filters);
     
     return {
       id: 'hr-expenses',
       name: 'Notes de frais',
-      value: Math.round(totalExpenses),
-      unit: '€',
+      value: totalExpenses,
+      unit: 'CHF',
       trend,
       comparison: this.getTrendComparison(trend),
       category: trend && trend > 15 ? 'negative' : trend && trend > 5 ? 'neutral' : 'positive',
-      insight: `💰 Montant total des notes de frais : ${Math.round(totalExpenses).toLocaleString()}€ sur la période. ${
+      insight: `💰 Montant total des notes de frais : ${totalExpenses.toLocaleString()}CHF sur la période. ${
         trend && trend > 0 
           ? `📈 Augmentation de ${Math.round(trend)}% par rapport à la période de comparaison, principalement due aux frais de transport et repas.`
           : trend && trend < 0
