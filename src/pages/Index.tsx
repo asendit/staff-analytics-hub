@@ -545,6 +545,9 @@ const Index = () => {
           onBoardUpdate={handleBoardUpdate}
           onBoardDelete={handleBoardDelete}
           availableKPIs={availableKPIs}
+          onExportCSV={exportToCSV}
+          onExportExcel={exportToExcel}
+          onExportPDF={exportToPDF}
         />
 
         {/* Filtres */}
@@ -563,32 +566,15 @@ const Index = () => {
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {currentBoard.name}
               </h2>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem onClick={() => setIsReorderMode(!isReorderMode)}>
-                    <GripVertical className="h-4 w-4 mr-2" />
-                    {isReorderMode ? 'Arrêter' : 'Activer'} la réorganisation
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={exportToCSV}>
-                    <FileText className="h-4 w-4 mr-2" />
-                    Exporter en CSV
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={exportToExcel}>
-                    <FileSpreadsheet className="h-4 w-4 mr-2" />
-                    Exporter en Excel
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={exportToPDF}>
-                    <FileBarChart className="h-4 w-4 mr-2" />
-                    Exporter en PDF
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 w-8 p-0"
+                onClick={() => setIsReorderMode(!isReorderMode)}
+                title={isReorderMode ? 'Arrêter la réorganisation' : 'Activer la réorganisation'}
+              >
+                <GripVertical className="h-4 w-4" />
+              </Button>
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
               <div className="text-sm text-gray-500 order-2 sm:order-1">

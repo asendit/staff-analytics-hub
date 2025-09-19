@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Copy, Share, Edit, Trash2, Save, BarChart3 } from 'lucide-react';
+import { Plus, Copy, FileText, FileSpreadsheet, FileBarChart, Edit, Trash2, Save, BarChart3 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 export interface Board {
@@ -26,6 +26,9 @@ interface BoardManagerProps {
   onBoardUpdate: (board: Board) => void;
   onBoardDelete: (boardId: string) => void;
   availableKPIs: { id: string; name: string }[];
+  onExportCSV: () => void;
+  onExportExcel: () => void;
+  onExportPDF: () => void;
 }
 
 const BoardManager: React.FC<BoardManagerProps> = ({
@@ -35,7 +38,10 @@ const BoardManager: React.FC<BoardManagerProps> = ({
   onBoardCreate,
   onBoardUpdate,
   onBoardDelete,
-  availableKPIs
+  availableKPIs,
+  onExportCSV,
+  onExportExcel,
+  onExportPDF
 }) => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -109,15 +115,6 @@ const BoardManager: React.FC<BoardManagerProps> = ({
     });
   };
 
-  const handleShareBoard = (board: Board) => {
-    const shareUrl = `${window.location.origin}?board=${board.id}`;
-    navigator.clipboard.writeText(shareUrl);
-
-    toast({
-      title: "Lien copié",
-      description: "Le lien de partage a été copié dans le presse-papier"
-    });
-  };
 
   const handleDeleteBoard = (boardId: string) => {
     if (boards.find(b => b.id === boardId)?.isDefault) {
@@ -290,9 +287,26 @@ const BoardManager: React.FC<BoardManagerProps> = ({
               <Button 
                 size="sm" 
                 variant="outline"
-                onClick={() => handleShareBoard(currentBoard)}
+                onClick={onExportCSV}
+                title="Exporter en CSV"
               >
-                <Share className="h-4 w-4" />
+                <FileText className="h-4 w-4" />
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={onExportExcel}
+                title="Exporter en Excel"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={onExportPDF}
+                title="Exporter en PDF"
+              >
+                <FileBarChart className="h-4 w-4" />
               </Button>
               <Button 
                 size="sm" 
