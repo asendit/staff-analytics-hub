@@ -640,6 +640,7 @@ const Index = () => {
               kpis={kpis}
               headcountData={headcountData}
               ediData={ediData}
+              salaryData={salaryData}
               kpiOrder={currentBoard.kpiOrder || []}
               enabled={isReorderMode}
               onOrderChange={handleKPIOrderChange}
