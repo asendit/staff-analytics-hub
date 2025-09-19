@@ -109,9 +109,9 @@ const Index = () => {
       console.log('Calcul des KPIs avec filtres:', filters);
       const allKPIs = analytics.getAllKPIs(filters);
       
-      // Filtrer les KPIs selon le board actuel (exclure headcount et edi qui sont traités séparément)
+      // Filtrer les KPIs selon le board actuel (exclure headcount, edi et salary qui sont traités séparément)
       const filteredKPIs = allKPIs.filter(kpi => 
-        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount' && kpi.id !== 'edi' && kpi.id !== 'seniority-and-retention'
+        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount' && kpi.id !== 'edi' && kpi.id !== 'salary' && kpi.id !== 'seniority-and-retention'
       );
       setKpis(filteredKPIs);
 
@@ -219,7 +219,7 @@ const Index = () => {
     if (analytics && currentBoard) {
       const allKPIs = analytics.getAllKPIs(filters);
       const filteredKPIs = allKPIs.filter(kpi => 
-        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount' && kpi.id !== 'edi'
+        currentBoard.kpis.includes(kpi.id) && kpi.id !== 'headcount' && kpi.id !== 'edi' && kpi.id !== 'salary'
       );
       setKpis(filteredKPIs);
       
@@ -490,6 +490,7 @@ const Index = () => {
     { id: 'turnover', name: 'Turnover' },
     { id: 'headcount', name: 'Effectif - Vue d\'ensemble' },
     { id: 'edi', name: 'Équité, diversité et inclusion' },
+    { id: 'salary', name: 'Masse salariale' },
     { id: 'remote-work', name: 'Télétravail' },
     { id: 'onboarding', name: 'Nouvelles arrivées' },
     { id: 'hr-expenses', name: 'Dépenses RH' },
@@ -635,7 +636,7 @@ const Index = () => {
             </div>
           )}
 
-          {(kpis.length > 0 || headcountData || ediData) ? (
+          {(kpis.length > 0 || headcountData || ediData || salaryData) ? (
             <DraggableKPIGrid
               kpis={kpis}
               headcountData={headcountData}

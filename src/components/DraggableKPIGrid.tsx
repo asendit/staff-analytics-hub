@@ -40,11 +40,11 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
 }) => {
   // Construit la liste des éléments dans l'ordre souhaité
   const buildAllItems = () => {
-    const items: Array<{ id: string; type: 'kpi' | 'headcount' | 'edi' | 'seniority-retention'; data: any }> = [];
+    const items: Array<{ id: string; type: 'kpi' | 'headcount' | 'edi' | 'salary' | 'seniority-retention'; data: any }> = [];
 
     const pushed = new Set<string>();
 
-    // 1) Respecter l'ordre fourni (incluant 'headcount', 'edi' et 'seniority-and-retention')
+    // 1) Respecter l'ordre fourni (incluant 'headcount', 'edi', 'salary' et 'seniority-and-retention')
     (kpiOrder || []).forEach((id) => {
       if (id === 'headcount' && headcountData) {
         items.push({ id: 'headcount', type: 'headcount', data: headcountData });
@@ -52,6 +52,9 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
       } else if (id === 'edi' && ediData) {
         items.push({ id: 'edi', type: 'edi', data: ediData });
         pushed.add('edi');
+      } else if (id === 'salary' && salaryData) {
+        items.push({ id: 'salary', type: 'salary', data: salaryData });
+        pushed.add('salary');
       } else if (id === 'seniority-and-retention' && seniorityRetentionData) {
         items.push({ id: 'seniority-and-retention', type: 'seniority-retention', data: seniorityRetentionData });
         pushed.add('seniority-and-retention');
@@ -76,13 +79,19 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
       pushed.add('edi');
     }
 
-    // 4) Ajouter seniority-and-retention s'il n'est pas encore dans la liste
+    // 4) Ajouter salary s'il n'est pas encore dans la liste
+    if (salaryData && !pushed.has('salary')) {
+      items.push({ id: 'salary', type: 'salary', data: salaryData });
+      pushed.add('salary');
+    }
+
+    // 5) Ajouter seniority-and-retention s'il n'est pas encore dans la liste
     if (seniorityRetentionData && !pushed.has('seniority-and-retention')) {
       items.push({ id: 'seniority-and-retention', type: 'seniority-retention', data: seniorityRetentionData });
       pushed.add('seniority-and-retention');
     }
 
-    // 4) Ajouter les autres KPIs non présents
+    // 6) Ajouter les autres KPIs non présents
     kpis.forEach((kpi) => {
       if (!pushed.has(kpi.id)) {
         items.push({ id: kpi.id, type: 'kpi', data: kpi });
@@ -126,7 +135,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
           <div
             key={item.id}
             className={`relative animate-fade-in ${
-              item.id === 'headcount' || item.id === 'edi' ? 'col-span-full lg:col-span-4 xl:col-span-4' : 
+              item.id === 'headcount' || item.id === 'edi' || item.id === 'salary' ? 'col-span-full lg:col-span-4 xl:col-span-4' : 
               item.id === 'seniority-and-retention' ? 'col-span-full md:col-span-2 lg:col-span-2 xl:col-span-2' : 
               ''
             }`}
@@ -142,6 +151,13 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
             ) : item.type === 'edi' ? (
               <EDICard
                 data={item.data as EDIData}
+                onInfoClick={() => {}}
+                onChartClick={() => {}}
+                showInsight={isAIEnabled}
+              />
+            ) : item.type === 'salary' ? (
+              <SalaryCard
+                data={item.data as SalaryData}
                 onInfoClick={() => {}}
                 onChartClick={() => {}}
                 showInsight={isAIEnabled}
@@ -192,7 +208,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
             {allItems.map((item, index) => {
               // Calculer le nombre de colonnes selon le type et la taille d'écran
               const getColSpan = () => {
-                if (item.id === 'headcount' || item.id === 'edi') {
+                if (item.id === 'headcount' || item.id === 'edi' || item.id === 'salary') {
                   return 'col-span-2 md:col-span-4 lg:col-span-6 xl:col-span-8'; // Toute la largeur
                 }
                 if (item.id === 'seniority-and-retention') {
@@ -242,6 +258,13 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                         ) : item.type === 'edi' ? (
                           <EDICard
                             data={item.data as EDIData}
+                            onInfoClick={() => {}}
+                            onChartClick={() => {}}
+                            showInsight={isAIEnabled}
+                          />
+                        ) : item.type === 'salary' ? (
+                          <SalaryCard
+                            data={item.data as SalaryData}
                             onInfoClick={() => {}}
                             onChartClick={() => {}}
                             showInsight={isAIEnabled}
