@@ -143,10 +143,10 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
 
         {/* Insight IA */}
         {showInsight && data.insight && (
-          <div className="mt-4 p-4 bg-teams-green/5 rounded-lg border border-teams-green/20">
+          <div className="mt-4 p-4 bg-teams-purple/5 rounded-lg border border-teams-purple/20">
             <div className="flex items-start space-x-3">
-              <div className="p-1.5 bg-teams-green/10 rounded-full">
-                <BarChart3 className="h-3 w-3 text-teams-green" />
+              <div className="p-1.5 bg-teams-purple/10 rounded-full">
+                <BarChart3 className="h-3 w-3 text-teams-purple" />
               </div>
               <p className="text-sm text-foreground leading-relaxed font-medium">
                 {data.insight}
