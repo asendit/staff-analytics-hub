@@ -99,25 +99,6 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
                 <div className="text-sm text-muted-foreground font-medium">par équivalent temps plein</div>
               </div>
             </div>
-
-            {/* Ratio CA */}
-            <div className="teams-card p-4 border border-teams-green/20">
-              <div className="flex items-center space-x-2 mb-3">
-                <TrendingUp className="h-4 w-4 text-teams-green" />
-                <span className="text-sm font-semibold text-foreground">Poids dans le CA</span>
-              </div>
-              <div className="flex items-baseline space-x-3">
-                <div className={`text-xl font-semibold ${data.salaryMassToRevenueRatio < 35 ? 'text-success' : data.salaryMassToRevenueRatio > 45 ? 'text-danger' : 'text-foreground'}`}>
-                  {data.salaryMassToRevenueRatio}%
-                </div>
-                {data.salaryMassToRevenueRatio < 35 ? (
-                  <TrendingUp className="h-4 w-4 text-success" />
-                ) : data.salaryMassToRevenueRatio > 45 ? (
-                  <TrendingUp className="h-4 w-4 text-danger rotate-180" />
-                ) : null}
-              </div>
-              <div className="text-sm text-muted-foreground font-medium">du chiffre d'affaires</div>
-            </div>
           </div>
 
           {/* Graphique par département */}
