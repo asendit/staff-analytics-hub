@@ -43,7 +43,7 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
     >
       <CardHeader className="flex flex-row items-center justify-between pb-4 pt-5 px-5">
         <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3">
-          <div className="w-1 h-6 bg-teams-green rounded-full" />
+          <div className="w-1 h-6 bg-teams-purple rounded-full" />
           Masse salariale
         </CardTitle>
         <div className="flex space-x-1">
