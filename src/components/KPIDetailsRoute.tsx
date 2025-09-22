@@ -48,6 +48,10 @@ const KPIDetailsRoute: React.FC = () => {
     setFilters(newFilters);
   };
 
+  const handleShowInsightChange = (enabled: boolean) => {
+    setShowInsight(enabled);
+  };
+
   if (!analytics) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -68,6 +72,7 @@ const KPIDetailsRoute: React.FC = () => {
           filters={filters}
           onFiltersChange={handleFiltersChange}
           showInsight={showInsight}
+          onShowInsightChange={handleShowInsightChange}
         />
       );
     default:
@@ -77,6 +82,7 @@ const KPIDetailsRoute: React.FC = () => {
           filters={filters}
           onFiltersChange={handleFiltersChange}
           showInsight={showInsight}
+          onShowInsightChange={handleShowInsightChange}
         />
       );
   }

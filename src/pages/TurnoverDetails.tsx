@@ -3,23 +3,26 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, TrendingUp, TrendingDown, Minus, UserMinus, BarChart3, PieChart, Activity, Building, Users, Brain } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Minus, UserMinus, BarChart3, PieChart, Activity, Building, Users, Brain, Sparkles } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 import { HRAnalytics, FilterOptions } from '../services/hrAnalytics';
 import FilterPanel from '../components/FilterPanel';
+import { Switch } from '@/components/ui/switch';
 
 interface TurnoverDetailsProps {
   analytics: HRAnalytics | null;
   filters: FilterOptions;
   onFiltersChange: (filters: FilterOptions) => void;
   showInsight: boolean;
+  onShowInsightChange?: (enabled: boolean) => void;
 }
 
 const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({ 
   analytics, 
   filters, 
   onFiltersChange,
-  showInsight 
+  showInsight,
+  onShowInsightChange
 }) => {
   const { kpiId } = useParams();
   const navigate = useNavigate();
@@ -39,6 +42,18 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
     setTimeout(() => {
       setLoading(false);
     }, 1000);
+  };
+
+  const handleAIToggle = (enabled: boolean) => {
+    localStorage.setItem('aiEnabled', String(enabled));
+    if (onShowInsightChange) {
+      onShowInsightChange(enabled);
+    }
+    // Trigger storage event for other components
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'aiEnabled',
+      newValue: String(enabled)
+    }));
   };
 
   useEffect(() => {
@@ -160,6 +175,15 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
                   Avec comparaison
                 </Badge>
               )}
+              <div className="flex items-center space-x-3 text-sm text-muted-foreground ml-4">
+                <Brain className="h-4 w-4" />
+                <span>IA</span>
+                <Switch
+                  checked={showInsight}
+                  onCheckedChange={handleAIToggle}
+                />
+                {showInsight && <Sparkles className="h-4 w-4 text-primary" />}
+              </div>
             </div>
           </div>
         </div>
