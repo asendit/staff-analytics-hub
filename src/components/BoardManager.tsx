@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Copy, FileText, FileSpreadsheet, FileBarChart, Edit, Trash2, Save, BarChart3 } from 'lucide-react';
+import { Plus, Copy, FileText, FileSpreadsheet, FileBarChart, Edit, Trash2, Save, BarChart3, Download, ChevronDown } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from '@/hooks/use-toast';
 
 export interface Board {
@@ -284,30 +285,28 @@ const BoardManager: React.FC<BoardManagerProps> = ({
               >
                 <Copy className="h-4 w-4" />
               </Button>
-              <Button 
-                size="sm" 
-                variant="outline"
-                onClick={onExportCSV}
-                title="Exporter en CSV"
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline"
-                onClick={onExportExcel}
-                title="Exporter en Excel"
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline"
-                onClick={onExportPDF}
-                title="Exporter en PDF"
-              >
-                <FileBarChart className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="outline" title="Options d'export">
+                    <Download className="h-4 w-4" />
+                    <ChevronDown className="h-3 w-3 ml-1" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={onExportCSV}>
+                    <FileText className="h-4 w-4 mr-2" />
+                    Exporter en CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={onExportExcel}>
+                    <FileSpreadsheet className="h-4 w-4 mr-2" />
+                    Exporter en Excel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={onExportPDF}>
+                    <FileBarChart className="h-4 w-4 mr-2" />
+                    Exporter en PDF
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button 
                 size="sm" 
                 variant="outline"
