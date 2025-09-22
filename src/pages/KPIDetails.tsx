@@ -352,21 +352,20 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={detailData.agencyBreakdown} layout="horizontal">
+                  <BarChart data={detailData.agencyBreakdown}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                    <YAxis 
+                    <XAxis 
                       type="category" 
                       dataKey="agency" 
                       stroke="hsl(var(--muted-foreground))"
-                      width={80}
                     />
+                    <YAxis type="number" stroke="hsl(var(--muted-foreground))" />
                     <Tooltip />
                     <Bar 
                       dataKey="count" 
                       fill="hsl(var(--success))" 
                       name="Effectif"
-                      radius={[0, 4, 4, 0]}
+                      radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -385,21 +384,20 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={detailData.departmentBreakdown} layout="horizontal">
+                  <BarChart data={detailData.departmentBreakdown}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                    <YAxis 
+                    <XAxis 
                       type="category" 
                       dataKey="department" 
                       stroke="hsl(var(--muted-foreground))"
-                      width={80}
                     />
+                    <YAxis type="number" stroke="hsl(var(--muted-foreground))" />
                     <Tooltip />
                     <Bar 
                       dataKey="count" 
                       fill="hsl(var(--primary))" 
                       name="Effectif"
-                      radius={[0, 4, 4, 0]}
+                      radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
                 </ResponsiveContainer>
