@@ -339,15 +339,17 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     name="Effectif 2024"
                     dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 6 }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="effectifN1" 
-                    stroke="hsl(var(--muted-foreground))" 
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    name="Effectif 2023"
-                    dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 4 }}
-                  />
+                  {filters.compareWith && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="effectifN1" 
+                      stroke="hsl(var(--muted-foreground))" 
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      name="Effectif 2023"
+                      dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 4 }}
+                    />
+                  )}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -382,12 +384,14 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                       name="Effectif 2024"
                       radius={[4, 4, 0, 0]}
                     />
-                    <Bar 
-                      dataKey="countN1" 
-                      fill="hsl(var(--muted-foreground))" 
-                      name="Effectif 2023"
-                      radius={[4, 4, 0, 0]}
-                    />
+                    {filters.compareWith && (
+                      <Bar 
+                        dataKey="countN1" 
+                        fill="hsl(var(--muted-foreground))" 
+                        name="Effectif 2023"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    )}
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -420,12 +424,14 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                       name="Effectif 2024"
                       radius={[4, 4, 0, 0]}
                     />
-                    <Bar 
-                      dataKey="countN1" 
-                      fill="hsl(var(--muted-foreground))" 
-                      name="Effectif 2023"
-                      radius={[4, 4, 0, 0]}
-                    />
+                    {filters.compareWith && (
+                      <Bar 
+                        dataKey="countN1" 
+                        fill="hsl(var(--muted-foreground))" 
+                        name="Effectif 2023"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    )}
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -441,63 +447,89 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                {/* 2024 */}
-                <div>
-                  <h4 className="text-sm font-medium text-center mb-2">2024</h4>
-                  <div className="h-48">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsPieChart>
-                        <Tooltip 
-                          formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionCurrent.find((d: any) => d.name === name)?.percentage}%)`, name]}
-                        />
-                        <Pie
-                          data={detailData.genderDistributionCurrent}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={40}
-                          outerRadius={70}
-                          paddingAngle={5}
-                          dataKey="value"
-                        >
-                          {detailData.genderDistributionCurrent.map((entry: any, index: number) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Legend />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
+              {filters.compareWith ? (
+                <div className="grid grid-cols-2 gap-4">
+                  {/* 2024 */}
+                  <div>
+                    <h4 className="text-sm font-medium text-center mb-2">2024</h4>
+                    <div className="h-48">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsPieChart>
+                          <Tooltip 
+                            formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionCurrent.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                          />
+                          <Pie
+                            data={detailData.genderDistributionCurrent}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={40}
+                            outerRadius={70}
+                            paddingAngle={5}
+                            dataKey="value"
+                          >
+                            {detailData.genderDistributionCurrent.map((entry: any, index: number) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Legend />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                </div>
 
-                {/* 2023 */}
-                <div>
-                  <h4 className="text-sm font-medium text-center mb-2">2023</h4>
-                  <div className="h-48">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsPieChart>
-                        <Tooltip 
-                          formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionPrevious.find((d: any) => d.name === name)?.percentage}%)`, name]}
-                        />
-                        <Pie
-                          data={detailData.genderDistributionPrevious}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={40}
-                          outerRadius={70}
-                          paddingAngle={5}
-                          dataKey="value"
-                        >
-                          {detailData.genderDistributionPrevious.map((entry: any, index: number) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Legend />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
+                  {/* 2023 */}
+                  <div>
+                    <h4 className="text-sm font-medium text-center mb-2">2023</h4>
+                    <div className="h-48">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsPieChart>
+                          <Tooltip 
+                            formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionPrevious.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                          />
+                          <Pie
+                            data={detailData.genderDistributionPrevious}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={40}
+                            outerRadius={70}
+                            paddingAngle={5}
+                            dataKey="value"
+                          >
+                            {detailData.genderDistributionPrevious.map((entry: any, index: number) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Legend />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Tooltip 
+                        formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionCurrent.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                      />
+                      <Pie
+                        data={detailData.genderDistributionCurrent}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={100}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {detailData.genderDistributionCurrent.map((entry: any, index: number) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Legend />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -510,61 +542,86 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                {/* 2024 */}
-                <div>
-                  <h4 className="text-sm font-medium text-center mb-2">2024</h4>
-                  <div className="h-48">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsPieChart>
-                        <Tooltip 
-                          formatter={(value, name) => [`${value} personnes (${detailData.contractTypes.find((d: any) => d.name === name)?.percentage}%)`, name]}
-                        />
-                        <Pie
-                          data={detailData.contractTypes}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={70}
-                          paddingAngle={2}
-                          dataKey="value"
-                        >
-                          {detailData.contractTypes.map((entry: any, index: number) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Legend />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
+              {filters.compareWith ? (
+                <div className="grid grid-cols-2 gap-4">
+                  {/* 2024 */}
+                  <div>
+                    <h4 className="text-sm font-medium text-center mb-2">2024</h4>
+                    <div className="h-48">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsPieChart>
+                          <Tooltip 
+                            formatter={(value, name) => [`${value} personnes (${detailData.contractTypes.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                          />
+                          <Pie
+                            data={detailData.contractTypes}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={70}
+                            paddingAngle={2}
+                            dataKey="value"
+                          >
+                            {detailData.contractTypes.map((entry: any, index: number) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Legend />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                </div>
 
-                {/* 2023 */}
-                <div>
-                  <h4 className="text-sm font-medium text-center mb-2">2023</h4>
-                  <div className="h-48">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsPieChart>
-                        <Tooltip 
-                          formatter={(value, name) => [`${value} personnes (${detailData.contractTypesPrevious.find((d: any) => d.name === name)?.percentage}%)`, name]}
-                        />
-                        <Pie
-                          data={detailData.contractTypesPrevious}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={70}
-                          paddingAngle={2}
-                          dataKey="value"
-                        >
-                          {detailData.contractTypesPrevious.map((entry: any, index: number) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Legend />
-                      </RechartsPieChart>
-                    </ResponsiveContainer>
+                  {/* 2023 */}
+                  <div>
+                    <h4 className="text-sm font-medium text-center mb-2">2023</h4>
+                    <div className="h-48">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsPieChart>
+                          <Tooltip 
+                            formatter={(value, name) => [`${value} personnes (${detailData.contractTypesPrevious.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                          />
+                          <Pie
+                            data={detailData.contractTypesPrevious}
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={70}
+                            paddingAngle={2}
+                            dataKey="value"
+                          >
+                            {detailData.contractTypesPrevious.map((entry: any, index: number) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Legend />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Tooltip 
+                        formatter={(value, name) => [`${value} personnes (${detailData.contractTypes.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                      />
+                      <Pie
+                        data={detailData.contractTypes}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        paddingAngle={2}
+                        dataKey="value"
+                      >
+                        {detailData.contractTypes.map((entry: any, index: number) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Legend />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
