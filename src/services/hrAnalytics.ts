@@ -1067,6 +1067,59 @@ export class HRAnalytics {
     };
   }
 
+  // Méthode publique pour obtenir les labels de comparaison
+  getComparisonLabels(filters: FilterOptions): { current: string; comparison: string } {
+    if (!filters.compareWith) {
+      return { current: 'Actuel', comparison: 'Précédent' };
+    }
+
+    const { currentPeriod, comparisonPeriod } = this.getComparisonPeriods(filters);
+    const now = new Date();
+
+    if (filters.period === 'year') {
+      return {
+        current: `${now.getFullYear()}`,
+        comparison: `${now.getFullYear() - 1}`
+      };
+    } else if (filters.period === 'quarter') {
+      const currentQuarter = Math.floor(now.getMonth() / 3) + 1;
+      
+      if (filters.compareWith === 'previous') {
+        const prevQuarter = currentQuarter === 1 ? 4 : currentQuarter - 1;
+        const prevYear = currentQuarter === 1 ? now.getFullYear() - 1 : now.getFullYear();
+        return {
+          current: `T${currentQuarter} ${now.getFullYear()}`,
+          comparison: `T${prevQuarter} ${prevYear}`
+        };
+      } else {
+        return {
+          current: `T${currentQuarter} ${now.getFullYear()}`,
+          comparison: `T${currentQuarter} ${now.getFullYear() - 1}`
+        };
+      }
+    } else if (filters.period === 'month') {
+      const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 
+                     'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+      const currentMonth = now.getMonth();
+      
+      if (filters.compareWith === 'previous') {
+        const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+        const prevYear = currentMonth === 0 ? now.getFullYear() - 1 : now.getFullYear();
+        return {
+          current: `${months[currentMonth]} ${now.getFullYear()}`,
+          comparison: `${months[prevMonth]} ${prevYear}`
+        };
+      } else {
+        return {
+          current: `${months[currentMonth]} ${now.getFullYear()}`,
+          comparison: `${months[currentMonth]} ${now.getFullYear() - 1}`
+        };
+      }
+    }
+
+    return { current: 'Actuel', comparison: 'Précédent' };
+  }
+
   private getHeadcountAtDate(date: Date): number {
     return this.data.employees.filter(employee => {
       const hireDate = new Date(employee.hireDate);

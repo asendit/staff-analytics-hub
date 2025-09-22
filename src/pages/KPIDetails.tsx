@@ -27,6 +27,9 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
   const [detailData, setDetailData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  // Obtenir les labels de comparaison
+  const comparisonLabels = analytics.getComparisonLabels(filters);
+
   // Données fictives pour les filtres
   const departments = ['RH', 'Commercial', 'Technique', 'Marketing', 'Finance', 'Support'];
   const agencies = ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nantes', 'Bordeaux'];
@@ -354,7 +357,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     dataKey="effectif" 
                     stroke="hsl(var(--primary))" 
                     strokeWidth={3}
-                    name="Effectif 2024"
+                    name={`Effectif ${comparisonLabels.current}`}
                     dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 6 }}
                   />
                   {filters.compareWith && (
@@ -364,7 +367,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                       stroke="hsl(var(--muted-foreground))" 
                       strokeWidth={2}
                       strokeDasharray="5 5"
-                      name="Effectif 2023"
+                      name={`Effectif ${comparisonLabels.comparison}`}
                       dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 4 }}
                     />
                   )}
@@ -399,14 +402,14 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     <Bar 
                       dataKey="count" 
                       fill="hsl(var(--success))" 
-                      name="Effectif 2024"
+                      name={`Effectif ${comparisonLabels.current}`}
                       radius={[4, 4, 0, 0]}
                     />
                     {filters.compareWith && (
                       <Bar 
                         dataKey="countN1" 
                         fill="hsl(var(--muted-foreground))" 
-                        name="Effectif 2023"
+                        name={`Effectif ${comparisonLabels.comparison}`}
                         radius={[4, 4, 0, 0]}
                       />
                     )}
@@ -439,14 +442,14 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     <Bar 
                       dataKey="count" 
                       fill="hsl(var(--primary))" 
-                      name="Effectif 2024"
+                      name={`Effectif ${comparisonLabels.current}`}
                       radius={[4, 4, 0, 0]}
                     />
                     {filters.compareWith && (
                       <Bar 
                         dataKey="countN1" 
                         fill="hsl(var(--muted-foreground))" 
-                        name="Effectif 2023"
+                        name={`Effectif ${comparisonLabels.comparison}`}
                         radius={[4, 4, 0, 0]}
                       />
                     )}
