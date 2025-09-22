@@ -25,7 +25,7 @@ const KPICard: React.FC<KPICardProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleDetailsClick = () => {
+  const handleCardClick = () => {
     if (kpi.id === 'turnover') {
       navigate('/kpi-details/turnover');
     } else {
@@ -45,7 +45,10 @@ const KPICard: React.FC<KPICardProps> = ({
   };
 
   return (
-    <Card className="teams-card border border-teams-purple/30">
+    <Card 
+      className="teams-card border border-teams-purple/30 cursor-pointer hover:border-teams-purple/50 transition-colors" 
+      onClick={handleCardClick}
+    >
       <CardHeader className="flex flex-row items-start justify-between pb-3 pt-4 px-4">
         <div className="flex items-start space-x-3">
           <div className="w-1 h-12 rounded-full bg-teams-purple" />
@@ -67,7 +70,10 @@ const KPICard: React.FC<KPICardProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleDetailsClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCardClick();
+            }}
             className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
             title="Voir les graphiques détaillés"
           >
@@ -76,7 +82,10 @@ const KPICard: React.FC<KPICardProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onInfoClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              onInfoClick();
+            }}
             className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
             title="Voir les détails"
           >

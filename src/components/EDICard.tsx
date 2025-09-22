@@ -52,7 +52,10 @@ const EDICard: React.FC<EDICardProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onChartClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCardClick();
+            }}
             className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
             title="Voir les graphiques détaillés"
           >
@@ -61,7 +64,10 @@ const EDICard: React.FC<EDICardProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onInfoClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              onInfoClick();
+            }}
             className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
             title="Voir les détails"
           >
