@@ -175,15 +175,6 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
                   Avec comparaison
                 </Badge>
               )}
-              <div className="flex items-center space-x-3 text-sm text-muted-foreground ml-4">
-                <Brain className="h-4 w-4" />
-                <span>IA</span>
-                <Switch
-                  checked={showInsight}
-                  onCheckedChange={handleAIToggle}
-                />
-                {showInsight && <Sparkles className="h-4 w-4 text-primary" />}
-              </div>
             </div>
           </div>
         </div>
@@ -209,7 +200,15 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
                   <Brain className="h-5 w-5 text-primary" />
                   <span className="text-lg font-semibold text-foreground">Analyse IA - Turnover</span>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                    <span>IA</span>
+                    <Switch
+                      checked={showInsight}
+                      onCheckedChange={handleAIToggle}
+                    />
+                    {showInsight && <Sparkles className="h-4 w-4 text-primary" />}
+                  </div>
                   <Button 
                     onClick={() => onFiltersChange({ ...filters })}
                     variant="ghost"
@@ -279,6 +278,13 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
                   <div className="w-2 h-8 bg-muted-foreground rounded-full" />
                   <Brain className="h-5 w-5 text-muted-foreground" />
                   <span className="text-lg font-semibold text-muted-foreground">Analyse IA désactivée</span>
+                </div>
+                <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                  <span>IA</span>
+                  <Switch
+                    checked={showInsight}
+                    onCheckedChange={handleAIToggle}
+                  />
                 </div>
               </CardTitle>
             </CardHeader>
