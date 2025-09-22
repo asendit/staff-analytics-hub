@@ -88,7 +88,7 @@ export interface KPIChartData {
 }
 
 export interface FilterOptions {
-  period: 'week' | 'month' | 'quarter' | 'year' | 'custom';
+  period: 'month' | 'quarter' | 'year' | 'custom';
   department?: string;
   agency?: string;
   remoteWork?: boolean;
@@ -121,7 +121,7 @@ export class HRAnalytics {
   }
 
   getAbsenteeismChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -166,7 +166,7 @@ export class HRAnalytics {
   }
 
   getTurnoverChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -273,7 +273,7 @@ export class HRAnalytics {
   }
 
   getHeadcountChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     const employees = this.filterEmployees(filters);
     
@@ -355,7 +355,7 @@ export class HRAnalytics {
   }
 
   getRemoteWorkChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -404,7 +404,7 @@ export class HRAnalytics {
   }
 
   getOnboardingChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -452,7 +452,7 @@ export class HRAnalytics {
   }
 
   getHRExpensesChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -567,7 +567,7 @@ export class HRAnalytics {
   }
 
   getAverageSeniorityChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -592,7 +592,7 @@ export class HRAnalytics {
   }
 
   getSeniorityRetentionChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -617,7 +617,7 @@ export class HRAnalytics {
   }
 
   getSeniorityAndRetentionChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -642,7 +642,7 @@ export class HRAnalytics {
   }
 
   getAgeAndSeniorityChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -687,7 +687,7 @@ export class HRAnalytics {
   }
 
   getTaskCompletionChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -733,7 +733,7 @@ export class HRAnalytics {
   }
 
   getDocumentCompletionChartData(filters: FilterOptions): KPIChartData {
-    const months = this.generateMonthLabels(filters.period);
+    const months = this.generatePeriodLabels(filters.period);
     const departments = [...new Set(this.data.employees.map(emp => emp.department))];
     
     return {
@@ -995,13 +995,14 @@ export class HRAnalytics {
     return 'stable';
   }
 
-  private generateMonthLabels(period: string): string[] {
+  private generatePeriodLabels(period: string): string[] {
     const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    const weeks = ['S48', 'S49', 'S50', 'S51', 'S52', 'S1', 'S2', 'S3'];
     
     switch (period) {
-      case 'quarter': return months.slice(0, 3);
-      case 'year': return months;
-      case 'month': return ['S1', 'S2', 'S3', 'S4'];
+      case 'quarter': return weeks; // évolution hebdomadaire pour le trimestre
+      case 'year': return months; // évolution mensuelle pour l'année
+      case 'month': return weeks.slice(-4); // S52, S1, S2, S3 pour le mois
       default: return months.slice(0, 6);
     }
   }
@@ -1009,10 +1010,6 @@ export class HRAnalytics {
   private getPeriodStartDate(period: string): Date {
     const now = new Date();
     switch (period) {
-      case 'week':
-        const weekStart = new Date(now);
-        weekStart.setDate(now.getDate() - 7);
-        return weekStart;
       case 'month':
         const monthStart = new Date(now);
         monthStart.setMonth(now.getMonth() - 1);
@@ -1034,7 +1031,6 @@ export class HRAnalytics {
 
   private getTotalDays(period: string): number {
     switch (period) {
-      case 'week': return 7;
       case 'month': return 30;
       case 'quarter': return 90;
       case 'year': return 365;

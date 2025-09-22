@@ -29,7 +29,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
 
-  const handlePeriodChange = (period: 'week' | 'month' | 'quarter' | 'year' | 'custom') => {
+  const handlePeriodChange = (period: 'month' | 'quarter' | 'year' | 'custom') => {
     if (period === 'custom') {
       onFiltersChange({ 
         ...filters, 
@@ -115,7 +115,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="week">Semaine en cours</SelectItem>
                   <SelectItem value="month">Mois en cours</SelectItem>
                   <SelectItem value="quarter">Trimestre en cours</SelectItem>
                   <SelectItem value="year">Année en cours</SelectItem>
@@ -240,7 +239,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <span>
               {filters.period === 'custom' ? 
                 `${startDate ? format(startDate, "dd/MM/yyyy") : '...'} - ${endDate ? format(endDate, "dd/MM/yyyy") : '...'}` :
-                filters.period === 'week' ? 'Semaine en cours' :
                 filters.period === 'month' ? 'Mois en cours' : 
                 filters.period === 'quarter' ? 'Trimestre en cours' : 'Année en cours'
               }
