@@ -245,7 +245,10 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Effectif Total</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Effectif Total 
+                    <span className="text-xs ml-1">(fin de période)</span>
+                  </p>
                   <div className="flex items-baseline space-x-2 mt-1">
                     <span className="text-3xl font-bold text-foreground">
                       {detailData.totalHeadcount.toLocaleString('fr-FR')}

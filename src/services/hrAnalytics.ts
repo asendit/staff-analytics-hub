@@ -984,8 +984,98 @@ export class HRAnalytics {
       return null;
     }
 
-    // Simulation de calcul de tendance selon le type de comparaison
-    return faker.number.int({ min: -10, max: 10 });
+    // Obtenir les périodes de comparaison
+    const { currentPeriod, comparisonPeriod } = this.getComparisonPeriods(filters);
+    
+    // Calculer l'effectif pour chaque période (à la fin de la période)
+    const currentHeadcount = this.getHeadcountAtDate(currentPeriod.end);
+    const comparisonHeadcount = this.getHeadcountAtDate(comparisonPeriod.end);
+    
+    if (comparisonHeadcount === 0) return null;
+    
+    // Calculer le pourcentage de variation
+    const trend = ((currentHeadcount - comparisonHeadcount) / comparisonHeadcount) * 100;
+    return Math.round(trend * 10) / 10;
+  }
+
+  private getComparisonPeriods(filters: FilterOptions) {
+    const now = new Date();
+    let currentStart: Date, currentEnd: Date, comparisonStart: Date, comparisonEnd: Date;
+
+    if (filters.period === 'year') {
+      // Année courante vs année précédente
+      currentEnd = new Date(now.getFullYear(), 11, 31); // 31 décembre année courante
+      currentStart = new Date(now.getFullYear(), 0, 1); // 1er janvier année courante
+      comparisonEnd = new Date(now.getFullYear() - 1, 11, 31); // 31 décembre année précédente
+      comparisonStart = new Date(now.getFullYear() - 1, 0, 1); // 1er janvier année précédente
+    } else if (filters.period === 'quarter') {
+      // Calculer le trimestre actuel
+      const currentQuarter = Math.floor(now.getMonth() / 3);
+      const quarterStartMonth = currentQuarter * 3;
+      
+      currentStart = new Date(now.getFullYear(), quarterStartMonth, 1);
+      currentEnd = new Date(now.getFullYear(), quarterStartMonth + 3, 0); // Dernier jour du trimestre
+      
+      if (filters.compareWith === 'previous') {
+        // Trimestre précédent
+        if (currentQuarter === 0) {
+          // Q1 → Q4 année précédente
+          comparisonStart = new Date(now.getFullYear() - 1, 9, 1); // Octobre
+          comparisonEnd = new Date(now.getFullYear() - 1, 12, 0); // 31 décembre
+        } else {
+          // Trimestre précédent de la même année
+          const prevQuarterStartMonth = (currentQuarter - 1) * 3;
+          comparisonStart = new Date(now.getFullYear(), prevQuarterStartMonth, 1);
+          comparisonEnd = new Date(now.getFullYear(), prevQuarterStartMonth + 3, 0);
+        }
+      } else {
+        // Même trimestre année précédente
+        comparisonStart = new Date(now.getFullYear() - 1, quarterStartMonth, 1);
+        comparisonEnd = new Date(now.getFullYear() - 1, quarterStartMonth + 3, 0);
+      }
+    } else if (filters.period === 'month') {
+      currentStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      currentEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Dernier jour du mois
+      
+      if (filters.compareWith === 'previous') {
+        // Mois précédent
+        if (now.getMonth() === 0) {
+          // Janvier → Décembre année précédente
+          comparisonStart = new Date(now.getFullYear() - 1, 11, 1);
+          comparisonEnd = new Date(now.getFullYear() - 1, 12, 0); // 31 décembre
+        } else {
+          // Mois précédent de la même année
+          comparisonStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          comparisonEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+        }
+      } else {
+        // Même mois année précédente
+        comparisonStart = new Date(now.getFullYear() - 1, now.getMonth(), 1);
+        comparisonEnd = new Date(now.getFullYear() - 1, now.getMonth() + 1, 0);
+      }
+    } else {
+      // Défaut
+      currentStart = now;
+      currentEnd = now;
+      comparisonStart = now;
+      comparisonEnd = now;
+    }
+
+    return {
+      currentPeriod: { start: currentStart, end: currentEnd },
+      comparisonPeriod: { start: comparisonStart, end: comparisonEnd }
+    };
+  }
+
+  private getHeadcountAtDate(date: Date): number {
+    return this.data.employees.filter(employee => {
+      const hireDate = new Date(employee.hireDate);
+      const terminationDate = employee.terminationDate ? new Date(employee.terminationDate) : null;
+      
+      return employee.status === 'active' && 
+             hireDate <= date && 
+             (!terminationDate || terminationDate > date);
+    }).length;
   }
 
   private getTrendComparison(trend: number | null): 'higher' | 'lower' | 'stable' {
