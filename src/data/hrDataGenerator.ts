@@ -41,41 +41,67 @@ export const generateHRData = (): GeneratedHRData => {
   const employees: Employee[] = [];
   const expenses: Expense[] = [];
 
-  // Départements et postes réalistes
+  // Départements et postes réalistes - Version enrichie
   const departments = [
+    'Direction Générale',
     'Ressources Humaines',
-    'Développement',
-    'Marketing',
-    'Ventes',
-    'Finance',
-    'Operations',
+    'Développement & IT',
+    'Marketing & Communication',
+    'Ventes & Commercial',
+    'Finance & Comptabilité',
+    'Operations & Logistique',
     'Support Client',
-    'Direction'
+    'Recherche & Développement',
+    'Qualité & Conformité',
+    'Juridique & Compliance',
+    'Achats & Approvisionnements',
+    'Production',
+    'Maintenance',
+    'Sécurité & Environnement',
+    'Formation & Développement'
   ];
 
-  // Agences réalistes
+  // Agences réalistes - Version enrichie
   const agencies = [
     'Paris Siège',
-    'Lyon',
-    'Marseille',
-    'Toulouse',
-    'Nantes',
-    'Bordeaux',
-    'Lille',
-    'Nice',
-    'Strasbourg',
-    'Rennes'
+    'Lyon Centre',
+    'Marseille Sud',
+    'Toulouse Midi-Pyrénées',
+    'Nantes Atlantique',
+    'Bordeaux Nouvelle-Aquitaine',
+    'Lille Nord',
+    'Nice Côte d\'Azur',
+    'Strasbourg Grand-Est',
+    'Rennes Bretagne',
+    'Montpellier',
+    'Clermont-Ferrand',
+    'Dijon Bourgogne',
+    'Rouen Normandie',
+    'Grenoble Alpes',
+    'Metz Lorraine',
+    'Tours Centre-Val de Loire',
+    'Caen',
+    'Orléans',
+    'Amiens Hauts-de-France'
   ];
 
   const positionsByDepartment: Record<string, string[]> = {
-    'Ressources Humaines': ['DRH', 'Chargé RH', 'Assistant RH', 'Responsable Formation'],
-    'Développement': ['Lead Developer', 'Développeur Frontend', 'Développeur Backend', 'DevOps', 'QA Engineer'],
-    'Marketing': ['Directeur Marketing', 'Chef de Produit', 'Chargé Marketing', 'Community Manager'],
-    'Ventes': ['Directeur Commercial', 'Responsable Ventes', 'Commercial', 'Account Manager'],
-    'Finance': ['Directeur Financier', 'Contrôleur de Gestion', 'Comptable', 'Analyste Financier'],
-    'Operations': ['Directeur Operations', 'Chef de Projet', 'Coordinateur', 'Analyste Process'],
-    'Support Client': ['Responsable Support', 'Technicien Support', 'Customer Success'],
-    'Direction': ['PDG', 'Directeur Général', 'Directeur Adjoint']
+    'Direction Générale': ['PDG', 'Directeur Général', 'Directeur Adjoint', 'Secrétaire de Direction'],
+    'Ressources Humaines': ['DRH', 'Directeur RH Adjoint', 'Responsable RH', 'Chargé RH', 'Assistant RH', 'Responsable Formation', 'Chargé Recrutement', 'Gestionnaire Paie', 'Responsable Relations Sociales'],
+    'Développement & IT': ['CTO', 'Lead Developer', 'Architecte Logiciel', 'Développeur Senior', 'Développeur Frontend', 'Développeur Backend', 'Développeur Fullstack', 'DevOps Engineer', 'SysAdmin', 'QA Engineer', 'Testeur', 'UX/UI Designer', 'Product Owner', 'Scrum Master'],
+    'Marketing & Communication': ['Directeur Marketing', 'Responsable Communication', 'Chef de Produit', 'Chargé Marketing Digital', 'Community Manager', 'Chargé Communication', 'Graphiste', 'Content Manager', 'SEO Specialist', 'Responsable Brand'],
+    'Ventes & Commercial': ['Directeur Commercial', 'Directeur Régional', 'Responsable Ventes', 'Commercial Senior', 'Commercial', 'Account Manager', 'Business Developer', 'Chargé Clientèle', 'Commercial Terrain', 'Key Account Manager'],
+    'Finance & Comptabilité': ['Directeur Financier', 'Contrôleur de Gestion', 'Responsable Comptabilité', 'Comptable Senior', 'Comptable', 'Assistant Comptable', 'Analyste Financier', 'Responsable Trésorerie', 'Auditeur Interne'],
+    'Operations & Logistique': ['Directeur Operations', 'Responsable Logistique', 'Chef de Projet', 'Coordinateur Operations', 'Analyste Process', 'Supply Chain Manager', 'Gestionnaire Stock', 'Planificateur', 'Responsable Expédition'],
+    'Support Client': ['Directeur Support', 'Responsable Support', 'Technicien Support Senior', 'Technicien Support', 'Customer Success Manager', 'Chargé Relation Client', 'Hotliner', 'Responsable Service Client'],
+    'Recherche & Développement': ['Directeur R&D', 'Responsable Innovation', 'Ingénieur R&D', 'Chercheur', 'Technicien R&D', 'Chef de Projet R&D', 'Analyste Produit', 'Ingénieur Tests'],
+    'Qualité & Conformité': ['Directeur Qualité', 'Responsable Qualité', 'Ingénieur Qualité', 'Technicien Qualité', 'Auditeur Qualité', 'Responsable Conformité', 'Chargé Normes'],
+    'Juridique & Compliance': ['Directeur Juridique', 'Juriste Senior', 'Juriste', 'Compliance Officer', 'Assistant Juridique', 'Responsable Contrats'],
+    'Achats & Approvisionnements': ['Directeur Achats', 'Responsable Achats', 'Acheteur Senior', 'Acheteur', 'Assistant Achats', 'Category Manager'],
+    'Production': ['Directeur Production', 'Responsable Production', 'Chef d\'Équipe', 'Superviseur', 'Opérateur Production', 'Technicien Production', 'Contrôleur Production'],
+    'Maintenance': ['Responsable Maintenance', 'Technicien Maintenance', 'Électricien', 'Mécanicien', 'Automaticien', 'Agent Maintenance'],
+    'Sécurité & Environnement': ['Responsable HSE', 'Ingénieur Sécurité', 'Animateur Sécurité', 'Responsable Environnement', 'Agent Sécurité'],
+    'Formation & Développement': ['Responsable Formation', 'Formateur', 'Ingénieur Pédagogique', 'Chargé Développement RH', 'Coach']
   };
 
   // Noms français réalistes
@@ -117,15 +143,71 @@ export const generateHRData = (): GeneratedHRData => {
     { weight: 1, value: 'Scolarité obligatoire' }
   ];
 
-  // Génération des employés
-  for (let i = 0; i < 250; i++) {
-    const department = faker.helpers.arrayElement(departments);
+  // Fonction pour générer des salaires réalistes selon le poste et le département
+  const generateSalaryForPosition = (department: string, position: string): number => {
+    const baseSalaries: Record<string, number> = {
+      // Direction
+      'PDG': faker.number.int({ min: 150000, max: 300000 }),
+      'Directeur Général': faker.number.int({ min: 120000, max: 200000 }),
+      'CTO': faker.number.int({ min: 100000, max: 180000 }),
+      'Directeur': faker.number.int({ min: 80000, max: 150000 }),
+      
+      // Management
+      'Responsable': faker.number.int({ min: 55000, max: 90000 }),
+      'Chef': faker.number.int({ min: 50000, max: 80000 }),
+      'Lead': faker.number.int({ min: 60000, max: 95000 }),
+      
+      // Seniors
+      'Senior': faker.number.int({ min: 45000, max: 70000 }),
+      'Architecte': faker.number.int({ min: 70000, max: 110000 }),
+      'Manager': faker.number.int({ min: 50000, max: 85000 }),
+      
+      // Juniors/Standard
+      'Développeur': faker.number.int({ min: 35000, max: 60000 }),
+      'Commercial': faker.number.int({ min: 30000, max: 55000 }),
+      'Chargé': faker.number.int({ min: 32000, max: 50000 }),
+      'Technicien': faker.number.int({ min: 28000, max: 45000 }),
+      'Assistant': faker.number.int({ min: 25000, max: 40000 }),
+      'Agent': faker.number.int({ min: 24000, max: 38000 }),
+      'Opérateur': faker.number.int({ min: 26000, max: 42000 })
+    };
+    
+    for (const [key, salary] of Object.entries(baseSalaries)) {
+      if (position.includes(key)) {
+        return salary;
+      }
+    }
+    
+    return faker.number.int({ min: 28000, max: 55000 }); // Salaire par défaut
+  };
+
+  // Génération des employés - Version enrichie (500 employés pour plus de données)
+  for (let i = 0; i < 500; i++) {
+    // Répartition plus réaliste des départements (certains plus gros que d'autres)
+    const departmentWeights = [
+      { department: 'Développement & IT', weight: 25 },
+      { department: 'Ventes & Commercial', weight: 20 },
+      { department: 'Operations & Logistique', weight: 15 },
+      { department: 'Support Client', weight: 12 },
+      { department: 'Production', weight: 10 },
+      { department: 'Marketing & Communication', weight: 8 },
+      { department: 'Finance & Comptabilité', weight: 4 },
+      { department: 'Ressources Humaines', weight: 3 },
+      { department: 'Recherche & Développement', weight: 1.5 },
+      { department: 'Qualité & Conformité', weight: 0.8 },
+      { department: 'Juridique & Compliance', weight: 0.4 },
+      { department: 'Direction Générale', weight: 0.3 }
+    ];
+    
+    const department = faker.helpers.weightedArrayElement(departmentWeights.map(d => ({ value: d.department, weight: d.weight })));
     const agency = faker.helpers.arrayElement(agencies);
     const position = faker.helpers.arrayElement(positionsByDepartment[department]);
     const firstName = faker.helpers.arrayElement(firstNames);
     const lastName = faker.helpers.arrayElement(lastNames);
     
-    const status = faker.helpers.arrayElement(['active', 'inactive', 'terminated']);
+    // Statut plus réaliste : 90% actifs, 5% inactive, 5% terminated
+    const statusOptions: ('active' | 'inactive' | 'terminated')[] = ['active', 'active', 'active', 'active', 'active', 'active', 'active', 'active', 'active', 'inactive', 'terminated'];
+    const status = faker.helpers.arrayElement(statusOptions);
 
     const employee: Employee = {
       id: `emp-${i + 1}`,
@@ -135,15 +217,20 @@ export const generateHRData = (): GeneratedHRData => {
       department,
       agency,
       position,
-      salary: faker.number.int({ min: 30000, max: 120000 }),
-      hireDate: faker.date.between({ from: '2020-01-01', to: '2024-01-01' }),
-      terminationDate: status === 'terminated' ? faker.date.between({ from: '2024-01-01', to: '2024-12-31' }) : undefined,
+      salary: generateSalaryForPosition(department, position),
+      hireDate: faker.date.between({ from: '2019-01-01', to: '2024-01-01' }),
+      terminationDate: status === 'terminated' ? faker.date.between({ from: '2023-06-01', to: '2024-12-31' }) : undefined,
       status: status,
       performanceScore: faker.number.int({ min: 1, max: 5 }),
       trainingHours: faker.number.int({ min: 0, max: 80 }),
       remoteWork: faker.datatype.boolean({ probability: 0.6 }),
       address: `${faker.location.streetAddress()}, ${faker.location.city()}, France`,
-      workingTimeRate: faker.helpers.arrayElement([1.0, 0.8, 0.6, 0.5]),
+      workingTimeRate: faker.helpers.weightedArrayElement([
+        { value: 1.0, weight: 75 }, // 75% temps plein
+        { value: 0.8, weight: 15 }, // 15% 80%
+        { value: 0.6, weight: 7 },  // 7% 60%
+        { value: 0.5, weight: 3 }   // 3% 50%
+      ]),
       gender: faker.helpers.arrayElement(['homme', 'femme']),
       birthDate: faker.date.birthdate({ min: 22, max: 65, mode: 'age' }),
       nationality: faker.helpers.arrayElement(['France', ...nationalities.slice(1)]),
@@ -159,10 +246,13 @@ export const generateHRData = (): GeneratedHRData => {
     employees.push(employee);
   }
 
-  // Génération des dépenses RH
-  const expenseCategories = ['repas', 'transport', 'formation', 'materiel'];
+  // Génération des dépenses RH - Version enrichie
+  const expenseCategories = [
+    'repas', 'transport', 'formation', 'materiel', 'hebergement', 
+    'communication', 'evenements', 'licences', 'recrutement', 'medical'
+  ];
   
-  for (let i = 0; i < 500; i++) {
+  for (let i = 0; i < 1200; i++) {
     const category = faker.helpers.arrayElement(expenseCategories);
     let amount: number;
     let description: string;
@@ -184,16 +274,40 @@ export const generateHRData = (): GeneratedHRData => {
         amount = faker.number.int({ min: 50, max: 1500 });
         description = `Matériel bureau - ${faker.helpers.arrayElement(['Ordinateur', 'Mobilier', 'Fournitures', 'Logiciels'])}`;
         break;
+      case 'hebergement':
+        amount = faker.number.int({ min: 80, max: 250 });
+        description = `Hébergement - ${faker.helpers.arrayElement(['Hôtel', 'Résidence', 'Airbnb'])}`;
+        break;
+      case 'communication':
+        amount = faker.number.int({ min: 30, max: 300 });
+        description = `Communication - ${faker.helpers.arrayElement(['Téléphone', 'Internet', 'Abonnement'])}`;
+        break;
+      case 'evenements':
+        amount = faker.number.int({ min: 200, max: 5000 });
+        description = `Événement - ${faker.helpers.arrayElement(['Team Building', 'Séminaire', 'Congrès', 'Salon professionnel'])}`;
+        break;
+      case 'licences':
+        amount = faker.number.int({ min: 50, max: 800 });
+        description = `Licence logicielle - ${faker.helpers.arrayElement(['Office', 'Adobe', 'Développement', 'Design'])}`;
+        break;
+      case 'recrutement':
+        amount = faker.number.int({ min: 500, max: 8000 });
+        description = `Recrutement - ${faker.helpers.arrayElement(['Cabinet', 'Job board', 'Cooptation', 'Chasseur de tête'])}`;
+        break;
+      case 'medical':
+        amount = faker.number.int({ min: 100, max: 1200 });
+        description = `Frais médicaux - ${faker.helpers.arrayElement(['Visite médicale', 'Ergonomie', 'Prévention'])}`;
+        break;
       default:
-        amount = 0;
-        description = 'Dépense divers';
+        amount = faker.number.int({ min: 20, max: 200 });
+        description = 'Dépense diverse';
     }
 
     const expense: Expense = {
       id: `exp-${i + 1}`,
       category,
       amount,
-      date: faker.date.between({ from: '2024-01-01', to: '2024-12-31' }),
+      date: faker.date.between({ from: '2023-01-01', to: '2024-12-31' }),
       description
     };
     
