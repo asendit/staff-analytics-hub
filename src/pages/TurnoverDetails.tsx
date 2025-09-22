@@ -456,18 +456,44 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
           </Card>
         </div>
 
-        {/* Insight IA */}
-        {showInsight && (
-          <Card className="teams-card border-primary/20 bg-primary/5">
+        {/* Analyse IA */}
+        {showInsight && detailData.insight && (
+          <Card className="teams-card border-l-4 border-l-primary">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2 text-primary">
-                <Activity className="h-5 w-5" />
+              <CardTitle className="flex items-center space-x-2">
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <Activity className="h-4 w-4 text-primary" />
+                </div>
                 <span>Analyse IA</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-sm text-foreground leading-relaxed">
                 {detailData.insight}
+              </p>
+              <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                <p className="text-xs text-muted-foreground">
+                  💡 <strong>Recommandations :</strong> Analyser les causes de départ dans les départements les plus touchés et mettre en place des actions de rétention ciblées.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Message si l'IA est désactivée */}
+        {!showInsight && (
+          <Card className="teams-card border-l-4 border-l-muted">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <div className="p-2 bg-muted/10 rounded-full">
+                  <Activity className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <span className="text-muted-foreground">Analyse IA désactivée</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                L'analyse par intelligence artificielle est actuellement désactivée. Activez-la dans les paramètres pour obtenir des insights personnalisés sur vos données de turnover.
               </p>
             </CardContent>
           </Card>
