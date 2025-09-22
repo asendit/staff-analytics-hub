@@ -1,12 +1,12 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Minus, Brain, BarChart3 } from 'lucide-react';
 import { KPIData, FilterOptions } from '../services/hrAnalytics';
-
 const getKPIDescription = (kpiId: string): string => {
-  const descriptions: { [key: string]: string } = {
+  const descriptions: {
+    [key: string]: string;
+  } = {
     'turnover': 'Indicateur de la mobilité des effectifs. Il mesure la proportion de collaborateurs ayant quitté l\'entreprise sur une période donnée, rapportée à l\'effectif théorique disponible (effectif au début de période + embauches). Il permet d\'évaluer la stabilité de l\'organisation et de détecter un éventuel turnover élevé.',
     'absenteeism': 'Indicateur mesurant le pourcentage d\'absences non prévues par rapport au temps de travail théorique. Il permet d\'identifier les problématiques de santé, d\'engagement ou d\'organisation du travail.',
     'remote-work': 'Indicateur du pourcentage de collaborateurs pratiquant le télétravail de manière régulière. Il mesure l\'adoption du travail à distance et son évolution dans l\'organisation.',
@@ -21,9 +21,10 @@ const getKPIDescription = (kpiId: string): string => {
   };
   return descriptions[kpiId] || 'Description de cet indicateur RH et de son utilité dans le pilotage des ressources humaines.';
 };
-
 const getKPIFormula = (kpiId: string): string => {
-  const formulas: { [key: string]: string } = {
+  const formulas: {
+    [key: string]: string;
+  } = {
     'turnover': 'Taux de turnover (%) = (Départs / (Effectif début de période + Arrivées)) × 100',
     'absenteeism': 'Taux d\'absentéisme (%) = (Heures d\'absence / Heures théoriques travaillées) × 100',
     'remote-work': 'Taux de télétravail (%) = (Collaborateurs en télétravail / Effectif total éligible) × 100',
@@ -38,7 +39,6 @@ const getKPIFormula = (kpiId: string): string => {
   };
   return formulas[kpiId] || 'Formule = (Valeur mesurée / Valeur de référence) × 100';
 };
-
 interface KPIDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -46,32 +46,30 @@ interface KPIDetailModalProps {
   filters: FilterOptions;
   showInsight?: boolean;
 }
-
-const KPIDetailModal: React.FC<KPIDetailModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  kpi, 
+const KPIDetailModal: React.FC<KPIDetailModalProps> = ({
+  isOpen,
+  onClose,
+  kpi,
   filters,
-  showInsight = true 
+  showInsight = true
 }) => {
   if (!kpi) return null;
-
   const getTrendIcon = () => {
     if (kpi.trend > 0) return <TrendingUp className="h-5 w-5 text-green-600" />;
     if (kpi.trend < 0) return <TrendingDown className="h-5 w-5 text-red-600" />;
     return <Minus className="h-5 w-5 text-gray-400" />;
   };
-
   const getCategoryColor = () => {
     switch (kpi.category) {
-      case 'positive': return 'border-l-green-500 bg-green-50';
-      case 'negative': return 'border-l-red-500 bg-red-50';
-      default: return 'border-l-blue-500 bg-blue-50';
+      case 'positive':
+        return 'border-l-green-500 bg-green-50';
+      case 'negative':
+        return 'border-l-red-500 bg-red-50';
+      default:
+        return 'border-l-blue-500 bg-blue-50';
     }
   };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+  return <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
@@ -83,9 +81,7 @@ const KPIDetailModal: React.FC<KPIDetailModalProps> = ({
         <div className="space-y-6">
           {/* Description et méthode de calcul */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Description et méthode de calcul</CardTitle>
-            </CardHeader>
+            
             <CardContent className="space-y-4">
               <div>
                 <h4 className="font-medium text-gray-700 mb-2">Description :</h4>
@@ -103,8 +99,6 @@ const KPIDetailModal: React.FC<KPIDetailModalProps> = ({
           </Card>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
 export default KPIDetailModal;
