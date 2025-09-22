@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, TrendingDown, Minus, Info, PieChart, Globe, GraduationCap, DollarSign } from 'lucide-react';
+import { Users, TrendingUp, TrendingDown, Minus, PieChart, Globe, GraduationCap, DollarSign } from 'lucide-react';
 import { EDIData } from '../services/hrAnalytics';
 import { PieChart as RechartPieChart, Cell, ResponsiveContainer, Tooltip, Legend, Pie } from 'recharts';
 
@@ -48,26 +48,15 @@ const EDICard: React.FC<EDICardProps> = ({
           <div className="w-1 h-6 bg-teams-purple rounded-full" />
           Équité, diversité et inclusion
         </CardTitle>
-        <div className="flex space-x-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onChartClick}
-            className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
-            title="Voir les graphiques détaillés"
-          >
-            <PieChart className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onInfoClick}
-            className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
-            title="Voir les détails"
-          >
-            <Info className="h-4 w-4" />
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onChartClick}
+          className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
+          title="Voir les graphiques détaillés"
+        >
+          <PieChart className="h-4 w-4" />
+        </Button>
       </CardHeader>
       <CardContent className="px-5 pb-5">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -181,6 +170,18 @@ const EDICard: React.FC<EDICardProps> = ({
                   <Legend />
                 </RechartPieChart>
               </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Description et méthode de calcul */}
+        <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50">
+          <div className="space-y-3">
+            <p className="text-sm text-foreground font-medium leading-relaxed">
+              <strong>Équité, diversité et inclusion :</strong> Ensemble d'indicateurs mesurant la diversité des profils (âge, genre, nationalité, formation) et l'équité salariale. Permet de s'assurer du respect des principes d'égalité des chances et de non-discrimination, et de piloter les actions en faveur de l'inclusion.
+            </p>
+            <div className="text-sm text-muted-foreground font-mono bg-background/50 p-2 rounded border">
+              Ratio genre = (Nombre H ou F / Effectif total) × 100 | Écart salarial = ((Salaire H - Salaire F) / Salaire H) × 100
             </div>
           </div>
         </div>
