@@ -252,12 +252,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
                     Effectif Total 
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Nombre total de collaborateurs présents dans l'organisation à la fin de la période. Inclut tous les contrats actifs (CDI, CDD, intérim, stages). Cet indicateur reflète la taille de l'organisation et son évolution dans le temps.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2 font-mono bg-muted/50 p-2 rounded">
-                    Effectif Total = Σ(Collaborateurs actifs au dernier jour de la période)
+                    <span className="text-xs ml-1">(fin de période)</span>
                   </p>
                   <div className="flex items-baseline space-x-2 mt-1">
                     <span className="text-3xl font-bold text-foreground">
@@ -280,13 +275,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">ETP (Équivalent Temps Plein)</p>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Mesure l'effectif en convertissant tous les temps partiels en équivalent temps plein. Un collaborateur à mi-temps compte pour 0,5 ETP. Cet indicateur permet de mieux évaluer la capacité de travail réelle de l'organisation.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2 font-mono bg-muted/50 p-2 rounded">
-                    ETP = Σ(Temps de travail individuel / Temps plein standard)
-                  </p>
+                  <p className="text-sm font-medium text-muted-foreground">ETP</p>
                   <div className="flex items-baseline space-x-2 mt-1">
                     <span className="text-3xl font-bold text-foreground">
                       {detailData.totalETP.toLocaleString('fr-FR')}
@@ -309,12 +298,6 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Nouvelles arrivées</p>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Nombre de nouveaux collaborateurs intégrés dans l'organisation sur la période. Inclut tous les types de contrats (CDI, CDD, intérim, stages). Indicateur clé pour mesurer la croissance et le dynamisme de recrutement.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2 font-mono bg-muted/50 p-2 rounded">
-                    Nouvelles arrivées = Σ(Embauches sur la période)
-                  </p>
                   <div className="flex items-baseline space-x-2 mt-1">
                     <span className="text-3xl font-bold text-foreground">
                       +{detailData.newHires}
@@ -335,12 +318,6 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Départs</p>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Nombre total de collaborateurs ayant quitté l'organisation sur la période. Inclut tous les types de départs : démissions, licenciements, fins de contrat, retraites. Indicateur essentiel pour analyser la rétention et la stabilité.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2 font-mono bg-muted/50 p-2 rounded">
-                    Départs = Σ(Sorties définitives sur la période)
-                  </p>
                   <div className="flex items-baseline space-x-2 mt-1">
                     <span className="text-3xl font-bold text-foreground">
                       {detailData.departures}

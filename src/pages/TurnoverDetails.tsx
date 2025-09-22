@@ -308,12 +308,6 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
                   <p className="text-sm font-medium text-muted-foreground">
                     Taux de Turnover
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Indicateur de la mobilité des effectifs. Il mesure la proportion de collaborateurs ayant quitté l'entreprise sur une période donnée, rapportée à l'effectif théorique disponible. Il permet d'évaluer la stabilité de l'organisation et de détecter un éventuel turnover élevé.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2 font-mono bg-muted/50 p-2 rounded">
-                    Taux de turnover (%) = (Départs / (Effectif début + Arrivées)) × 100
-                  </p>
                   <div className="flex items-baseline space-x-2 mt-1">
                     <span className="text-3xl font-bold text-foreground">
                       {detailData.totalTurnoverRate.toFixed(1)}%
@@ -336,12 +330,6 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Départs Total</p>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Nombre absolu de collaborateurs ayant quitté l'organisation sur la période analysée. Comprend tous les types de sorties : démissions volontaires, licenciements, fins de contrat, retraites et mutations externes. Indicateur quantitatif complémentaire au taux de turnover.
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2 font-mono bg-muted/50 p-2 rounded">
-                    Départs Total = Σ(Toutes sorties définitives sur la période)
-                  </p>
                   <div className="flex items-baseline space-x-2 mt-1">
                     <span className="text-3xl font-bold text-foreground">
                       {detailData.departures}
