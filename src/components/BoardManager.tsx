@@ -282,6 +282,7 @@ const BoardManager: React.FC<BoardManagerProps> = ({
                 size="sm" 
                 variant="outline"
                 onClick={() => handleDuplicateBoard(currentBoard)}
+                disabled
               >
                 <Copy className="h-4 w-4" />
               </Button>
