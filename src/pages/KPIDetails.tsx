@@ -310,7 +310,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
           </Card>
         </div>
 
-        {/* Évolution */}
+         {/* Évolution */}
         <Card className="teams-card">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -321,35 +321,81 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={detailData.evolutionData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis 
-                    dataKey="period" 
-                    stroke="hsl(var(--muted-foreground))"
-                  />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
-                  <Tooltip />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="effectif" 
-                    stroke="hsl(var(--primary))" 
-                    strokeWidth={3}
-                    name={`Effectif ${comparisonLabels.current}`}
-                    dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 6 }}
-                  />
-                  {filters.compareWith && (
+                {filters.period === 'quarter' && filters.compareWith === 'previous' ? (
+                  // Cas spécial : trimestre avec comparaison période précédente - une seule courbe continue
+                  <LineChart data={detailData.evolutionData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="period" 
+                      stroke="hsl(var(--muted-foreground))"
+                    />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <Tooltip />
+                    <Legend />
                     <Line 
                       type="monotone" 
-                      dataKey="effectifN1" 
-                      stroke="hsl(var(--muted-foreground))" 
-                      strokeWidth={2}
-                      strokeDasharray="5 5"
-                      name={`Effectif ${comparisonLabels.comparison}`}
-                      dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 4 }}
+                      dataKey="effectif" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={3}
+                      name="Effectif"
+                      dot={(props: any) => {
+                        const { cx, cy, payload } = props;
+                        return (
+                          <circle
+                            cx={cx}
+                            cy={cy}
+                            r={6}
+                            fill={payload.isCurrentQuarter ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                            stroke={payload.isCurrentQuarter ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                            strokeWidth={2}
+                          />
+                        );
+                      }}
                     />
-                  )}
-                </LineChart>
+                  </LineChart>
+                ) : (
+                  // Cas normaux
+                  <LineChart data={detailData.evolutionData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="period" 
+                      stroke="hsl(var(--muted-foreground))"
+                    />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <Tooltip />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="effectif" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={3}
+                      name={`Effectif ${comparisonLabels.current}`}
+                      dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 6 }}
+                    />
+                    {filters.compareWith && filters.period !== 'quarter' && (
+                      <Line 
+                        type="monotone" 
+                        dataKey="effectifN1" 
+                        stroke="hsl(var(--muted-foreground))" 
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                        name={`Effectif ${comparisonLabels.comparison}`}
+                        dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 4 }}
+                      />
+                    )}
+                    {filters.compareWith && filters.period === 'quarter' && filters.compareWith === 'year-ago' && (
+                      <Line 
+                        type="monotone" 
+                        dataKey="effectifN1" 
+                        stroke="hsl(var(--muted-foreground))" 
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                        name={`Effectif ${comparisonLabels.comparison}`}
+                        dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 4 }}
+                      />
+                    )}
+                  </LineChart>
+                )}
               </ResponsiveContainer>
             </div>
           </CardContent>
