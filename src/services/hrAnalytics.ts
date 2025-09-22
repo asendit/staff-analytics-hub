@@ -1156,28 +1156,42 @@ export class HRAnalytics {
   }
 
   private getQuarterEvolutionData(filters: FilterOptions, currentYear: number): Array<{period: string, effectif: number, effectifN1?: number}> {
-    // T3 2025 = semaines 27 à 39 (13 semaines)
-    const currentQuarterWeeks = Array.from({ length: 13 }, (_, i) => 27 + i);
+    const now = new Date();
+    const currentQuarter = Math.floor(now.getMonth() / 3);
+    const quarterMonths = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    
+    // Mois du trimestre en cours
+    const currentQuarterMonthNames = quarterMonths.slice(currentQuarter * 3, (currentQuarter + 1) * 3);
     
     if (!filters.compareWith) {
-      // Sans comparaison : une seule courbe pour les semaines 27-39
-      return currentQuarterWeeks.map(week => ({
-        period: `S${week}`,
+      // Sans comparaison : une seule courbe pour les 3 mois du trimestre en cours
+      return currentQuarterMonthNames.map(month => ({
+        period: month,
         effectif: faker.number.int({ min: 310, max: 330 })
       }));
     } else if (filters.compareWith === 'previous') {
-      // Comparaison avec trimestre précédent (T2 2025 = semaines 14-26)
-      return currentQuarterWeeks.map((week, index) => ({
-        period: `S${week}`,
-        effectif: faker.number.int({ min: 310, max: 330 }), // T3 2025
-        effectifN1: faker.number.int({ min: 300, max: 320 }) // T2 2025 (semaines 14-26)
-      }));
+      // Comparaison avec trimestre précédent
+      const prevQuarter = currentQuarter === 0 ? 3 : currentQuarter - 1;
+      const prevQuarterMonthNames = quarterMonths.slice(prevQuarter * 3, (prevQuarter + 1) * 3);
+      
+      // Axe X = 6 mois (3 mois actuels + 3 mois précédents)
+      const allMonths = [...prevQuarterMonthNames, ...currentQuarterMonthNames];
+      
+      return allMonths.map((month, index) => {
+        const isCurrentQuarter = index >= 3;
+        return {
+          period: month,
+          effectif: isCurrentQuarter ? faker.number.int({ min: 310, max: 330 }) : 0, // Trimestre en cours
+          effectifN1: !isCurrentQuarter ? faker.number.int({ min: 300, max: 320 }) : 0 // Trimestre précédent
+        };
+      });
     } else {
-      // Comparaison avec année précédente (T3 2025 vs T3 2024, même semaines 27-39)
-      return currentQuarterWeeks.map(week => ({
-        period: `S${week}`,
-        effectif: faker.number.int({ min: 310, max: 330 }), // T3 2025
-        effectifN1: faker.number.int({ min: 290, max: 310 }) // T3 2024
+      // Comparaison avec année précédente (même trimestre)
+      // Axe X = 3 mois du trimestre en cours
+      return currentQuarterMonthNames.map(month => ({
+        period: month,
+        effectif: faker.number.int({ min: 310, max: 330 }), // Trimestre en cours 2025
+        effectifN1: faker.number.int({ min: 290, max: 310 }) // Même trimestre 2024
       }));
     }
   }

@@ -315,7 +315,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <BarChart3 className="h-5 w-5 text-primary" />
-              <span>Évolution {filters.period === 'year' ? 'mensuelle' : filters.period === 'quarter' ? 'hebdomadaire' : 'quotidienne'}</span>
+              <span>Évolution {filters.period === 'year' ? 'mensuelle' : filters.period === 'quarter' ? 'mensuelle' : 'quotidienne'}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
