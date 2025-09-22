@@ -106,6 +106,7 @@ export interface FilterOptions {
 export class HRAnalytics {
   constructor(public data: HRData) {}
 
+  // Force refresh
   getAbsenteeismRate(filters: FilterOptions): KPIData {
     const totalDays = this.getTotalDays(filters.period);
     const employees = this.filterEmployees(filters);
