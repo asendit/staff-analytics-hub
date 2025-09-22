@@ -80,12 +80,21 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
           { agency: 'Bordeaux', count: 34 }
         ];
 
+        const departmentBreakdown = [
+          { department: 'Technique', count: 142 },
+          { department: 'Commercial', count: 89 },
+          { department: 'Marketing', count: 45 },
+          { department: 'RH', count: 23 },
+          { department: 'Finance', count: 19 }
+        ];
+
         setDetailData({
           ...headcountData,
           monthlyEvolution,
           genderDistribution,
           contractTypes,
           agencyBreakdown,
+          departmentBreakdown,
           currentPeriod: filters.period,
           hasComparison: searchParams.get('compare') === 'true'
         });
