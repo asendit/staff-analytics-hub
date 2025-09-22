@@ -315,14 +315,15 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <BarChart3 className="h-5 w-5 text-primary" />
-              <span>Évolution {filters.period === 'year' ? 'mensuelle' : filters.period === 'quarter' ? 'mensuelle' : 'quotidienne'}</span>
+              <span>Évolution {filters.period === 'year' ? 'mensuelle' : filters.period === 'quarter' ? 'mensuelle' : 'hebdomadaire'}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
-                {filters.period === 'quarter' && filters.compareWith === 'previous' ? (
-                  // Cas spécial : trimestre avec comparaison période précédente - une seule courbe continue
+                {(filters.period === 'quarter' && filters.compareWith === 'previous') || 
+                 (filters.period === 'month' && filters.compareWith === 'previous') ? (
+                  // Cas spéciaux : une seule courbe continue avec styles distincts
                   <LineChart data={detailData.evolutionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis 
@@ -340,13 +341,14 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                       name="Effectif"
                       dot={(props: any) => {
                         const { cx, cy, payload } = props;
+                        const isCurrentPeriod = filters.period === 'quarter' ? payload.isCurrentQuarter : payload.isCurrentMonth;
                         return (
                           <circle
                             cx={cx}
                             cy={cy}
                             r={6}
-                            fill={payload.isCurrentQuarter ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
-                            stroke={payload.isCurrentQuarter ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                            fill={isCurrentPeriod ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                            stroke={isCurrentPeriod ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
                             strokeWidth={2}
                           />
                         );
@@ -369,28 +371,17 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                       dataKey="effectif" 
                       stroke="hsl(var(--primary))" 
                       strokeWidth={3}
-                      name={`Effectif ${comparisonLabels.current}`}
+                      name={filters.compareWith ? `Année ${new Date().getFullYear()}` : `Effectif ${comparisonLabels.current}`}
                       dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 6 }}
                     />
-                    {filters.compareWith && filters.period !== 'quarter' && (
+                    {filters.compareWith && (
                       <Line 
                         type="monotone" 
                         dataKey="effectifN1" 
                         stroke="hsl(var(--muted-foreground))" 
                         strokeWidth={2}
                         strokeDasharray="5 5"
-                        name={`Effectif ${comparisonLabels.comparison}`}
-                        dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 4 }}
-                      />
-                    )}
-                    {filters.compareWith && filters.period === 'quarter' && filters.compareWith === 'year-ago' && (
-                      <Line 
-                        type="monotone" 
-                        dataKey="effectifN1" 
-                        stroke="hsl(var(--muted-foreground))" 
-                        strokeWidth={2}
-                        strokeDasharray="5 5"
-                        name={`Effectif ${comparisonLabels.comparison}`}
+                        name={filters.compareWith === 'year-ago' ? `Année ${new Date().getFullYear() - 1}` : `Effectif ${comparisonLabels.comparison}`}
                         dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 4 }}
                       />
                     )}

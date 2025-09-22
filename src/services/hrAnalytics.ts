@@ -1201,37 +1201,79 @@ export class HRAnalytics {
     }
   }
 
-  private getMonthEvolutionData(filters: FilterOptions, currentYear: number): Array<{period: string, effectif: number, effectifN1?: number}> {
+  private getMonthEvolutionData(filters: FilterOptions, currentYear: number): Array<{period: string, effectif: number, effectifN1?: number, isCurrentMonth?: boolean}> {
     const now = new Date();
     const currentMonth = now.getMonth();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    
+    // Calculer les semaines ISO du mois en cours
+    const currentMonthWeeks = this.getMonthISOWeeks(currentYear, currentMonth);
     
     if (!filters.compareWith) {
-      // Sans comparaison : une seule courbe par jour du mois
-      return Array.from({ length: daysInMonth }, (_, i) => ({
-        period: `${i + 1}`,
-        effectif: faker.number.int({ min: 315, max: 325 })
+      // Sans comparaison : effectif par semaine du mois en cours
+      return currentMonthWeeks.map(week => ({
+        period: `S${week}`,
+        effectif: faker.number.int({ min: 315, max: 325 }),
+        isCurrentMonth: true
       }));
     } else if (filters.compareWith === 'previous') {
-      // Comparaison avec mois précédent
+      // Comparaison avec mois précédent - UNE SEULE COURBE continue
       const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
       const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-      const daysInPrevMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
-      const maxDays = Math.max(daysInMonth, daysInPrevMonth);
+      const prevMonthWeeks = this.getMonthISOWeeks(prevYear, prevMonth);
       
-      return Array.from({ length: maxDays }, (_, i) => ({
-        period: `${i + 1}`,
-        effectif: i < daysInMonth ? faker.number.int({ min: 315, max: 325 }) : 0,
-        effectifN1: i < daysInPrevMonth ? faker.number.int({ min: 310, max: 320 }) : 0
+      // Une seule série continue avec indicateur de période
+      const prevMonthData = prevMonthWeeks.map(week => ({
+        period: `S${week}`,
+        effectif: faker.number.int({ min: 310, max: 320 }),
+        isCurrentMonth: false
       }));
+      
+      const currentMonthData = currentMonthWeeks.map(week => ({
+        period: `S${week}`,
+        effectif: faker.number.int({ min: 315, max: 325 }),
+        isCurrentMonth: true
+      }));
+      
+      return [...prevMonthData, ...currentMonthData];
     } else {
-      // Comparaison avec même mois année précédente
-      return Array.from({ length: daysInMonth }, (_, i) => ({
-        period: `${i + 1}`,
-        effectif: faker.number.int({ min: 315, max: 325 }), // Mois courant
-        effectifN1: faker.number.int({ min: 300, max: 315 }) // Même mois année précédente
+      // Comparaison avec année précédente (mêmes semaines ISO)
+      return currentMonthWeeks.map(week => ({
+        period: `S${week}`,
+        effectif: faker.number.int({ min: 315, max: 325 }), // Année N
+        effectifN1: faker.number.int({ min: 300, max: 315 }), // Année N-1
+        isCurrentMonth: true
       }));
     }
+  }
+
+  private getMonthISOWeeks(year: number, month: number): number[] {
+    // Premier jour du mois
+    const firstDay = new Date(year, month, 1);
+    // Dernier jour du mois
+    const lastDay = new Date(year, month + 1, 0);
+    
+    // Semaines ISO
+    const firstWeek = this.getISOWeekNumber(firstDay);
+    const lastWeek = this.getISOWeekNumber(lastDay);
+    
+    const weeks: number[] = [];
+    
+    // Gérer le cas où on traverse le changement d'année
+    if (firstWeek <= lastWeek) {
+      for (let week = firstWeek; week <= lastWeek; week++) {
+        weeks.push(week);
+      }
+    } else {
+      // Fin d'année (ex: décembre peut avoir des semaines 48-52, puis 1)
+      for (let week = firstWeek; week <= 52; week++) {
+        weeks.push(week);
+      }
+      for (let week = 1; week <= lastWeek; week++) {
+        weeks.push(week);
+      }
+    }
+    
+    return weeks;
   }
 
 
