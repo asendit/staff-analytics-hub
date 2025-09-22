@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DollarSign, TrendingUp, Users, Building2, Info, BarChart3 } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Minus, Users, Building2, Info, BarChart3 } from 'lucide-react';
 import { SalaryData } from '../services/hrAnalytics';
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 
@@ -11,13 +11,15 @@ interface SalaryCardProps {
   onInfoClick: () => void;
   onChartClick: () => void;
   showInsight?: boolean;
+  filters?: { compareWith?: string };
 }
 
 const SalaryCard: React.FC<SalaryCardProps> = ({ 
   data, 
   onInfoClick, 
   onChartClick, 
-  showInsight = true 
+  showInsight = true,
+  filters 
 }) => {
   const navigate = useNavigate();
 
@@ -36,6 +38,14 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
     employeeCount: dept.employeeCount
   }));
 
+  // Helper function pour les icônes de tendance
+  const getTrendIcon = () => {
+    if (!data.trend || data.trend === null) return null;
+    if (data.trend > 0) return <TrendingUp className="h-4 w-4 text-muted-foreground" />;
+    if (data.trend < 0) return <TrendingDown className="h-4 w-4 text-muted-foreground" />;
+    return <Minus className="h-4 w-4 text-muted-foreground" />;
+  };
+
   return (
     <Card 
       className="teams-card border border-teams-green/30 col-span-full lg:col-span-4 xl:col-span-4 cursor-pointer hover:border-teams-green/50 transition-colors" 
@@ -44,7 +54,17 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
       <CardHeader className="flex flex-row items-center justify-between pb-4 pt-5 px-5">
         <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3">
           <div className="w-1 h-6 bg-teams-purple rounded-full" />
-          Masse salariale
+          <div className="flex flex-col">
+            <span>Masse salariale</span>
+            {filters?.compareWith && data.trend !== null && (
+              <div className="flex items-center space-x-1 mt-1">
+                {getTrendIcon()}
+                <span className="text-xs font-medium text-muted-foreground">
+                  {data.trend && data.trend > 0 ? '+' : ''}{data.trend}%
+                </span>
+              </div>
+            )}
+          </div>
         </CardTitle>
         <div className="flex space-x-1">
           <Button

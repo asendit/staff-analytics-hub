@@ -1,6 +1,6 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { KPIData, ExtendedHeadcountData, EDIData, SalaryData } from '../services/hrAnalytics';
+import { KPIData, ExtendedHeadcountData, EDIData, SalaryData, FilterOptions } from '../services/hrAnalytics';
 import KPICard from './KPICard';
 import HeadcountCard from './HeadcountCard';
 import EDICard from './EDICard';
@@ -21,6 +21,7 @@ interface DraggableKPIGridProps {
   loadingKPIs?: Set<string>;
   onRefreshKPIInsight?: (kpiId: string) => void;
   seniorityRetentionData?: any;
+  filters: FilterOptions;
 }
 
 const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
@@ -36,7 +37,8 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
   isAIEnabled,
   loadingKPIs = new Set(),
   onRefreshKPIInsight,
-  seniorityRetentionData
+  seniorityRetentionData,
+  filters
 }) => {
   // Construit la liste des éléments dans l'ordre souhaité
   const buildAllItems = () => {
@@ -154,6 +156,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                 onInfoClick={() => {}}
                 onChartClick={() => {}}
                 showInsight={isAIEnabled}
+                filters={filters}
               />
             ) : item.type === 'salary' ? (
               <SalaryCard
@@ -161,6 +164,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                 onInfoClick={() => {}}
                 onChartClick={() => {}}
                 showInsight={isAIEnabled}
+                filters={filters}
               />
             ) : item.type === 'seniority-retention' ? (
               <SeniorityRetentionCard
@@ -261,6 +265,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                             onInfoClick={() => {}}
                             onChartClick={() => {}}
                             showInsight={isAIEnabled}
+                            filters={filters}
                           />
                         ) : item.type === 'salary' ? (
                           <SalaryCard
@@ -268,6 +273,7 @@ const DraggableKPIGrid: React.FC<DraggableKPIGridProps> = ({
                             onInfoClick={() => {}}
                             onChartClick={() => {}}
                             showInsight={isAIEnabled}
+                            filters={filters}
                           />
                         ) : item.type === 'seniority-retention' ? (
                           <SeniorityRetentionCard

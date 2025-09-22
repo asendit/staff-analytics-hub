@@ -638,6 +638,7 @@ const Index = () => {
               loadingKPIs={loadingKPIs}
               onRefreshKPIInsight={handleRefreshKPIInsight}
               seniorityRetentionData={analytics && currentBoard.kpis.includes('seniority-and-retention') ? analytics.getSeniorityAndRetention(filters) : undefined}
+              filters={filters}
             />
           ) : (
             <div className="text-center py-12">
