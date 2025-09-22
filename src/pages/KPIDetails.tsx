@@ -76,6 +76,13 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
           { name: 'Stage', value: 5, percentage: 1.5 }
         ];
 
+        const contractTypesPrevious = [
+          { name: 'CDI', value: 265, percentage: 87 },
+          { name: 'CDD', value: 22, percentage: 7 },
+          { name: 'Intérim', value: 10, percentage: 3.5 },
+          { name: 'Stage', value: 7, percentage: 2.5 }
+        ];
+
         const agencyBreakdown = [
           { agency: 'Paris', count: 95, countN1: 88 },
           { agency: 'Lyon', count: 68, countN1: 65 },
@@ -99,6 +106,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
           genderDistributionCurrent,
           genderDistributionPrevious,
           contractTypes,
+          contractTypesPrevious,
           agencyBreakdown,
           departmentBreakdown,
           currentPeriod: filters.period,
@@ -424,104 +432,71 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
             </CardContent>
           </Card>
 
-          {/* Répartition par genre - 2024 */}
+          {/* Répartition par genre */}
           <Card className="teams-card">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <PieChart className="h-5 w-5 text-primary" />
-                <span>Répartition Hommes/Femmes 2024</span>
+                <span>Répartition Hommes/Femmes</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsPieChart>
-                    <Tooltip 
-                      formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionCurrent.find((d: any) => d.name === name)?.percentage}%)`, name]}
-                    />
-                    <Pie
-                      data={detailData.genderDistributionCurrent}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {detailData.genderDistributionCurrent.map((entry: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Legend />
-                  </RechartsPieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 space-y-2">
-                {detailData.genderDistributionCurrent.map((item: any, index: number) => (
-                  <div key={item.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                      />
-                      <span className="text-sm font-medium">{item.name}</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {item.value} ({item.percentage}%)
-                    </span>
+              <div className="grid grid-cols-2 gap-4">
+                {/* 2024 */}
+                <div>
+                  <h4 className="text-sm font-medium text-center mb-2">2024</h4>
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart>
+                        <Tooltip 
+                          formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionCurrent.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                        />
+                        <Pie
+                          data={detailData.genderDistributionCurrent}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={40}
+                          outerRadius={70}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {detailData.genderDistributionCurrent.map((entry: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Legend />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </div>
 
-          {/* Répartition par genre - 2023 */}
-          <Card className="teams-card">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <PieChart className="h-5 w-5 text-muted-foreground" />
-                <span>Répartition Hommes/Femmes 2023</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsPieChart>
-                    <Tooltip 
-                      formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionPrevious.find((d: any) => d.name === name)?.percentage}%)`, name]}
-                    />
-                    <Pie
-                      data={detailData.genderDistributionPrevious}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {detailData.genderDistributionPrevious.map((entry: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Legend />
-                  </RechartsPieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 space-y-2">
-                {detailData.genderDistributionPrevious.map((item: any, index: number) => (
-                  <div key={item.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                      />
-                      <span className="text-sm font-medium">{item.name}</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {item.value} ({item.percentage}%)
-                    </span>
+                {/* 2023 */}
+                <div>
+                  <h4 className="text-sm font-medium text-center mb-2">2023</h4>
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart>
+                        <Tooltip 
+                          formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionPrevious.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                        />
+                        <Pie
+                          data={detailData.genderDistributionPrevious}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={40}
+                          outerRadius={70}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {detailData.genderDistributionPrevious.map((entry: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Legend />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
                   </div>
-                ))}
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -535,71 +510,88 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsPieChart>
-                    <Tooltip 
-                      formatter={(value, name) => [`${value} personnes (${detailData.contractTypes.find((d: any) => d.name === name)?.percentage}%)`, name]}
-                    />
-                    <Pie
-                      data={detailData.contractTypes}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      {detailData.contractTypes.map((entry: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Legend />
-                  </RechartsPieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 space-y-2">
-                {detailData.contractTypes.map((item: any, index: number) => (
-                  <div key={item.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                      />
-                      <span className="text-sm font-medium">{item.name}</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {item.value} ({item.percentage}%)
-                    </span>
+              <div className="grid grid-cols-2 gap-4">
+                {/* 2024 */}
+                <div>
+                  <h4 className="text-sm font-medium text-center mb-2">2024</h4>
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart>
+                        <Tooltip 
+                          formatter={(value, name) => [`${value} personnes (${detailData.contractTypes.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                        />
+                        <Pie
+                          data={detailData.contractTypes}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={70}
+                          paddingAngle={2}
+                          dataKey="value"
+                        >
+                          {detailData.contractTypes.map((entry: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Legend />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
                   </div>
-                ))}
+                </div>
+
+                {/* 2023 */}
+                <div>
+                  <h4 className="text-sm font-medium text-center mb-2">2023</h4>
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart>
+                        <Tooltip 
+                          formatter={(value, name) => [`${value} personnes (${detailData.contractTypesPrevious.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                        />
+                        <Pie
+                          data={detailData.contractTypesPrevious}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={70}
+                          paddingAngle={2}
+                          dataKey="value"
+                        >
+                          {detailData.contractTypesPrevious.map((entry: any, index: number) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Legend />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
-
-          {/* Analyse IA */}
-          {showInsight && detailData.insight && (
-            <Card className="teams-card border-l-4 border-l-primary">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <div className="p-2 bg-primary/10 rounded-full">
-                    <Activity className="h-4 w-4 text-primary" />
-                  </div>
-                  <span>Analyse IA</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-foreground leading-relaxed">
-                  {detailData.insight}
-                </p>
-                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                  <p className="text-xs text-muted-foreground">
-                    💡 <strong>Recommandations :</strong> Surveiller l'évolution des départs au trimestre prochain et renforcer les actions de rétention dans les départements les plus touchés.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
+
+        {/* Analyse IA */}
+        {showInsight && detailData.insight && (
+          <Card className="teams-card border-l-4 border-l-primary">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <div className="p-2 bg-primary/10 rounded-full">
+                  <Activity className="h-4 w-4 text-primary" />
+                </div>
+                <span>Analyse IA</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-foreground leading-relaxed">
+                {detailData.insight}
+              </p>
+              <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                <p className="text-xs text-muted-foreground">
+                  💡 <strong>Recommandations :</strong> Surveiller l'évolution des départs au trimestre prochain et renforcer les actions de rétention dans les départements les plus touchés.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
