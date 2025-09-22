@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, TrendingDown, Minus, BarChart3, Brain, RotateCcw } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Info, BarChart3, Brain, RotateCcw } from 'lucide-react';
 import { KPIData } from '../services/hrAnalytics';
 
 interface SeniorityRetentionData {
@@ -48,15 +48,26 @@ const SeniorityRetentionCard: React.FC<SeniorityRetentionCardProps> = ({
             </CardTitle>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onChartClick(data.averageSeniority)}
-          className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
-          title="Voir les graphiques détaillés"
-        >
-          <BarChart3 className="h-4 w-4" />
-        </Button>
+        <div className="flex space-x-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onChartClick(data.averageSeniority)}
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
+            title="Voir les graphiques détaillés"
+          >
+            <BarChart3 className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onInfoClick(data.averageSeniority)}
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
+            title="Voir les détails"
+          >
+            <Info className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="pt-0 px-4 pb-4">
         <div className="space-y-3">
@@ -102,18 +113,6 @@ const SeniorityRetentionCard: React.FC<SeniorityRetentionCardProps> = ({
                   </span>
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Description et méthode de calcul */}
-          <div className="mt-3 p-3 bg-muted/30 rounded-md border border-border/50">
-            <div className="space-y-2">
-              <p className="text-xs text-foreground font-medium leading-relaxed">
-                <strong>Ancienneté et rétention :</strong> Indicateurs mesurant l&apos;ancienneté moyenne des collaborateurs et le taux de rétention à long terme (supérieur à 5 ans). Ils permettent d&apos;évaluer la fidélisation des talents et la stabilité de l&apos;organisation.
-              </p>
-              <div className="text-xs text-muted-foreground font-mono bg-background/50 p-2 rounded border">
-                Ancienneté moy. = Σ(Années de service) / Effectif | Rétention 5ans et plus = (Collaborateurs anciens / Effectif) × 100
-              </div>
             </div>
           </div>
 

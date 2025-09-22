@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, TrendingDown, Minus, BarChart3, UserPlus, UserMinus, Clock } from 'lucide-react';
+import { Users, TrendingUp, TrendingDown, Minus, Info, BarChart3, UserPlus, UserMinus, Clock } from 'lucide-react';
 import { ExtendedHeadcountData } from '../services/hrAnalytics';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -55,15 +55,26 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
           <div className="w-1 h-6 bg-teams-purple rounded-full" />
           Effectif - Vue d'ensemble
         </CardTitle>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onChartClick}
-          className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
-          title="Voir les graphiques détaillés"
-        >
-          <BarChart3 className="h-4 w-4" />
-        </Button>
+        <div className="flex space-x-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onChartClick}
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
+            title="Voir les graphiques détaillés"
+          >
+            <BarChart3 className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onInfoClick}
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
+            title="Voir les détails"
+          >
+            <Info className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="px-5 pb-5">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -215,18 +226,6 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                   />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        {/* Description et méthode de calcul */}
-        <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50">
-          <div className="space-y-3">
-            <p className="text-sm text-foreground font-medium leading-relaxed">
-              <strong>Effectif total :</strong> Indicateur central du nombre de collaborateurs présents dans l'organisation. Il comprend l'effectif total (tous contrats confondus) et l'équivalent temps plein (ETP). Il permet de suivre l'évolution des ressources humaines et de mesurer la capacité productive de l'entreprise.
-            </p>
-            <div className="text-sm text-muted-foreground font-mono bg-background/50 p-2 rounded border">
-              Effectif total = Nombre de collaborateurs actifs | ETP = Σ(Temps de travail / Temps plein)
             </div>
           </div>
         </div>

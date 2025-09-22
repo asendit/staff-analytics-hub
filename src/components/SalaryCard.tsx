@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DollarSign, TrendingUp, Users, Building2, BarChart3 } from 'lucide-react';
+import { DollarSign, TrendingUp, Users, Building2, Info, BarChart3 } from 'lucide-react';
 import { SalaryData } from '../services/hrAnalytics';
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 
@@ -46,15 +46,26 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
           <div className="w-1 h-6 bg-teams-purple rounded-full" />
           Masse salariale
         </CardTitle>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onChartClick}
-          className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-green hover:bg-teams-green/10"
-          title="Voir les graphiques détaillés"
-        >
-          <BarChart3 className="h-4 w-4" />
-        </Button>
+        <div className="flex space-x-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onChartClick}
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-green hover:bg-teams-green/10"
+            title="Voir les graphiques détaillés"
+          >
+            <BarChart3 className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onInfoClick}
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-teams-green hover:bg-teams-green/10"
+            title="Voir les détails"
+          >
+            <Info className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="px-5 pb-5">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -126,18 +137,6 @@ const SalaryCard: React.FC<SalaryCardProps> = ({
                   />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        {/* Description et méthode de calcul */}
-        <div className="mt-4 p-4 bg-muted/30 rounded-lg border border-border/50">
-          <div className="space-y-3">
-            <p className="text-sm text-foreground font-medium leading-relaxed">
-              <strong>Masse salariale :</strong> Indicateur financier représentant le coût total des rémunérations versées aux collaborateurs. Elle inclut les salaires bruts, charges sociales et avantages. Permet de piloter les coûts RH et d'optimiser la répartition budgétaire par département ou fonction.
-            </p>
-            <div className="text-sm text-muted-foreground font-mono bg-background/50 p-2 rounded border">
-              Masse salariale = Σ(Salaires bruts + Charges sociales) | Par ETP = Masse totale / Nombre ETP
             </div>
           </div>
         </div>
