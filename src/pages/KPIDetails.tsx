@@ -52,30 +52,8 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
         const headcountData = analytics.getExtendedHeadcount(filters);
         const chartData = analytics.getKPIChartData('headcount', filters);
         
-        // Données simulées pour les graphiques détaillés
-        const evolutionData = filters.period === 'year' ? [
-          { period: 'Jan', effectif: 285, effectifN1: 270 },
-          { period: 'Fév', effectif: 292, effectifN1: 275 },
-          { period: 'Mar', effectif: 298, effectifN1: 282 },
-          { period: 'Avr', effectif: 305, effectifN1: 288 },
-          { period: 'Mai', effectif: 312, effectifN1: 295 },
-          { period: 'Jun', effectif: 318, effectifN1: 301 },
-          { period: 'Jul', effectif: 322, effectifN1: 305 },
-          { period: 'Aoû', effectif: 325, effectifN1: 308 },
-          { period: 'Sep', effectif: 318, effectifN1: 302 },
-          { period: 'Oct', effectif: 320, effectifN1: 304 },
-          { period: 'Nov', effectif: 315, effectifN1: 299 },
-          { period: 'Déc', effectif: 318, effectifN1: 301 }
-        ] : [
-          { period: 'S48', effectif: 318, effectifN1: 301 },
-          { period: 'S49', effectif: 320, effectifN1: 303 },
-          { period: 'S50', effectif: 322, effectifN1: 305 },
-          { period: 'S51', effectif: 325, effectifN1: 308 },
-          { period: 'S52', effectif: 318, effectifN1: 302 },
-          { period: 'S1', effectif: 320, effectifN1: 304 },
-          { period: 'S2', effectif: 315, effectifN1: 299 },
-          { period: 'S3', effectif: 318, effectifN1: 301 }
-        ];
+        // Utiliser les données d'évolution générées dynamiquement
+        const evolutionData = analytics.getEvolutionData(filters);
 
         const genderDistributionCurrent = [
           { name: 'Femmes', value: 165, percentage: 52 },

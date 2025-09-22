@@ -1009,7 +1009,7 @@ export class HRAnalytics {
       comparisonEnd = new Date(now.getFullYear() - 1, 11, 31); // 31 décembre année précédente
       comparisonStart = new Date(now.getFullYear() - 1, 0, 1); // 1er janvier année précédente
     } else if (filters.period === 'quarter') {
-      // Calculer le trimestre actuel
+      // Calculer le trimestre actuel (on suppose T3 = juillet-septembre)
       const currentQuarter = Math.floor(now.getMonth() / 3);
       const quarterStartMonth = currentQuarter * 3;
       
@@ -1118,6 +1118,100 @@ export class HRAnalytics {
     }
 
     return { current: 'Actuel', comparison: 'Précédent' };
+  }
+
+  // Méthode pour générer les données d'évolution selon la période et la comparaison
+  getEvolutionData(filters: FilterOptions): Array<{period: string, effectif: number, effectifN1?: number}> {
+    if (!filters.compareWith) {
+      // Sans comparaison, générer seulement les données actuelles
+      return this.generateCurrentPeriodData(filters);
+    }
+
+    const { currentPeriod, comparisonPeriod } = this.getComparisonPeriods(filters);
+    const currentData = this.generatePeriodData(filters, currentPeriod, 'current');
+    const comparisonData = this.generatePeriodData(filters, comparisonPeriod, 'comparison');
+
+    // Fusionner les données
+    return currentData.map((current, index) => ({
+      ...current,
+      effectifN1: comparisonData[index]?.effectif || 0
+    }));
+  }
+
+  private generateCurrentPeriodData(filters: FilterOptions): Array<{period: string, effectif: number}> {
+    const now = new Date();
+    
+    if (filters.period === 'year') {
+      // Evolution mensuelle pour l'année
+      const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+      return months.map(month => ({
+        period: month,
+        effectif: faker.number.int({ min: 280, max: 330 })
+      }));
+    } else if (filters.period === 'quarter') {
+      // Evolution hebdomadaire pour le trimestre (13 semaines)
+      const currentQuarter = Math.floor(now.getMonth() / 3);
+      const startWeek = (currentQuarter * 13) + 1; // Approximation
+      
+      return Array.from({ length: 13 }, (_, i) => ({
+        period: `S${startWeek + i}`,
+        effectif: faker.number.int({ min: 310, max: 330 })
+      }));
+    } else if (filters.period === 'month') {
+      // Evolution hebdomadaire pour le mois (4-5 semaines)
+      const startWeek = Math.floor((now.getMonth() * 4.33) + 1);
+      
+      return Array.from({ length: 4 }, (_, i) => ({
+        period: `S${Math.floor(startWeek + i)}`,
+        effectif: faker.number.int({ min: 315, max: 325 })
+      }));
+    }
+
+    return [];
+  }
+
+  private generatePeriodData(filters: FilterOptions, period: {start: Date, end: Date}, type: 'current' | 'comparison'): Array<{period: string, effectif: number}> {
+    const baseEffectif = type === 'current' ? 320 : 300;
+    const variance = type === 'current' ? 20 : 15;
+
+    if (filters.period === 'year') {
+      // Evolution mensuelle
+      const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+      return months.map(month => ({
+        period: month,
+        effectif: faker.number.int({ min: baseEffectif - variance, max: baseEffectif + variance })
+      }));
+    } else if (filters.period === 'quarter') {
+      // Evolution hebdomadaire pour le trimestre
+      const quarterStart = Math.floor(period.start.getMonth() / 3);
+      const startWeek = this.getISOWeekNumber(period.start);
+      
+      return Array.from({ length: 13 }, (_, i) => ({
+        period: `S${startWeek + i}`,
+        effectif: faker.number.int({ min: baseEffectif - variance, max: baseEffectif + variance })
+      }));
+    } else if (filters.period === 'month') {
+      // Evolution hebdomadaire pour le mois
+      const startWeek = this.getISOWeekNumber(period.start);
+      
+      return Array.from({ length: 4 }, (_, i) => ({
+        period: `S${startWeek + i}`,
+        effectif: faker.number.int({ min: baseEffectif - variance, max: baseEffectif + variance })
+      }));
+    }
+
+    return [];
+  }
+
+  private getISOWeekNumber(date: Date): number {
+    const tempDate = new Date(date.getTime());
+    tempDate.setHours(0, 0, 0, 0);
+    // Thursday in current week decides the year
+    tempDate.setDate(tempDate.getDate() + 3 - (tempDate.getDay() + 6) % 7);
+    // January 4 is always in week 1
+    const yearStart = new Date(tempDate.getFullYear(), 0, 4);
+    // Adjust to Thursday in week 1 and count weeks from there
+    return Math.ceil((((tempDate.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
   }
 
   private getHeadcountAtDate(date: Date): number {
