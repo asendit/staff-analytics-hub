@@ -11,15 +11,13 @@ interface EDICardProps {
   onInfoClick: () => void;
   onChartClick: () => void;
   showInsight?: boolean;
-  filters?: { compareWith?: string };
 }
 
 const EDICard: React.FC<EDICardProps> = ({ 
   data, 
   onInfoClick, 
   onChartClick, 
-  showInsight = true,
-  filters
+  showInsight = true 
 }) => {
   const navigate = useNavigate();
 
@@ -40,14 +38,6 @@ const EDICard: React.FC<EDICardProps> = ({
   console.log('EDI Card - Education breakdown data:', data.educationBreakdown);
   console.log('EDI Card - Pie data:', pieData);
 
-  // Helper function pour les icônes de tendance
-  const getTrendIcon = () => {
-    if (!data.trend || data.trend === null) return null;
-    if (data.trend > 0) return <TrendingUp className="h-4 w-4 text-muted-foreground" />;
-    if (data.trend < 0) return <TrendingDown className="h-4 w-4 text-muted-foreground" />;
-    return <Minus className="h-4 w-4 text-muted-foreground" />;
-  };
-
   return (
     <Card 
       className="teams-card border border-teams-purple/30 col-span-full lg:col-span-4 xl:col-span-4 cursor-pointer hover:border-teams-purple/50 transition-colors" 
@@ -56,17 +46,7 @@ const EDICard: React.FC<EDICardProps> = ({
       <CardHeader className="flex flex-row items-center justify-between pb-4 pt-5 px-5">
         <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3">
           <div className="w-1 h-6 bg-teams-purple rounded-full" />
-          <div className="flex flex-col">
-            <span>Équité, diversité et inclusion</span>
-            {filters?.compareWith && data.trend !== null && (
-              <div className="flex items-center space-x-1 mt-1">
-                {getTrendIcon()}
-                <span className="text-xs font-medium text-muted-foreground">
-                  {data.trend && data.trend > 0 ? '+' : ''}{data.trend}%
-                </span>
-              </div>
-            )}
-          </div>
+          Équité, diversité et inclusion
         </CardTitle>
         <div className="flex space-x-1">
           <Button

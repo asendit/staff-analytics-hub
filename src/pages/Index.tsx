@@ -22,7 +22,6 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 
 const Index = () => {
-  // Gestion de l'état global persisté
   const [hrData, setHrData] = useState<HRData | null>(null);
   const [analytics, setAnalytics] = useState<HRAnalytics | null>(null);
   const [kpis, setKpis] = useState<KPIData[]>([]);
@@ -638,7 +637,6 @@ const Index = () => {
               loadingKPIs={loadingKPIs}
               onRefreshKPIInsight={handleRefreshKPIInsight}
               seniorityRetentionData={analytics && currentBoard.kpis.includes('seniority-and-retention') ? analytics.getSeniorityAndRetention(filters) : undefined}
-              filters={filters}
             />
           ) : (
             <div className="text-center py-12">

@@ -66,9 +66,6 @@ export interface EDIData {
   nationalitiesCount: number;
   educationBreakdown: Array<{ level: string; count: number; percentage: number }>;
   insight: string;
-  trend?: number | null;
-  comparison?: 'higher' | 'lower' | 'stable';
-  category?: 'positive' | 'negative' | 'neutral';
 }
 
 export interface SalaryData {
@@ -77,9 +74,6 @@ export interface SalaryData {
   salaryMassToRevenueRatio: number;
   departmentSalaryBreakdown: Array<{ department: string; totalSalary: number; averageSalary: number; employeeCount: number }>;
   insight: string;
-  trend?: number | null;
-  comparison?: 'higher' | 'lower' | 'stable';
-  category?: 'positive' | 'negative' | 'neutral';
 }
 
 export interface KPIChartData {
@@ -106,7 +100,6 @@ export interface FilterOptions {
 export class HRAnalytics {
   constructor(public data: HRData) {}
 
-  // Force refresh
   getAbsenteeismRate(filters: FilterOptions): KPIData {
     const totalDays = this.getTotalDays(filters.period);
     const employees = this.filterEmployees(filters);
@@ -1046,9 +1039,6 @@ export class HRAnalytics {
 
     console.log('Final education breakdown:', educationBreakdown);
 
-    // Calcul des tendances pour l'EDI
-    const trend = this.calculateEDITrend(filters);
-    
     // Génération d'insight
     const diversity = nationalitiesCount;
     const genderBalance = Math.abs(50 - genderRatio.men);
@@ -1063,27 +1053,18 @@ export class HRAnalytics {
       insight += `⚠️ Un écart salarial de ${salarygapAbs.toFixed(1)}% nécessite une attention particulière.`;
     }
 
-    // Ajouter l'analyse de tendance à l'insight
-    if (trend && trend !== 0) {
-      insight += ` ${trend > 0 ? '📈' : '📉'} Tendance ${trend > 0 ? 'positive' : 'négative'} de ${Math.abs(trend).toFixed(1)}% par rapport à la période de comparaison.`;
-    }
-
     return {
       averageAge: Math.round(averageAge),
       genderRatio,
       salarygap: Math.round(salarygap * 10) / 10,
       nationalitiesCount,
       educationBreakdown,
-      insight,
-      trend,
-      comparison: this.getTrendComparison(trend),
-      category: salarygapAbs < 5 ? 'positive' : 'negative'
+      insight
     };
   }
 
   getSalaryData(filters: FilterOptions): SalaryData {
-    const employees = this.filterEmployees(filters)
-      .filter(emp => emp && emp.status === 'active' && emp.department && emp.salary); // Ajout de vérifications de sécurité
+    const employees = this.filterEmployees(filters).filter(emp => emp.status === 'active');
     
     // Masse salariale totale
     const totalSalaryMass = employees.reduce((sum, emp) => sum + emp.salary, 0);
@@ -1102,12 +1083,6 @@ export class HRAnalytics {
     const departmentSalaries: { [key: string]: { total: number; count: number; employees: any[] } } = {};
     
     employees.forEach(emp => {
-      // Vérification de sécurité pour éviter les erreurs
-      if (!emp || !emp.department || !emp.salary) {
-        console.warn('Employee avec données manquantes détecté:', emp);
-        return; // Skip cet employé
-      }
-      
       if (!departmentSalaries[emp.department]) {
         departmentSalaries[emp.department] = { total: 0, count: 0, employees: [] };
       }
@@ -1123,77 +1098,22 @@ export class HRAnalytics {
       employeeCount: data.count
     })).sort((a, b) => b.totalSalary - a.totalSalary);
     
-    // Calcul des tendances pour la masse salariale
-    const trend = this.calculateSalaryTrend(filters);
+    // Génération d'insight
+    const topDepartment = departmentSalaryBreakdown[0];
+    const avgSalaryOverall = Math.round(totalSalaryMass / employees.length);
     
-    // Génération d'insight avec vérifications de sécurité
     let insight = `La masse salariale totale s'élève à ${(totalSalaryMass / 1000).toFixed(0)}k€. `;
-    
-    if (employees.length > 0) {
-      const avgSalaryOverall = Math.round(totalSalaryMass / employees.length);
-      insight += `Le salaire moyen est de ${avgSalaryOverall.toLocaleString()}€. `;
-      
-      if (departmentSalaryBreakdown.length > 0) {
-        const topDepartment = departmentSalaryBreakdown[0];
-        insight += `Le département "${topDepartment.department}" représente la plus grande part avec ${(topDepartment.totalSalary / 1000).toFixed(0)}k€. `;
-      }
-    } else {
-      insight += `Aucun employé trouvé pour les filtres sélectionnés. `;
-    }
-    
+    insight += `Le salaire moyen est de ${avgSalaryOverall.toLocaleString()}€. `;
+    insight += `Le département "${topDepartment.department}" représente la plus grande part avec ${(topDepartment.totalSalary / 1000).toFixed(0)}k€. `;
     insight += `La masse salariale représente ${salaryMassToRevenueRatio.toFixed(1)}% du chiffre d'affaires estimé.`;
-    
-    // Ajouter l'analyse de tendance à l'insight
-    if (trend && trend !== 0) {
-      insight += ` ${trend > 0 ? '📈' : '📉'} Évolution de ${trend > 0 ? '+' : ''}${trend.toFixed(1)}% par rapport à la période de comparaison.`;
-    }
     
     return {
       totalSalaryMass,
       salaryMassPerETP: Math.round(salaryMassPerETP),
       salaryMassToRevenueRatio: Math.round(salaryMassToRevenueRatio * 10) / 10,
       departmentSalaryBreakdown,
-      insight,
-      trend,
-      comparison: this.getTrendComparison(trend),
-      category: trend && trend > 10 ? 'negative' : trend && trend > 5 ? 'neutral' : 'positive'
+      insight
     };
-  }
-
-  private calculateEDITrend(filters: FilterOptions): number | null {
-    // Si aucune comparaison n'est sélectionnée, on ne retourne pas de tendance
-    if (!filters.compareWith) {
-      return null;
-    }
-
-    // Simulation de tendances EDI basées sur le type de comparaison
-    if (filters.compareWith === 'previous') {
-      // Tendance simulée pour période précédente (-2% à +2%)
-      return faker.number.float({ min: -2, max: 2, fractionDigits: 1 });
-    } else if (filters.compareWith === 'year-ago') {
-      // Tendance simulée pour année précédente (-5% à +5%)
-      return faker.number.float({ min: -5, max: 5, fractionDigits: 1 });
-    }
-
-    return null;
-  }
-
-  private calculateSalaryTrend(filters: FilterOptions): number | null {
-    // Si aucune comparaison n'est sélectionnée, on ne retourne pas de tendance
-    if (!filters.compareWith) {
-      return null;
-    }
-
-    // Simulation de tendances salariales basées sur le type de comparaison
-    if (filters.compareWith === 'previous') {
-      // Tendance simulée pour période précédente (-5% à +8%)
-      return faker.number.float({ min: -5, max: 8, fractionDigits: 1 });
-    } else if (filters.compareWith === 'year-ago') {
-      // Tendance simulée pour année précédente (-10% à +15%)
-      return faker.number.float({ min: -10, max: 15, fractionDigits: 1 });
-    }
-
-    return null;
   }
 
   private calculateTrend(filters: FilterOptions): number | null {
