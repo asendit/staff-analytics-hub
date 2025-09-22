@@ -181,15 +181,6 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
       </div>
 
       <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Section Filtres et Options */}
-        <FilterPanel
-          filters={filters}
-          onFiltersChange={onFiltersChange}
-          departments={departments}
-          agencies={agencies}
-          onRefresh={handleRefresh}
-        />
-
         {/* Analyse IA */}
         {showInsight && detailData.insight && (
           <Card className="teams-card-elevated border-0 mb-6">
@@ -201,14 +192,6 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
                   <span className="text-lg font-semibold text-foreground">Analyse IA - Turnover</span>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-3 text-sm text-muted-foreground">
-                    <span>IA</span>
-                    <Switch
-                      checked={showInsight}
-                      onCheckedChange={handleAIToggle}
-                    />
-                    {showInsight && <Sparkles className="h-4 w-4 text-primary" />}
-                  </div>
                   <Button 
                     onClick={() => onFiltersChange({ ...filters })}
                     variant="ghost"
@@ -218,6 +201,14 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
                     <Activity className="h-4 w-4 mr-2" />
                     <span className="text-sm font-medium">Regénérer l'analyse</span>
                   </Button>
+                  <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                    <span>IA</span>
+                    <Switch
+                      checked={showInsight}
+                      onCheckedChange={handleAIToggle}
+                    />
+                    {showInsight && <Sparkles className="h-4 w-4 text-primary" />}
+                  </div>
                 </div>
               </CardTitle>
             </CardHeader>
@@ -304,6 +295,15 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
             </CardContent>
           </Card>
         )}
+
+        {/* Section Filtres et Options */}
+        <FilterPanel
+          filters={filters}
+          onFiltersChange={onFiltersChange}
+          departments={departments}
+          agencies={agencies}
+          onRefresh={handleRefresh}
+        />
 
         {/* Valeurs principales */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
