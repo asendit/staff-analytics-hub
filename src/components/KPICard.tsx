@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, TrendingDown, Minus, Info, BarChart3, Brain, RotateCcw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { KPIData } from '../services/hrAnalytics';
 
 interface KPICardProps {
@@ -22,6 +23,16 @@ const KPICard: React.FC<KPICardProps> = ({
   isLoadingInsight = false,
   onRefreshInsight
 }) => {
+  const navigate = useNavigate();
+
+  const handleDetailsClick = () => {
+    if (kpi.id === 'turnover') {
+      navigate('/kpi-details/turnover');
+    } else {
+      onChartClick();
+    }
+  };
+
   const getTrendIcon = () => {
     if (kpi.trend === null) return null;
     if (kpi.trend > 0) return <TrendingUp className="h-4 w-4 text-muted-foreground" />;
@@ -56,7 +67,7 @@ const KPICard: React.FC<KPICardProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={onChartClick}
+            onClick={handleDetailsClick}
             className="h-7 w-7 p-0 text-muted-foreground hover:text-teams-purple hover:bg-teams-purple/10"
             title="Voir les graphiques"
           >

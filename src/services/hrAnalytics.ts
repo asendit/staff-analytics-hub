@@ -190,6 +190,144 @@ export class HRAnalytics {
     };
   }
 
+  getExtendedTurnover(filters: FilterOptions) {
+    const turnoverRate = this.getTurnoverRate(filters);
+    const employees = this.filterEmployees(filters);
+    const totalTurnover = parseFloat(turnoverRate.value as string);
+    const departures = Math.round((employees.length * totalTurnover) / 100);
+    
+    return {
+      totalTurnoverRate: totalTurnover,
+      departures,
+      trend: turnoverRate.trend,
+      comparison: turnoverRate.comparison,
+      category: turnoverRate.category,
+      insight: turnoverRate.insight
+    };
+  }
+
+  getTurnoverEvolutionData(filters: FilterOptions) {
+    const currentYear = new Date().getFullYear();
+    
+    if (filters.period === 'year') {
+      return this.getYearTurnoverEvolutionData(filters, currentYear);
+    } else if (filters.period === 'quarter') {
+      return this.getQuarterTurnoverEvolutionData(filters, currentYear);
+    } else if (filters.period === 'month') {
+      return null; // Pas d'évolution pour le mois
+    }
+    
+    return null;
+  }
+
+  private getYearTurnoverEvolutionData(filters: FilterOptions, currentYear: number): Array<{period: string, turnover: number, turnoverN1?: number}> {
+    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    
+    if (!filters.compareWith) {
+      return months.map(month => ({
+        period: month,
+        turnover: faker.number.float({ min: 5, max: 15, fractionDigits: 1 })
+      }));
+    } else {
+      return months.map(month => ({
+        period: month,
+        turnover: faker.number.float({ min: 5, max: 15, fractionDigits: 1 }),
+        turnoverN1: faker.number.float({ min: 4, max: 16, fractionDigits: 1 })
+      }));
+    }
+  }
+
+  private getQuarterTurnoverEvolutionData(filters: FilterOptions, currentYear: number): Array<{period: string, turnover: number, turnoverN1?: number, isCurrentQuarter?: boolean}> {
+    const now = new Date();
+    const currentQuarter = Math.floor(now.getMonth() / 3);
+    
+    if (!filters.compareWith) {
+      const quarterMonths = this.getMonthsInQuarter(currentYear, currentQuarter);
+      return quarterMonths.map(month => ({
+        period: month,
+        turnover: faker.number.float({ min: 5, max: 15, fractionDigits: 1 }),
+        isCurrentQuarter: true
+      }));
+    } else if (filters.compareWith === 'previous') {
+      const quarterMonths = this.getMonthsInQuarter(currentYear, currentQuarter);
+      const prevQuarter = currentQuarter === 0 ? 3 : currentQuarter - 1;
+      const prevYear = currentQuarter === 0 ? currentYear - 1 : currentYear;
+      const prevQuarterMonths = this.getMonthsInQuarter(prevYear, prevQuarter);
+      
+      const prevQuarterData = prevQuarterMonths.map(month => ({
+        period: month,
+        turnover: faker.number.float({ min: 4, max: 14, fractionDigits: 1 }),
+        isCurrentQuarter: false
+      }));
+      
+      const currentQuarterData = quarterMonths.map(month => ({
+        period: month,
+        turnover: faker.number.float({ min: 5, max: 15, fractionDigits: 1 }),
+        isCurrentQuarter: true
+      }));
+      
+      return [...prevQuarterData, ...currentQuarterData];
+    } else {
+      const quarterMonths = this.getMonthsInQuarter(currentYear, currentQuarter);
+      return quarterMonths.map(month => ({
+        period: month,
+        turnover: faker.number.float({ min: 5, max: 15, fractionDigits: 1 }),
+        turnoverN1: faker.number.float({ min: 4, max: 16, fractionDigits: 1 }),
+        isCurrentQuarter: true
+      }));
+    }
+  }
+
+  getTurnoverByAgency(filters: FilterOptions) {
+    const agencies = ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nantes', 'Bordeaux'];
+    return agencies.map(agency => ({
+      agency,
+      turnover: faker.number.float({ min: 3, max: 18, fractionDigits: 1 }),
+      turnoverN1: faker.number.float({ min: 2, max: 20, fractionDigits: 1 })
+    }));
+  }
+
+  getTurnoverByDepartment(filters: FilterOptions) {
+    const departments = ['RH', 'Commercial', 'Technique', 'Marketing', 'Finance', 'Support'];
+    return departments.map(department => ({
+      department,
+      turnover: faker.number.float({ min: 2, max: 22, fractionDigits: 1 }),
+      turnoverN1: faker.number.float({ min: 1, max: 25, fractionDigits: 1 })
+    }));
+  }
+
+  getTurnoverByHierarchicalLevel(filters: FilterOptions) {
+    return [
+      { name: 'Manager', value: faker.number.float({ min: 8, max: 15, fractionDigits: 1 }), percentage: 35 },
+      { name: 'Non-manager', value: faker.number.float({ min: 5, max: 12, fractionDigits: 1 }), percentage: 65 }
+    ];
+  }
+
+  getTurnoverByHierarchicalLevelPrevious(filters: FilterOptions) {
+    return [
+      { name: 'Manager', value: faker.number.float({ min: 7, max: 16, fractionDigits: 1 }), percentage: 32 },
+      { name: 'Non-manager', value: faker.number.float({ min: 4, max: 13, fractionDigits: 1 }), percentage: 68 }
+    ];
+  }
+
+  getTurnoverByContractType(filters: FilterOptions) {
+    return [
+      { name: 'CDI', value: faker.number.float({ min: 3, max: 8, fractionDigits: 1 }), percentage: 60 },
+      { name: 'CDD', value: faker.number.float({ min: 15, max: 25, fractionDigits: 1 }), percentage: 25 },
+      { name: 'Intérim', value: faker.number.float({ min: 20, max: 35, fractionDigits: 1 }), percentage: 10 },
+      { name: 'Stage', value: faker.number.float({ min: 80, max: 95, fractionDigits: 1 }), percentage: 5 }
+    ];
+  }
+
+  getTurnoverByContractTypePrevious(filters: FilterOptions) {
+    return [
+      { name: 'CDI', value: faker.number.float({ min: 2, max: 9, fractionDigits: 1 }), percentage: 58 },
+      { name: 'CDD', value: faker.number.float({ min: 12, max: 28, fractionDigits: 1 }), percentage: 27 },
+      { name: 'Intérim', value: faker.number.float({ min: 18, max: 38, fractionDigits: 1 }), percentage: 12 },
+      { name: 'Stage', value: faker.number.float({ min: 75, max: 98, fractionDigits: 1 }), percentage: 3 }
+    ];
+  }
+
   getExtendedHeadcount(filters: FilterOptions): ExtendedHeadcountData {
     const employees = this.filterEmployees(filters);
     const periodStart = this.getPeriodStartDate(filters.period);
@@ -1274,6 +1412,12 @@ export class HRAnalytics {
     }
     
     return weeks;
+  }
+
+  private getMonthsInQuarter(year: number, quarter: number): string[] {
+    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    const startMonth = quarter * 3;
+    return months.slice(startMonth, startMonth + 3);
   }
 
 

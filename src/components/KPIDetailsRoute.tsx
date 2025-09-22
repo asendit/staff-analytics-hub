@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import KPIDetails from '../pages/KPIDetails';
+import TurnoverDetails from '../pages/TurnoverDetails';
 import { HRAnalytics, FilterOptions } from '../services/hrAnalytics';
 import { convertHRData } from '../utils/dataConverter';
 import { generateHRData } from '../data/hrDataGenerator';
@@ -12,6 +13,7 @@ const KPIDetailsRoute: React.FC = () => {
     return localStorage.getItem('aiEnabled') === 'true';
   });
   const navigate = useNavigate();
+  const { kpiId } = useParams();
 
   useEffect(() => {
     // Initialiser ou récupérer l'analytics depuis le localStorage ou générer de nouvelles données
@@ -57,14 +59,27 @@ const KPIDetailsRoute: React.FC = () => {
     );
   }
 
-  return (
-    <KPIDetails
-      analytics={analytics}
-      filters={filters}
-      onFiltersChange={handleFiltersChange}
-      showInsight={showInsight}
-    />
-  );
+  // Choisir le bon composant selon le kpiId
+  switch (kpiId) {
+    case 'turnover':
+      return (
+        <TurnoverDetails
+          analytics={analytics}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          showInsight={showInsight}
+        />
+      );
+    default:
+      return (
+        <KPIDetails
+          analytics={analytics}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          showInsight={showInsight}
+        />
+      );
+  }
 };
 
 export default KPIDetailsRoute;
