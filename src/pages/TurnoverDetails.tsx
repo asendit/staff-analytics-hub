@@ -76,15 +76,12 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
 
   const getTrendIcon = (trend: number | null) => {
     if (trend === null) return <Minus className="h-5 w-5 text-muted-foreground" />;
-    if (trend > 0) return <TrendingUp className="h-5 w-5 text-destructive" />;
-    if (trend < 0) return <TrendingDown className="h-5 w-5 text-success" />;
+    if (trend > 0) return <TrendingUp className="h-5 w-5 text-muted-foreground" />;
+    if (trend < 0) return <TrendingDown className="h-5 w-5 text-muted-foreground" />;
     return <Minus className="h-5 w-5 text-muted-foreground" />;
   };
 
   const getTrendColor = (trend: number | null) => {
-    if (trend === null) return 'text-muted-foreground';
-    if (trend > 0) return 'text-destructive'; // Augmentation du turnover = mauvais
-    if (trend < 0) return 'text-success'; // Diminution du turnover = bon
     return 'text-muted-foreground';
   };
 
@@ -179,7 +176,7 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
         />
 
         {/* Valeurs principales */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className="teams-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -222,22 +219,6 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
                   </div>
                 </div>
                 <Users className="h-8 w-8 text-primary" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="teams-card">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Impact</p>
-                  <div className="flex items-baseline space-x-2 mt-1">
-                    <span className={`text-3xl font-bold ${detailData.category === 'positive' ? 'text-success' : detailData.category === 'negative' ? 'text-destructive' : 'text-muted-foreground'}`}>
-                      {detailData.category === 'positive' ? 'Faible' : detailData.category === 'negative' ? 'Élevé' : 'Modéré'}
-                    </span>
-                  </div>
-                </div>
-                <Building className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -350,7 +331,7 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
                     <Tooltip />
                     <Bar 
                       dataKey="turnover" 
-                      fill="hsl(var(--destructive))" 
+                      fill="hsl(var(--primary))" 
                       name={`Turnover ${comparisonLabels.current}`}
                       radius={[4, 4, 0, 0]}
                     />
@@ -390,7 +371,7 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
                     <Tooltip />
                     <Bar 
                       dataKey="turnover" 
-                      fill="hsl(var(--destructive))" 
+                      fill="hsl(var(--primary))" 
                       name={`Turnover ${comparisonLabels.current}`}
                       radius={[4, 4, 0, 0]}
                     />
