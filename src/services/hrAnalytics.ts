@@ -1126,13 +1126,21 @@ export class HRAnalytics {
     // Calcul des tendances pour la masse salariale
     const trend = this.calculateSalaryTrend(filters);
     
-    // Génération d'insight
-    const topDepartment = departmentSalaryBreakdown[0];
-    const avgSalaryOverall = Math.round(totalSalaryMass / employees.length);
-    
+    // Génération d'insight avec vérifications de sécurité
     let insight = `La masse salariale totale s'élève à ${(totalSalaryMass / 1000).toFixed(0)}k€. `;
-    insight += `Le salaire moyen est de ${avgSalaryOverall.toLocaleString()}€. `;
-    insight += `Le département "${topDepartment.department}" représente la plus grande part avec ${(topDepartment.totalSalary / 1000).toFixed(0)}k€. `;
+    
+    if (employees.length > 0) {
+      const avgSalaryOverall = Math.round(totalSalaryMass / employees.length);
+      insight += `Le salaire moyen est de ${avgSalaryOverall.toLocaleString()}€. `;
+      
+      if (departmentSalaryBreakdown.length > 0) {
+        const topDepartment = departmentSalaryBreakdown[0];
+        insight += `Le département "${topDepartment.department}" représente la plus grande part avec ${(topDepartment.totalSalary / 1000).toFixed(0)}k€. `;
+      }
+    } else {
+      insight += `Aucun employé trouvé pour les filtres sélectionnés. `;
+    }
+    
     insight += `La masse salariale représente ${salaryMassToRevenueRatio.toFixed(1)}% du chiffre d'affaires estimé.`;
     
     // Ajouter l'analyse de tendance à l'insight
