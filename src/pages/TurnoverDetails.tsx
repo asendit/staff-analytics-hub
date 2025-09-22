@@ -3,7 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, TrendingUp, TrendingDown, Minus, UserMinus, BarChart3, PieChart, Activity, Building, Users } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Minus, UserMinus, BarChart3, PieChart, Activity, Building, Users, Brain } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 import { HRAnalytics, FilterOptions } from '../services/hrAnalytics';
 import FilterPanel from '../components/FilterPanel';
@@ -174,6 +174,106 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
           agencies={agencies}
           onRefresh={handleRefresh}
         />
+
+        {/* Analyse IA */}
+        {showInsight && detailData.insight && (
+          <Card className="teams-card-elevated border-0 mb-6">
+            <CardHeader className="pb-4 pt-5 px-5">
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-8 bg-primary rounded-full" />
+                  <Brain className="h-5 w-5 text-primary" />
+                  <span className="text-lg font-semibold text-foreground">Analyse IA - Turnover</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    onClick={() => onFiltersChange({ ...filters })}
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-primary hover:bg-primary/10"
+                  >
+                    <Activity className="h-4 w-4 mr-2" />
+                    <span className="text-sm font-medium">Regénérer l'analyse</span>
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6 px-5 pb-5">
+              {/* Synthèse IA */}
+              <div className="teams-card p-4 border border-primary/30">
+                <div className="flex items-start space-x-3">
+                  <div className="p-2 bg-primary/10 rounded-full">
+                    <Brain className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-foreground text-sm mb-3">Synthèse IA</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                      {detailData.insight}
+                    </p>
+                    
+                    {/* Métriques clés */}
+                    <div className="bg-primary/5 p-3 rounded-md border border-primary/20 mt-4">
+                      <h5 className="text-xs font-semibold text-foreground mb-2">Métriques clés :</h5>
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                          <span className="text-muted-foreground">Taux de turnover :</span>
+                          <span className="ml-1 font-medium text-foreground">{detailData.totalTurnoverRate.toFixed(1)}%</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Départs total :</span>
+                          <span className="ml-1 font-medium text-foreground">{detailData.departures} personnes</span>
+                        </div>
+                        {detailData.trend !== null && (
+                          <div>
+                            <span className="text-muted-foreground">Évolution :</span>
+                            <span className={`ml-1 font-medium ${detailData.trend > 0 ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
+                              {detailData.trend > 0 ? '+' : ''}{detailData.trend}%
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                      <p className="text-xs text-muted-foreground">
+                        💡 <strong>Recommandations :</strong> Analyser les causes de départ dans les départements les plus touchés et mettre en place des actions de rétention ciblées.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Message si l'IA est désactivée */}
+        {!showInsight && (
+          <Card className="teams-card-elevated border-0 mb-6">
+            <CardHeader className="pb-4 pt-5 px-5">
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-2 h-8 bg-muted-foreground rounded-full" />
+                  <Brain className="h-5 w-5 text-muted-foreground" />
+                  <span className="text-lg font-semibold text-muted-foreground">Analyse IA désactivée</span>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-5 pb-5">
+              <div className="teams-card p-4 border border-muted">
+                <div className="flex items-start space-x-3">
+                  <div className="p-2 bg-muted/10 rounded-full">
+                    <Activity className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                      L'analyse par intelligence artificielle est actuellement désactivée. Activez-la dans les paramètres pour obtenir des insights personnalisés sur vos données de turnover.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Valeurs principales */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -455,49 +555,6 @@ const TurnoverDetails: React.FC<TurnoverDetailsProps> = ({
             </CardContent>
           </Card>
         </div>
-
-        {/* Analyse IA */}
-        {showInsight && detailData.insight && (
-          <Card className="teams-card border-l-4 border-l-primary">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <div className="p-2 bg-primary/10 rounded-full">
-                  <Activity className="h-4 w-4 text-primary" />
-                </div>
-                <span>Analyse IA</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-foreground leading-relaxed">
-                {detailData.insight}
-              </p>
-              <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                <p className="text-xs text-muted-foreground">
-                  💡 <strong>Recommandations :</strong> Analyser les causes de départ dans les départements les plus touchés et mettre en place des actions de rétention ciblées.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Message si l'IA est désactivée */}
-        {!showInsight && (
-          <Card className="teams-card border-l-4 border-l-muted">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <div className="p-2 bg-muted/10 rounded-full">
-                  <Activity className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <span className="text-muted-foreground">Analyse IA désactivée</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                L'analyse par intelligence artificielle est actuellement désactivée. Activez-la dans les paramètres pour obtenir des insights personnalisés sur vos données de turnover.
-              </p>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
