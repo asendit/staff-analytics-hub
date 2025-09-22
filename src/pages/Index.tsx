@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { generateHRData } from '../data/hrDataGenerator';
 import { convertHRData } from '../utils/dataConverter';
 import { HRAnalytics, KPIData, KPIChartData, FilterOptions, HRData, ExtendedHeadcountData, EDIData, SalaryData } from '../services/hrAnalytics';
+import { usePersistedDashboardState } from '../hooks/usePersistedState';
 import KPICard from '../components/KPICard';
 import HeadcountCard from '../components/HeadcountCard';
 import EDICard from '../components/EDICard';
@@ -27,7 +28,7 @@ const Index = () => {
   const [headcountData, setHeadcountData] = useState<ExtendedHeadcountData | null>(null);
   const [ediData, setEdiData] = useState<EDIData | null>(null);
   const [salaryData, setSalaryData] = useState<SalaryData | null>(null);
-  const [filters, setFilters] = useState<FilterOptions>({ period: 'year' });
+  const { filters, updateFilters, isAIEnabled, updateAIEnabled } = usePersistedDashboardState();
   const [globalInsight, setGlobalInsight] = useState<string>('');
   const [isLoadingInsight, setIsLoadingInsight] = useState(false);
   const [loadingKPIs, setLoadingKPIs] = useState<Set<string>>(new Set());
@@ -37,7 +38,6 @@ const Index = () => {
   const [selectedKPIChartData, setSelectedKPIChartData] = useState<KPIChartData | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isChartModalOpen, setIsChartModalOpen] = useState(false);
-  const [isAIEnabled, setIsAIEnabled] = useState(true);
   const [isReorderMode, setIsReorderMode] = useState(false);
 
   // Initialisation des données
@@ -193,7 +193,7 @@ const Index = () => {
   };
 
   const handleAIToggle = (enabled: boolean) => {
-    setIsAIEnabled(enabled);
+    updateAIEnabled(enabled);
     
     if (!enabled) {
       setGlobalInsight('');
@@ -553,7 +553,7 @@ const Index = () => {
         {/* Filtres */}
         <FilterPanel
           filters={filters}
-          onFiltersChange={setFilters}
+          onFiltersChange={updateFilters}
           departments={departments}
           agencies={agencies}
           onRefresh={handleRefresh}
