@@ -1082,7 +1082,8 @@ export class HRAnalytics {
   }
 
   getSalaryData(filters: FilterOptions): SalaryData {
-    const employees = this.filterEmployees(filters).filter(emp => emp.status === 'active');
+    const employees = this.filterEmployees(filters)
+      .filter(emp => emp && emp.status === 'active' && emp.department && emp.salary); // Ajout de vérifications de sécurité
     
     // Masse salariale totale
     const totalSalaryMass = employees.reduce((sum, emp) => sum + emp.salary, 0);
@@ -1101,6 +1102,12 @@ export class HRAnalytics {
     const departmentSalaries: { [key: string]: { total: number; count: number; employees: any[] } } = {};
     
     employees.forEach(emp => {
+      // Vérification de sécurité pour éviter les erreurs
+      if (!emp || !emp.department || !emp.salary) {
+        console.warn('Employee avec données manquantes détecté:', emp);
+        return; // Skip cet employé
+      }
+      
       if (!departmentSalaries[emp.department]) {
         departmentSalaries[emp.department] = { total: 0, count: 0, employees: [] };
       }
