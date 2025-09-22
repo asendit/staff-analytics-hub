@@ -71,11 +71,21 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
           { name: 'Stage', value: 5, percentage: 1.5 }
         ];
 
+        const agencyBreakdown = [
+          { agency: 'Paris', count: 95 },
+          { agency: 'Lyon', count: 68 },
+          { agency: 'Marseille', count: 52 },
+          { agency: 'Toulouse', count: 41 },
+          { agency: 'Nantes', count: 28 },
+          { agency: 'Bordeaux', count: 34 }
+        ];
+
         setDetailData({
           ...headcountData,
           monthlyEvolution,
           genderDistribution,
           contractTypes,
+          agencyBreakdown,
           currentPeriod: filters.period,
           hasComparison: searchParams.get('compare') === 'true'
         });
@@ -322,6 +332,39 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
 
         {/* Répartitions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Répartition par agence */}
+          <Card className="teams-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                <span>Répartition par agence</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={detailData.agencyBreakdown} layout="horizontal">
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis 
+                      type="category" 
+                      dataKey="agency" 
+                      stroke="hsl(var(--muted-foreground))"
+                      width={80}
+                    />
+                    <Tooltip />
+                    <Bar 
+                      dataKey="count" 
+                      fill="hsl(var(--success))" 
+                      name="Effectif"
+                      radius={[0, 4, 4, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Répartition par département */}
           <Card className="teams-card">
             <CardHeader>
