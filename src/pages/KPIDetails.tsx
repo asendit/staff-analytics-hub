@@ -51,17 +51,22 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
         
         // Données simulées pour les graphiques détaillés
         const monthlyEvolution = [
-          { month: 'Jan', effectif: 285, etp: 270 },
-          { month: 'Fév', effectif: 292, etp: 275 },
-          { month: 'Mar', effectif: 298, etp: 282 },
-          { month: 'Avr', effectif: 305, etp: 288 },
-          { month: 'Mai', effectif: 312, etp: 295 },
-          { month: 'Jun', effectif: 318, etp: 301 }
+          { month: 'Jan', effectif: 285, effectifN1: 270 },
+          { month: 'Fév', effectif: 292, effectifN1: 275 },
+          { month: 'Mar', effectif: 298, effectifN1: 282 },
+          { month: 'Avr', effectif: 305, effectifN1: 288 },
+          { month: 'Mai', effectif: 312, effectifN1: 295 },
+          { month: 'Jun', effectif: 318, effectifN1: 301 }
         ];
 
-        const genderDistribution = [
+        const genderDistributionCurrent = [
           { name: 'Femmes', value: 165, percentage: 52 },
           { name: 'Hommes', value: 153, percentage: 48 }
+        ];
+
+        const genderDistributionPrevious = [
+          { name: 'Femmes', value: 148, percentage: 49 },
+          { name: 'Hommes', value: 152, percentage: 51 }
         ];
 
         const contractTypes = [
@@ -72,26 +77,27 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
         ];
 
         const agencyBreakdown = [
-          { agency: 'Paris', count: 95 },
-          { agency: 'Lyon', count: 68 },
-          { agency: 'Marseille', count: 52 },
-          { agency: 'Toulouse', count: 41 },
-          { agency: 'Nantes', count: 28 },
-          { agency: 'Bordeaux', count: 34 }
+          { agency: 'Paris', count: 95, countN1: 88 },
+          { agency: 'Lyon', count: 68, countN1: 65 },
+          { agency: 'Marseille', count: 52, countN1: 48 },
+          { agency: 'Toulouse', count: 41, countN1: 38 },
+          { agency: 'Nantes', count: 28, countN1: 25 },
+          { agency: 'Bordeaux', count: 34, countN1: 30 }
         ];
 
         const departmentBreakdown = [
-          { department: 'Technique', count: 142 },
-          { department: 'Commercial', count: 89 },
-          { department: 'Marketing', count: 45 },
-          { department: 'RH', count: 23 },
-          { department: 'Finance', count: 19 }
+          { department: 'Technique', count: 142, countN1: 135 },
+          { department: 'Commercial', count: 89, countN1: 82 },
+          { department: 'Marketing', count: 45, countN1: 40 },
+          { department: 'RH', count: 23, countN1: 21 },
+          { department: 'Finance', count: 19, countN1: 17 }
         ];
 
         setDetailData({
           ...headcountData,
           monthlyEvolution,
-          genderDistribution,
+          genderDistributionCurrent,
+          genderDistributionPrevious,
           contractTypes,
           agencyBreakdown,
           departmentBreakdown,
@@ -322,16 +328,17 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     dataKey="effectif" 
                     stroke="hsl(var(--primary))" 
                     strokeWidth={3}
-                    name="Effectif"
+                    name="Effectif 2024"
                     dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 6 }}
                   />
                   <Line 
                     type="monotone" 
-                    dataKey="etp" 
-                    stroke="hsl(var(--success))" 
+                    dataKey="effectifN1" 
+                    stroke="hsl(var(--muted-foreground))" 
                     strokeWidth={2}
-                    name="ETP"
-                    dot={{ fill: 'hsl(var(--success))', strokeWidth: 2, r: 4 }}
+                    strokeDasharray="5 5"
+                    name="Effectif 2023"
+                    dot={{ fill: 'hsl(var(--muted-foreground))', strokeWidth: 2, r: 4 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -364,7 +371,13 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     <Bar 
                       dataKey="count" 
                       fill="hsl(var(--success))" 
-                      name="Effectif"
+                      name="Effectif 2024"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar 
+                      dataKey="countN1" 
+                      fill="hsl(var(--muted-foreground))" 
+                      name="Effectif 2023"
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
@@ -396,7 +409,13 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                     <Bar 
                       dataKey="count" 
                       fill="hsl(var(--primary))" 
-                      name="Effectif"
+                      name="Effectif 2024"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar 
+                      dataKey="countN1" 
+                      fill="hsl(var(--muted-foreground))" 
+                      name="Effectif 2023"
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
@@ -405,12 +424,12 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
             </CardContent>
           </Card>
 
-          {/* Répartition par genre */}
+          {/* Répartition par genre - 2024 */}
           <Card className="teams-card">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <PieChart className="h-5 w-5 text-primary" />
-                <span>Répartition Hommes/Femmes</span>
+                <span>Répartition Hommes/Femmes 2024</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -418,10 +437,10 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                 <ResponsiveContainer width="100%" height="100%">
                   <RechartsPieChart>
                     <Tooltip 
-                      formatter={(value, name) => [`${value} personnes (${detailData.genderDistribution.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                      formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionCurrent.find((d: any) => d.name === name)?.percentage}%)`, name]}
                     />
                     <Pie
-                      data={detailData.genderDistribution}
+                      data={detailData.genderDistributionCurrent}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}
@@ -429,7 +448,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {detailData.genderDistribution.map((entry: any, index: number) => (
+                      {detailData.genderDistributionCurrent.map((entry: any, index: number) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -438,7 +457,58 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 space-y-2">
-                {detailData.genderDistribution.map((item: any, index: number) => (
+                {detailData.genderDistributionCurrent.map((item: any, index: number) => (
+                  <div key={item.name} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                      />
+                      <span className="text-sm font-medium">{item.name}</span>
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      {item.value} ({item.percentage}%)
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Répartition par genre - 2023 */}
+          <Card className="teams-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <PieChart className="h-5 w-5 text-muted-foreground" />
+                <span>Répartition Hommes/Femmes 2023</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsPieChart>
+                    <Tooltip 
+                      formatter={(value, name) => [`${value} personnes (${detailData.genderDistributionPrevious.find((d: any) => d.name === name)?.percentage}%)`, name]}
+                    />
+                    <Pie
+                      data={detailData.genderDistributionPrevious}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {detailData.genderDistributionPrevious.map((entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Legend />
+                  </RechartsPieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-4 space-y-2">
+                {detailData.genderDistributionPrevious.map((item: any, index: number) => (
                   <div key={item.name} className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div 
