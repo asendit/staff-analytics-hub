@@ -81,13 +81,15 @@ const Index = () => {
 
     const managerBoard: Board = {
       id: 'manager-view',
-      name: 'Tableau de bord Manager',
-      description: 'Indicateurs opérationnels pour les managers',
+      name: 'Tableau de bord Manager (Défaut)',
+      description: 'Indicateurs de gestion d\'équipe et de performance opérationnelle',
       kpis: [
-        'headcount', 'absenteeism', 'remote-work', 'task-completion', 'age-seniority'
+        'team-headcount', 'team-performance', 'absenteeism', 'remote-work', 
+        'team-satisfaction', 'workload-distribution', 'training-completion', 'team-turnover'
       ],
       kpiOrder: [
-        'headcount', 'remote-work', 'absenteeism', 'task-completion', 'age-seniority'
+        'team-headcount', 'team-performance', 'team-satisfaction', 'absenteeism', 
+        'remote-work', 'workload-distribution', 'training-completion', 'team-turnover'
       ],
       createdAt: new Date().toISOString(),
       isDefault: true
@@ -497,7 +499,13 @@ const Index = () => {
     { id: 'age-seniority', name: 'Âge et ancienneté' },
     { id: 'seniority-and-retention', name: 'Ancienneté et rétention' },
     { id: 'task-completion', name: 'Tâches RH' },
-    { id: 'document-completion', name: 'Dossiers collaborateurs' }
+    { id: 'document-completion', name: 'Dossiers collaborateurs' },
+    { id: 'team-headcount', name: 'Effectif équipe' },
+    { id: 'team-performance', name: 'Performance équipe' },
+    { id: 'team-satisfaction', name: 'Satisfaction équipe' },
+    { id: 'workload-distribution', name: 'Répartition de charge' },
+    { id: 'training-completion', name: 'Formation équipe' },
+    { id: 'team-turnover', name: 'Turnover équipe' }
   ];
 
   const departments = hrData ? [...new Set(hrData.employees.map(emp => emp.department))] as string[] : [];

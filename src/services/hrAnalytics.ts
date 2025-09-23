@@ -924,7 +924,6 @@ export class HRAnalytics {
       case 'absenteeism': return this.getAbsenteeismChartData(filters);
       case 'turnover': return this.getTurnoverChartData(filters);
       case 'headcount': return this.getHeadcountChartData(filters);
-      
       case 'remote-work': return this.getRemoteWorkChartData(filters);
       case 'onboarding': return this.getOnboardingChartData(filters);
       case 'hr-expenses': return this.getHRExpensesChartData(filters);
@@ -934,6 +933,12 @@ export class HRAnalytics {
       case 'seniority-and-retention': return this.getSeniorityAndRetentionChartData(filters);
       case 'task-completion': return this.getTaskCompletionChartData(filters);
       case 'document-completion': return this.getDocumentCompletionChartData(filters);
+      case 'team-headcount': return this.getTeamHeadcountChartData(filters);
+      case 'team-performance': return this.getTeamPerformanceChartData(filters);
+      case 'team-satisfaction': return this.getTeamSatisfactionChartData(filters);
+      case 'workload-distribution': return this.getWorkloadDistributionChartData(filters);
+      case 'training-completion': return this.getTrainingCompletionChartData(filters);
+      case 'team-turnover': return this.getTeamTurnoverChartData(filters);
       default: return null;
     }
   }
@@ -968,14 +973,271 @@ export class HRAnalytics {
       this.getAbsenteeismRate(filters),
       this.getTurnoverRate(filters),
       this.getHeadcount(filters),
-      
       this.getRemoteWorkAdoption(filters),
       this.getOnboardingDuration(filters),
       this.getHRExpenses(filters),
       this.getAgeAndSeniority(filters),
       this.getTaskCompletionRate(filters),
-      this.getDocumentCompletionRate(filters)
+      this.getDocumentCompletionRate(filters),
+      this.getTeamHeadcount(filters),
+      this.getTeamPerformance(filters),
+      this.getTeamSatisfaction(filters),
+      this.getWorkloadDistribution(filters),
+      this.getTrainingCompletion(filters),
+      this.getTeamTurnover(filters)
     ];
+  }
+
+  // KPIs spécifiques aux managers
+  getTeamHeadcount(filters: FilterOptions): KPIData {
+    const employees = this.filterEmployees(filters);
+    const teamSize = employees.filter(emp => emp.status === 'active').length;
+    const trend = this.calculateTrend(filters);
+
+    return {
+      id: 'team-headcount',
+      name: 'Effectif équipe',
+      value: teamSize,
+      unit: 'collaborateurs',
+      trend,
+      comparison: this.getTrendComparison(trend),
+      category: teamSize >= 5 ? 'positive' : 'neutral',
+      insight: `Votre équipe compte ${teamSize} collaborateurs actifs. ${teamSize >= 10 ? '👥 Équipe de taille confortable pour une gestion efficace.' : teamSize >= 5 ? '👤 Équipe de taille appropriée.' : '⚠️ Équipe réduite, attention à la charge de travail.'}`
+    };
+  }
+
+  getTeamPerformance(filters: FilterOptions): KPIData {
+    const employees = this.filterEmployees(filters);
+    const avgPerformance = employees.reduce((sum, emp) => sum + (emp.performanceScore || 75), 0) / employees.length;
+    const trend = this.calculateTrend(filters);
+
+    return {
+      id: 'team-performance',
+      name: 'Performance équipe',
+      value: avgPerformance.toFixed(0),
+      unit: '/100',
+      trend,
+      comparison: this.getTrendComparison(trend),
+      category: avgPerformance >= 80 ? 'positive' : avgPerformance >= 70 ? 'neutral' : 'negative',
+      insight: `Score moyen de performance : ${avgPerformance.toFixed(0)}/100. ${avgPerformance >= 80 ? '🏆 Excellente performance d\'équipe !' : avgPerformance >= 70 ? '📊 Performance correcte avec du potentiel.' : '🎯 Performance à améliorer avec du coaching.'}`
+    };
+  }
+
+  getTeamSatisfaction(filters: FilterOptions): KPIData {
+    const satisfactionScore = faker.number.float({ min: 65, max: 95, fractionDigits: 1 });
+    const trend = this.calculateTrend(filters);
+
+    return {
+      id: 'team-satisfaction',
+      name: 'Satisfaction équipe',
+      value: satisfactionScore.toFixed(1),
+      unit: '/100',
+      trend,
+      comparison: this.getTrendComparison(trend),
+      category: satisfactionScore >= 80 ? 'positive' : satisfactionScore >= 70 ? 'neutral' : 'negative',
+      insight: `Niveau de satisfaction : ${satisfactionScore.toFixed(1)}/100. ${satisfactionScore >= 80 ? '😊 Équipe très satisfaite de son environnement de travail.' : satisfactionScore >= 70 ? '🤔 Satisfaction modérée, identifier les axes d\'amélioration.' : '😐 Satisfaction faible, actions urgentes nécessaires.'}`
+    };
+  }
+
+  getWorkloadDistribution(filters: FilterOptions): KPIData {
+    const distributionScore = faker.number.float({ min: 60, max: 90, fractionDigits: 1 });
+    const trend = this.calculateTrend(filters);
+
+    return {
+      id: 'workload-distribution',
+      name: 'Répartition de charge',
+      value: distributionScore.toFixed(1),
+      unit: '%',
+      trend,
+      comparison: this.getTrendComparison(trend),
+      category: distributionScore >= 75 ? 'positive' : distributionScore >= 65 ? 'neutral' : 'negative',
+      insight: `Équilibre de la charge de travail : ${distributionScore.toFixed(1)}%. ${distributionScore >= 75 ? '⚖️ Charge bien répartie entre les collaborateurs.' : distributionScore >= 65 ? '📊 Répartition acceptable avec des ajustements possibles.' : '⚠️ Déséquilibre de charge, redistribution nécessaire.'}`
+    };
+  }
+
+  getTrainingCompletion(filters: FilterOptions): KPIData {
+    const employees = this.filterEmployees(filters);
+    const totalTrainingHours = employees.reduce((sum, emp) => sum + (emp.trainingHours || 0), 0);
+    const avgTrainingHours = totalTrainingHours / employees.length;
+    const trend = this.calculateTrend(filters);
+
+    return {
+      id: 'training-completion',
+      name: 'Formation équipe',
+      value: avgTrainingHours.toFixed(1),
+      unit: 'h/pers',
+      trend,
+      comparison: this.getTrendComparison(trend),
+      category: avgTrainingHours >= 20 ? 'positive' : avgTrainingHours >= 10 ? 'neutral' : 'negative',
+      insight: `${avgTrainingHours.toFixed(1)}h de formation par personne en moyenne. ${avgTrainingHours >= 20 ? '📚 Excellente dynamique de formation continue.' : avgTrainingHours >= 10 ? '📖 Formation présente mais peut être renforcée.' : '📝 Formation insuffisante, planifier des sessions.'}`
+    };
+  }
+
+  getTeamTurnover(filters: FilterOptions): KPIData {
+    const employees = this.filterEmployees(filters);
+    const departures = employees.filter(emp => emp.status === 'terminated').length;
+    const teamTurnover = (departures / employees.length) * 100;
+    const trend = this.calculateTrend(filters);
+
+    return {
+      id: 'team-turnover',
+      name: 'Turnover équipe',
+      value: teamTurnover.toFixed(1),
+      unit: '%',
+      trend,
+      comparison: this.getTrendComparison(trend),
+      category: teamTurnover <= 5 ? 'positive' : teamTurnover <= 10 ? 'neutral' : 'negative',
+      insight: `Taux de turnover de l'équipe : ${teamTurnover.toFixed(1)}%. ${teamTurnover <= 5 ? '🎯 Excellent taux de rétention des talents.' : teamTurnover <= 10 ? '📊 Turnover acceptable, surveiller les tendances.' : '🚨 Turnover élevé, analyser les causes de départ.'}`
+    };
+  }
+
+  // Chart data methods for manager KPIs
+  getTeamHeadcountChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generatePeriodLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.int({ min: 8, max: 25 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.int({ min: 3, max: 30 })
+      })),
+      specificBreakdown: {
+        title: 'Répartition par niveau hiérarchique',
+        data: [
+          { name: 'Seniors', value: faker.number.int({ min: 30, max: 50 }) },
+          { name: 'Intermédiaires', value: faker.number.int({ min: 35, max: 45 }) },
+          { name: 'Juniors', value: faker.number.int({ min: 15, max: 35 }) }
+        ]
+      }
+    };
+  }
+
+  getTeamPerformanceChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generatePeriodLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 70, max: 95, fractionDigits: 1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 65, max: 90, fractionDigits: 1 })
+      })),
+      specificBreakdown: {
+        title: 'Performance par objectif',
+        data: [
+          { name: 'Objectifs atteints', value: faker.number.int({ min: 70, max: 85 }) },
+          { name: 'En cours', value: faker.number.int({ min: 10, max: 20 }) },
+          { name: 'Non atteints', value: faker.number.int({ min: 5, max: 15 }) }
+        ]
+      }
+    };
+  }
+
+  getTeamSatisfactionChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generatePeriodLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 65, max: 88, fractionDigits: 1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 60, max: 90, fractionDigits: 1 })
+      })),
+      specificBreakdown: {
+        title: 'Facteurs de satisfaction',
+        data: [
+          { name: 'Management', value: faker.number.int({ min: 70, max: 85 }) },
+          { name: 'Conditions travail', value: faker.number.int({ min: 65, max: 80 }) },
+          { name: 'Reconnaissance', value: faker.number.int({ min: 60, max: 75 }) },
+          { name: 'Équilibre vie pro', value: faker.number.int({ min: 70, max: 85 }) }
+        ]
+      }
+    };
+  }
+
+  getWorkloadDistributionChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generatePeriodLabels(filters.period);
+    const employees = this.filterEmployees(filters);
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 60, max: 85, fractionDigits: 1 })
+      })),
+      departmentBreakdown: employees.slice(0, 6).map(emp => ({
+        department: `${emp.firstName} ${emp.lastName}`,
+        value: faker.number.float({ min: 40, max: 120, fractionDigits: 1 })
+      })),
+      specificBreakdown: {
+        title: 'Répartition par type de tâche',
+        data: [
+          { name: 'Projets prioritaires', value: faker.number.int({ min: 40, max: 60 }) },
+          { name: 'Tâches courantes', value: faker.number.int({ min: 25, max: 35 }) },
+          { name: 'Formation', value: faker.number.int({ min: 5, max: 15 }) },
+          { name: 'Support', value: faker.number.int({ min: 10, max: 20 }) }
+        ]
+      }
+    };
+  }
+
+  getTrainingCompletionChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generatePeriodLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 8, max: 25, fractionDigits: 1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 5, max: 30, fractionDigits: 1 })
+      })),
+      specificBreakdown: {
+        title: 'Types de formation',
+        data: [
+          { name: 'Technique', value: faker.number.int({ min: 40, max: 60 }) },
+          { name: 'Management', value: faker.number.int({ min: 20, max: 30 }) },
+          { name: 'Soft skills', value: faker.number.int({ min: 15, max: 25 }) },
+          { name: 'Sécurité', value: faker.number.int({ min: 5, max: 15 }) }
+        ]
+      }
+    };
+  }
+
+  getTeamTurnoverChartData(filters: FilterOptions): KPIChartData {
+    const months = this.generatePeriodLabels(filters.period);
+    const departments = [...new Set(this.data.employees.map(emp => emp.department))];
+    
+    return {
+      timeEvolution: months.map(month => ({
+        month,
+        value: faker.number.float({ min: 2, max: 12, fractionDigits: 1 })
+      })),
+      departmentBreakdown: departments.map(dept => ({
+        department: dept,
+        value: faker.number.float({ min: 1, max: 15, fractionDigits: 1 })
+      })),
+      specificBreakdown: {
+        title: 'Raisons de départ',
+        data: [
+          { name: 'Évolution carrière', value: faker.number.int({ min: 35, max: 50 }) },
+          { name: 'Salaire', value: faker.number.int({ min: 20, max: 30 }) },
+          { name: 'Conditions travail', value: faker.number.int({ min: 10, max: 20 }) },
+          { name: 'Personnel', value: faker.number.int({ min: 5, max: 15 }) }
+        ]
+      }
+    };
   }
 
   private groupEducationLevels(educationLevel: string): string {
