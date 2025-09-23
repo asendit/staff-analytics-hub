@@ -1834,15 +1834,37 @@ export class HRAnalytics {
     return ageRanges.map(ageRange => {
       const hommes = faker.number.int({ min: 5, max: 45 });
       const femmes = faker.number.int({ min: 5, max: 45 });
+      const total = hommes + femmes;
+      
+      // Calculer les pourcentages
+      const hommesPercentage = total > 0 ? Math.round((hommes / total) * 100 * 10) / 10 : 0;
+      const femmesPercentage = total > 0 ? Math.round((femmes / total) * 100 * 10) / 10 : 0;
+      
       const hommesN1 = filters.compareWith ? faker.number.int({ min: 5, max: 45 }) : null;
       const femmesN1 = filters.compareWith ? faker.number.int({ min: 5, max: 45 }) : null;
+      
+      // Calculer les pourcentages pour la période précédente
+      let hommesPercentageN1 = 0;
+      let femmesPercentageN1 = 0;
+      
+      if (filters.compareWith && hommesN1 && femmesN1) {
+        const totalN1 = hommesN1 + femmesN1;
+        hommesPercentageN1 = totalN1 > 0 ? Math.round((hommesN1 / totalN1) * 100 * 10) / 10 : 0;
+        femmesPercentageN1 = totalN1 > 0 ? Math.round((femmesN1 / totalN1) * 100 * 10) / 10 : 0;
+      }
       
       return {
         ageRange,
         hommes,
         femmes,
+        hommesPercentage,
+        femmesPercentage,
         ...(hommesN1 && { hommesN1 }),
-        ...(femmesN1 && { femmesN1 })
+        ...(femmesN1 && { femmesN1 }),
+        ...(filters.compareWith && { 
+          hommesPercentageN1,
+          femmesPercentageN1
+        })
       };
     });
   }

@@ -185,47 +185,51 @@ const EquityDetails: React.FC<EquityDetailsProps> = ({
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart 
                   data={equityData.agePyramidData}
-                  layout="horizontal"
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis 
-                    type="category" 
+                  <XAxis 
                     dataKey="ageRange" 
                     stroke="hsl(var(--muted-foreground))"
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
                   />
-                  <Tooltip />
+                  <YAxis 
+                    stroke="hsl(var(--muted-foreground))"
+                    label={{ value: 'Pourcentage (%)', angle: -90, position: 'insideLeft' }}
+                  />
+                  <Tooltip 
+                    formatter={(value: any) => [`${value}%`, '']}
+                  />
                   <Legend />
                   <Bar 
-                    dataKey="hommes" 
-                    stackId="a" 
+                    dataKey="hommesPercentage" 
                     fill="hsl(var(--primary))" 
                     name="Hommes"
-                    radius={[0, 4, 4, 0]}
+                    radius={[4, 4, 0, 0]}
                   />
                   <Bar 
-                    dataKey="femmes" 
-                    stackId="a" 
+                    dataKey="femmesPercentage" 
                     fill="hsl(var(--success))" 
                     name="Femmes"
-                    radius={[0, 4, 4, 0]}
+                    radius={[4, 4, 0, 0]}
                   />
                   {filters.compareWith && (
                     <>
                       <Bar 
-                        dataKey="hommesN1" 
-                        stackId="b" 
+                        dataKey="hommesPercentageN1" 
                         fill="hsl(var(--muted-foreground))" 
                         name="Hommes (période précédente)"
                         opacity={0.5}
+                        radius={[4, 4, 0, 0]}
                       />
                       <Bar 
-                        dataKey="femmesN1" 
-                        stackId="b" 
+                        dataKey="femmesPercentageN1" 
                         fill="hsl(var(--muted-foreground))" 
                         name="Femmes (période précédente)"
                         opacity={0.3}
+                        radius={[4, 4, 0, 0]}
                       />
                     </>
                   )}
