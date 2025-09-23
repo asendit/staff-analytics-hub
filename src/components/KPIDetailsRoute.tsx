@@ -5,11 +5,13 @@ import TurnoverDetails from '../pages/TurnoverDetails';
 import { HRAnalytics, FilterOptions } from '../services/hrAnalytics';
 import { convertHRData } from '../utils/dataConverter';
 import { generateHRData } from '../data/hrDataGenerator';
-import { usePersistedDashboardState } from '../hooks/usePersistedState';
 
 const KPIDetailsRoute: React.FC = () => {
   const [analytics, setAnalytics] = useState<HRAnalytics | null>(null);
-  const { filters, updateFilters, isAIEnabled, updateAIEnabled } = usePersistedDashboardState();
+  const [filters, setFilters] = useState<FilterOptions>({ period: 'month' });
+  const [showInsight, setShowInsight] = useState(() => {
+    return localStorage.getItem('aiEnabled') === 'true';
+  });
   const navigate = useNavigate();
   const { kpiId } = useParams();
 
@@ -32,12 +34,22 @@ const KPIDetailsRoute: React.FC = () => {
     initializeAnalytics();
   }, [navigate]);
 
+  useEffect(() => {
+    // Écouter les changements de l'état AI
+    const handleStorageChange = () => {
+      setShowInsight(localStorage.getItem('aiEnabled') === 'true');
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   const handleFiltersChange = (newFilters: FilterOptions) => {
-    updateFilters(newFilters);
+    setFilters(newFilters);
   };
 
   const handleShowInsightChange = (enabled: boolean) => {
-    updateAIEnabled(enabled);
+    setShowInsight(enabled);
   };
 
   if (!analytics) {
@@ -59,7 +71,7 @@ const KPIDetailsRoute: React.FC = () => {
           analytics={analytics}
           filters={filters}
           onFiltersChange={handleFiltersChange}
-          showInsight={isAIEnabled}
+          showInsight={showInsight}
           onShowInsightChange={handleShowInsightChange}
         />
       );
@@ -69,7 +81,7 @@ const KPIDetailsRoute: React.FC = () => {
           analytics={analytics}
           filters={filters}
           onFiltersChange={handleFiltersChange}
-          showInsight={isAIEnabled}
+          showInsight={showInsight}
           onShowInsightChange={handleShowInsightChange}
         />
       );
