@@ -1826,4 +1826,80 @@ export class HRAnalytics {
   getAgencies(): string[] {
     return ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nantes', 'Strasbourg'];
   }
+
+  // Méthodes pour les détails d'équité
+  getAgePyramidData(filters: FilterOptions): any[] {
+    const ageRanges = ['18-25', '26-35', '36-45', '46-55', '56-65'];
+    
+    return ageRanges.map(ageRange => {
+      const hommes = faker.number.int({ min: 5, max: 45 });
+      const femmes = faker.number.int({ min: 5, max: 45 });
+      const hommesN1 = filters.compareWith ? faker.number.int({ min: 5, max: 45 }) : null;
+      const femmesN1 = filters.compareWith ? faker.number.int({ min: 5, max: 45 }) : null;
+      
+      return {
+        ageRange,
+        hommes,
+        femmes,
+        ...(hommesN1 && { hommesN1 }),
+        ...(femmesN1 && { femmesN1 })
+      };
+    });
+  }
+
+  getEducationDistribution(filters: FilterOptions): any[] {
+    const educationLevels = [
+      'Doctorat',
+      'Master',
+      'Licence',
+      'DUT/BTS',
+      'Baccalauréat',
+      'Formation professionnelle'
+    ];
+    
+    return educationLevels.map(level => {
+      const value = faker.number.int({ min: 15, max: 80 });
+      const percentage = faker.number.float({ min: 8, max: 35, multipleOf: 0.1 });
+      
+      return {
+        name: level,
+        value,
+        percentage
+      };
+    });
+  }
+
+  getSalaryGapByCategory(filters: FilterOptions): any[] {
+    const categories = ['Direction', 'Cadres', 'Agents maîtrise', 'Employés', 'Ouvriers'];
+    
+    return categories.map(category => {
+      const gapPercentage = faker.number.float({ min: -15, max: 15, multipleOf: 0.1 });
+      const gapPercentageN1 = filters.compareWith ? faker.number.float({ min: -15, max: 15, multipleOf: 0.1 }) : null;
+      
+      return {
+        category,
+        gapPercentage,
+        ...(gapPercentageN1 && { gapPercentageN1 })
+      };
+    });
+  }
+
+  getGenderRatioByDepartment(filters: FilterOptions): any[] {
+    const departments = this.getDepartments();
+    
+    return departments.map(department => {
+      const menPercentage = faker.number.float({ min: 30, max: 70, multipleOf: 0.1 });
+      const womenPercentage = 100 - menPercentage;
+      const menPercentageN1 = filters.compareWith ? faker.number.float({ min: 30, max: 70, multipleOf: 0.1 }) : null;
+      const womenPercentageN1 = menPercentageN1 ? 100 - menPercentageN1 : null;
+      
+      return {
+        department,
+        menPercentage,
+        womenPercentage,
+        ...(menPercentageN1 && { menPercentageN1 }),
+        ...(womenPercentageN1 && { womenPercentageN1 })
+      };
+    });
+  }
 }
