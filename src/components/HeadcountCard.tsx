@@ -267,34 +267,34 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                     labelFormatter={(label) => `Département: ${label}`}
                   />
                   <Legend />
-                  <Bar 
-                    dataKey="effectif" 
-                    fill="#5B5FC7" 
-                    name="Effectif"
-                    radius={[2, 2, 0, 0]}
-                  />
-                  <Bar 
-                    dataKey="etp" 
-                    fill="#6264A7" 
-                    name="ETP"
-                    radius={[2, 2, 0, 0]}
-                  />
+                   <Bar 
+                     dataKey="effectif" 
+                     fill="#5B5FC7" 
+                     name={data.comparisonLabels?.current ? data.comparisonLabels.current : "Effectif"}
+                     radius={[2, 2, 0, 0]}
+                   />
+                   <Bar 
+                     dataKey="etp" 
+                     fill="#6264A7" 
+                     name="ETP"
+                     radius={[2, 2, 0, 0]}
+                   />
                   {data.departmentBreakdown[0]?.countPrevious !== undefined && (
                     <>
-                      <Bar 
-                        dataKey="effectifPrecedent" 
-                        fill="#5B5FC7" 
-                        fillOpacity={0.5}
-                        name="Effectif (période précédente)"
-                        radius={[2, 2, 0, 0]}
-                      />
-                      <Bar 
-                        dataKey="etpPrecedent" 
-                        fill="#6264A7" 
-                        fillOpacity={0.5}
-                        name="ETP (période précédente)"
-                        radius={[2, 2, 0, 0]}
-                      />
+                       <Bar 
+                         dataKey="effectifPrecedent" 
+                         fill="#5B5FC7" 
+                         fillOpacity={0.5}
+                         name={`Effectif (${data.comparisonLabels?.comparison || 'période précédente'})`}
+                         radius={[2, 2, 0, 0]}
+                       />
+                       <Bar 
+                         dataKey="etpPrecedent" 
+                         fill="#6264A7" 
+                         fillOpacity={0.5}
+                         name={`ETP (${data.comparisonLabels?.comparison || 'période précédente'})`}
+                         radius={[2, 2, 0, 0]}
+                       />
                     </>
                   )}
                 </BarChart>

@@ -63,6 +63,7 @@ export interface ExtendedHeadcountData {
   comparison: 'higher' | 'lower' | 'stable';
   category: 'positive' | 'negative' | 'neutral';
   insight: string;
+  comparisonLabels?: { current: string; comparison: string };
 }
 
 export interface EDIData {
@@ -399,6 +400,7 @@ export class HRAnalytics {
       .sort((a, b) => b.count - a.count);
     
     const trend = this.calculateTrend(filters);
+    const comparisonLabels = this.getComparisonLabels(filters);
     
     return {
       totalHeadcount,
@@ -409,7 +411,8 @@ export class HRAnalytics {
       departmentBreakdown,
       comparison: this.getTrendComparison(trend),
       category: totalHeadcount < 100 ? 'negative' : 'positive',
-      insight: `Effectif de ${totalHeadcount} collaborateurs (${totalETP.toFixed(1)} ETP). ${newHires} arrivée${newHires > 1 ? 's' : ''} et ${departures} départ${departures > 1 ? 's' : ''} sur la période. ${trend && trend > 0 ? '📈 Croissance de l\'effectif' : trend && trend < 0 ? '📉 Réduction de l\'effectif' : '📊 Effectif stable'}.`
+      insight: `Effectif de ${totalHeadcount} collaborateurs (${totalETP.toFixed(1)} ETP). ${newHires} arrivée${newHires > 1 ? 's' : ''} et ${departures} départ${departures > 1 ? 's' : ''} sur la période. ${trend && trend > 0 ? '📈 Croissance de l\'effectif' : trend && trend < 0 ? '📉 Réduction de l\'effectif' : '📊 Effectif stable'}.`,
+      comparisonLabels
     };
   }
 
@@ -1226,7 +1229,7 @@ export class HRAnalytics {
     };
   }
 
-  // Méthode publique pour obtenir les labels de comparaison
+  // Méthode publique pour obtenir les labels de comparaison avec format "vs"
   getComparisonLabels(filters: FilterOptions): { current: string; comparison: string } {
     if (!filters.compareWith) {
       return { current: 'Actuel', comparison: 'Précédent' };
@@ -1237,7 +1240,7 @@ export class HRAnalytics {
 
     if (filters.period === 'year') {
       return {
-        current: `${now.getFullYear()}`,
+        current: `${now.getFullYear()} vs ${now.getFullYear() - 1}`,
         comparison: `${now.getFullYear() - 1}`
       };
     } else if (filters.period === 'quarter') {
@@ -1247,30 +1250,30 @@ export class HRAnalytics {
         const prevQuarter = currentQuarter === 1 ? 4 : currentQuarter - 1;
         const prevYear = currentQuarter === 1 ? now.getFullYear() - 1 : now.getFullYear();
         return {
-          current: `T${currentQuarter} ${now.getFullYear()}`,
+          current: `T${currentQuarter} ${now.getFullYear()} vs T${prevQuarter} ${prevYear}`,
           comparison: `T${prevQuarter} ${prevYear}`
         };
       } else {
         return {
-          current: `T${currentQuarter} ${now.getFullYear()}`,
+          current: `T${currentQuarter} ${now.getFullYear()} vs T${currentQuarter} ${now.getFullYear() - 1}`,
           comparison: `T${currentQuarter} ${now.getFullYear() - 1}`
         };
       }
     } else if (filters.period === 'month') {
-      const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 
-                     'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+      const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 
+                     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
       const currentMonth = now.getMonth();
       
       if (filters.compareWith === 'previous') {
         const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
         const prevYear = currentMonth === 0 ? now.getFullYear() - 1 : now.getFullYear();
         return {
-          current: `${months[currentMonth]} ${now.getFullYear()}`,
+          current: `${months[currentMonth]} ${now.getFullYear()} vs ${months[prevMonth]} ${prevYear}`,
           comparison: `${months[prevMonth]} ${prevYear}`
         };
       } else {
         return {
-          current: `${months[currentMonth]} ${now.getFullYear()}`,
+          current: `${months[currentMonth]} ${now.getFullYear()} vs ${months[currentMonth]} ${now.getFullYear() - 1}`,
           comparison: `${months[currentMonth]} ${now.getFullYear() - 1}`
         };
       }
