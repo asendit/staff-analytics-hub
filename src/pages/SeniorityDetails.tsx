@@ -189,44 +189,8 @@ const SeniorityDetails: React.FC<SeniorityDetailsProps> = ({
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* 1. Répartition de l'ancienneté */}
+          {/* 1. Évolution de l'ancienneté moyenne - Full width on top */}
           <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5 text-teams-purple" />
-                <span>Répartition par tranche d'ancienneté</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={detailData.seniorityDistribution}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="range" />
-                  <YAxis />
-                  <Tooltip 
-                    formatter={(value, name) => [value, name === 'count' ? 'Collaborateurs' : 'Pourcentage']}
-                    labelFormatter={(label) => `Ancienneté: ${label}`}
-                  />
-                  <Bar dataKey="count" fill="#8884d8" name="Nombre de collaborateurs">
-                    {detailData.seniorityDistribution.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-              {showInsight && detailData.insight && (
-                <div className="mt-4 p-3 bg-teams-purple/5 rounded-md border border-teams-purple/20">
-                  <div className="flex items-start space-x-2">
-                    <Sparkles className="h-4 w-4 text-teams-purple mt-0.5 flex-shrink-0" />
-                    <p className="text-xs text-muted-foreground leading-relaxed">{detailData.insight}</p>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* 2. Évolution de l'ancienneté moyenne */}
-          <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <TrendingUp className="h-5 w-5 text-teams-purple" />
@@ -266,45 +230,146 @@ const SeniorityDetails: React.FC<SeniorityDetailsProps> = ({
             </CardContent>
           </Card>
 
-          {/* 3. Taux de rétention par cohorte */}
-          <Card>
+          {/* 2. Répartition de l'ancienneté */}
+          <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Users className="h-5 w-5 text-teams-purple" />
-                <span>Rétention par cohorte</span>
+                <BarChart3 className="h-5 w-5 text-teams-purple" />
+                <span>Répartition par tranche d'ancienneté</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={detailData.cohortRetention}>
+                <BarChart data={detailData.seniorityDistribution}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="yearsElapsed" />
+                  <XAxis dataKey="range" />
                   <YAxis />
                   <Tooltip 
-                    formatter={(value, name) => [`${value}%`, `Cohorte ${name}`]}
-                    labelFormatter={(label) => `Années écoulées: ${label}`}
+                    formatter={(value, name) => [
+                      value, 
+                      name === 'count' ? 'Collaborateurs' : 
+                      name === 'countPrevious' ? 'Collaborateurs (précédent)' : 'Pourcentage'
+                    ]}
+                    labelFormatter={(label) => `Ancienneté: ${label}`}
                   />
-                  <Legend />
-                  {detailData.cohortRetention.length > 0 && 
-                    Object.keys(detailData.cohortRetention[0])
-                      .filter(key => key !== 'yearsElapsed')
-                      .map((cohort, index) => (
-                        <Line 
-                          key={cohort}
-                          type="monotone" 
-                          dataKey={cohort} 
-                          stroke={COLORS[index % COLORS.length]} 
-                          strokeWidth={2}
-                          name={cohort}
-                        />
-                      ))
-                  }
-                </LineChart>
+                  {detailData.seniorityDistribution[0]?.comparisonLabel && (
+                    <Legend />
+                  )}
+                  <Bar dataKey="count" fill="#8884d8" name={detailData.seniorityDistribution[0]?.comparisonLabel?.split(' vs ')[0] || 'Collaborateurs'}>
+                    {detailData.seniorityDistribution.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Bar>
+                  {detailData.seniorityDistribution[0]?.countPrevious !== null && (
+                    <Bar 
+                      dataKey="countPrevious" 
+                      fill="#8884d8" 
+                      fillOpacity={0.6} 
+                      name={detailData.seniorityDistribution[0]?.comparisonLabel?.split(' vs ')[1] || 'Collaborateurs (précédent)'}
+                    >
+                      {detailData.seniorityDistribution.map((entry: any, index: number) => (
+                        <Cell key={`cell-prev-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={0.6} />
+                      ))}
+                    </Bar>
+                  )}
+                </BarChart>
+              </ResponsiveContainer>
+              {showInsight && detailData.insight && (
+                <div className="mt-4 p-3 bg-teams-purple/5 rounded-md border border-teams-purple/20">
+                  <div className="flex items-start space-x-2">
+                    <Sparkles className="h-4 w-4 text-teams-purple mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-muted-foreground leading-relaxed">{detailData.insight}</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* 3. Ancienneté par département */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="h-5 w-5 text-teams-purple" />
+                <span>Ancienneté par département</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={detailData.seniorityByDepartment}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="department" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      `${value} ans`, 
+                      name === 'avgSeniority' ? 'Ancienneté moyenne' : 'Ancienneté moyenne (précédent)'
+                    ]}
+                    labelFormatter={(label) => `Département: ${label}`}
+                  />
+                  {detailData.seniorityByDepartment[0]?.comparisonLabel && (
+                    <Legend />
+                  )}
+                  <Bar 
+                    dataKey="avgSeniority" 
+                    fill="#8884d8" 
+                    name={detailData.seniorityByDepartment[0]?.comparisonLabel?.split(' vs ')[0] || 'Ancienneté moyenne'}
+                  />
+                  {detailData.seniorityByDepartment[0]?.avgSeniorityPrevious !== null && (
+                    <Bar 
+                      dataKey="avgSeniorityPrevious" 
+                      fill="#8884d8" 
+                      fillOpacity={0.6}
+                      name={detailData.seniorityByDepartment[0]?.comparisonLabel?.split(' vs ')[1] || 'Ancienneté moyenne (précédent)'}
+                    />
+                  )}
+                </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          {/* 4. Départs par ancienneté */}
+          {/* 4. Ancienneté par agence */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-teams-purple" />
+                <span>Ancienneté par agence</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={detailData.seniorityByAgency}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="agency" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      `${value} ans`, 
+                      name === 'avgSeniority' ? 'Ancienneté moyenne' : 'Ancienneté moyenne (précédent)'
+                    ]}
+                    labelFormatter={(label) => `Agence: ${label}`}
+                  />
+                  {detailData.seniorityByAgency[0]?.comparisonLabel && (
+                    <Legend />
+                  )}
+                  <Bar 
+                    dataKey="avgSeniority" 
+                    fill="#82ca9d" 
+                    name={detailData.seniorityByAgency[0]?.comparisonLabel?.split(' vs ')[0] || 'Ancienneté moyenne'}
+                  />
+                  {detailData.seniorityByAgency[0]?.avgSeniorityPrevious !== null && (
+                    <Bar 
+                      dataKey="avgSeniorityPrevious" 
+                      fill="#82ca9d" 
+                      fillOpacity={0.6}
+                      name={detailData.seniorityByAgency[0]?.comparisonLabel?.split(' vs ')[1] || 'Ancienneté moyenne (précédent)'}
+                    />
+                  )}
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* 5. Départs par ancienneté */}
           <Card className="lg:col-span-2">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -333,14 +398,37 @@ const SeniorityDetails: React.FC<SeniorityDetailsProps> = ({
                   <XAxis dataKey="range" />
                   <YAxis />
                   <Tooltip 
-                    formatter={(value, name) => [value, name === 'count' ? 'Départs' : 'Pourcentage']}
+                    formatter={(value, name) => [
+                      value, 
+                      name === 'count' ? 'Départs' : 
+                      name === 'countPrevious' ? 'Départs (précédent)' : 'Pourcentage'
+                    ]}
                     labelFormatter={(label) => `Ancienneté: ${label}`}
                   />
-                  <Bar dataKey="count" fill="#ff7300" name="Nombre de départs">
+                  {detailData.departuresBySeniority[0]?.comparisonLabel && (
+                    <Legend />
+                  )}
+                  <Bar 
+                    dataKey="count" 
+                    fill="#ff7300" 
+                    name={detailData.departuresBySeniority[0]?.comparisonLabel?.split(' vs ')[0] || 'Départs'}
+                  >
                     {detailData.departuresBySeniority.map((entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Bar>
+                  {detailData.departuresBySeniority[0]?.countPrevious !== null && (
+                    <Bar 
+                      dataKey="countPrevious" 
+                      fill="#ff7300" 
+                      fillOpacity={0.6}
+                      name={detailData.departuresBySeniority[0]?.comparisonLabel?.split(' vs ')[1] || 'Départs (précédent)'}
+                    >
+                      {detailData.departuresBySeniority.map((entry: any, index: number) => (
+                        <Cell key={`cell-prev-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={0.6} />
+                      ))}
+                    </Bar>
+                  )}
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
