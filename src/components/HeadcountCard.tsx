@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, TrendingDown, Minus, Info, BarChart3, UserPlus, UserMinus, Clock } from 'lucide-react';
+import { Users, TrendingUp, TrendingDown, Minus, Info, BarChart3, UserPlus, UserMinus, Clock, Maximize2, Minimize2 } from 'lucide-react';
 import { ExtendedHeadcountData } from '../services/hrAnalytics';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -20,6 +20,7 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
   showInsight = true 
 }) => {
   const navigate = useNavigate();
+  const [isExtendedView, setIsExtendedView] = useState(false);
 
   const handleCardClick = () => {
     navigate('/kpi-details/headcount');
@@ -39,7 +40,10 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
   };
 
   // Préparer les données pour le graphique
-  const chartData = data.departmentBreakdown.map(dept => ({
+  const chartData = (isExtendedView 
+    ? data.departmentBreakdown 
+    : data.departmentBreakdown.slice(0, 5)
+  ).map(dept => ({
     name: dept.department,
     effectif: dept.count,
     etp: dept.etp
@@ -195,21 +199,54 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
           </div>
 
           {/* Graphique département */}
-          <div className="teams-card p-4 border border-teams-purple/20">
-            <div className="flex items-center space-x-2 mb-4">
-              <BarChart3 className="h-4 w-4 text-teams-purple" />
-              <span className="text-sm font-semibold text-foreground">Top 5 Départements</span>
+          <div className={`teams-card p-4 border border-teams-purple/20 ${isExtendedView ? 'col-span-2' : ''}`}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <BarChart3 className="h-4 w-4 text-teams-purple" />
+                <span className="text-sm font-semibold text-foreground">
+                  {isExtendedView 
+                    ? `Tous les départements (${data.departmentBreakdown.length})` 
+                    : `Top ${Math.min(5, data.departmentBreakdown.length)} Départements`
+                  }
+                </span>
+              </div>
+              {data.departmentBreakdown.length > 5 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsExtendedView(!isExtendedView);
+                  }}
+                  className="h-6 w-6 p-0 text-muted-foreground hover:text-teams-purple"
+                  title={isExtendedView ? "Vue compacte" : "Voir tous les départements"}
+                >
+                  {isExtendedView ? (
+                    <Minimize2 className="h-3 w-3" />
+                  ) : (
+                    <Maximize2 className="h-3 w-3" />
+                  )}
+                </Button>
+              )}
             </div>
-            <div className="h-48">
+            <div className={`${isExtendedView ? 'h-64' : 'h-48'}`}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                <BarChart 
+                  data={chartData} 
+                  margin={{ 
+                    top: 10, 
+                    right: 10, 
+                    left: 10, 
+                    bottom: isExtendedView ? 60 : 10 
+                  }}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis 
                     dataKey="name" 
                     fontSize={10}
-                    angle={-45}
+                    angle={isExtendedView ? -45 : -45}
                     textAnchor="end"
-                    height={60}
+                    height={isExtendedView ? 80 : 60}
                     stroke="hsl(var(--muted-foreground))"
                   />
                   <YAxis fontSize={10} stroke="hsl(var(--muted-foreground))" />
@@ -233,6 +270,11 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                 </BarChart>
               </ResponsiveContainer>
             </div>
+            {isExtendedView && (
+              <div className="mt-2 text-xs text-muted-foreground text-center">
+                Affichage complet • Cliquez sur l'icône pour revenir à la vue compacte
+              </div>
+            )}
           </div>
         </div>
 

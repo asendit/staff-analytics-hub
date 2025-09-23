@@ -3,7 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, TrendingUp, TrendingDown, Minus, Users, BarChart3, PieChart, Activity, UserPlus, UserMinus, Brain, Sparkles } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Minus, Users, BarChart3, PieChart, Activity, UserPlus, UserMinus, Brain, Sparkles, Maximize2, Minimize2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 import { HRAnalytics, ExtendedHeadcountData, FilterOptions } from '../services/hrAnalytics';
 import FilterPanel from '../components/FilterPanel';
@@ -29,6 +29,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
   const [searchParams] = useSearchParams();
   const [detailData, setDetailData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isExtendedDepartmentView, setIsExtendedDepartmentView] = useState(false);
 
   // Obtenir les labels de comparaison
   const comparisonLabels = analytics.getComparisonLabels(filters);
@@ -450,22 +451,63 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
           </Card>
 
           {/* Répartition par département */}
-          <Card className="teams-card">
+          <Card className={`teams-card ${isExtendedDepartmentView ? 'col-span-full' : ''}`}>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5 text-primary" />
-                <span>Répartition par département</span>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <BarChart3 className="h-5 w-5 text-primary" />
+                  <span>Répartition par département</span>
+                  <Badge variant="outline" className="text-xs">
+                    {isExtendedDepartmentView 
+                      ? `${detailData.departmentBreakdown.length} départements` 
+                      : `Top ${Math.min(5, detailData.departmentBreakdown.length)}`
+                    }
+                  </Badge>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsExtendedDepartmentView(!isExtendedDepartmentView)}
+                  className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
+                >
+                  {isExtendedDepartmentView ? (
+                    <>
+                      <Minimize2 className="h-4 w-4" />
+                      <span className="text-sm">Vue compacte</span>
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="h-4 w-4" />
+                      <span className="text-sm">Voir tout</span>
+                    </>
+                  )}
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-64">
+              <div className={`${isExtendedDepartmentView ? 'h-96' : 'h-64'}`}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={detailData.departmentBreakdown}>
+                  <BarChart 
+                    data={isExtendedDepartmentView 
+                      ? detailData.departmentBreakdown 
+                      : detailData.departmentBreakdown.slice(0, 5)
+                    }
+                    margin={{ 
+                      top: 10, 
+                      right: 10, 
+                      left: 10, 
+                      bottom: isExtendedDepartmentView ? 80 : 40 
+                    }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis 
                       type="category" 
                       dataKey="department" 
                       stroke="hsl(var(--muted-foreground))"
+                      angle={isExtendedDepartmentView ? -45 : 0}
+                      textAnchor={isExtendedDepartmentView ? "end" : "middle"}
+                      height={isExtendedDepartmentView ? 80 : 40}
+                      fontSize={isExtendedDepartmentView ? 11 : 12}
                     />
                     <YAxis type="number" stroke="hsl(var(--muted-foreground))" />
                     <Tooltip />
@@ -486,6 +528,11 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              {isExtendedDepartmentView && (
+                <div className="mt-4 text-sm text-muted-foreground text-center">
+                  Affichage de tous les départements • Utilisez la vue compacte pour un aperçu rapide
+                </div>
+              )}
             </CardContent>
           </Card>
 
