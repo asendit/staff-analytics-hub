@@ -93,60 +93,63 @@ const SeniorityDetails: React.FC<SeniorityDetailsProps> = ({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 space-y-4 lg:space-y-0">
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/')}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Retour au tableau de bord
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Analyse de l'ancienneté</h1>
-              <p className="text-muted-foreground">Vue détaillée de l'ancienneté et de la rétention</p>
+      {/* Header avec navigation */}
+      <div className="border-b border-border bg-card">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                onClick={() => navigate('/')}
+                className="p-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div>
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <span>Tableau de bord</span>
+                  <span>/</span>
+                  <span>KPI</span>
+                  <span>/</span>
+                  <span className="text-foreground">Ancienneté</span>
+                </div>
+                <h1 className="text-2xl font-semibold text-foreground mt-1">
+                  Détails - Ancienneté
+                </h1>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            {/* Filtre appliqués */}
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">
-                Période: {filters.period === 'month' ? 'Mois' : filters.period === 'quarter' ? 'Trimestre' : 'Année'}
-              </Badge>
-              {filters.department && (
-                <Badge variant="outline">Département: {filters.department}</Badge>
-              )}
-              {filters.agency && (
-                <Badge variant="outline">Agence: {filters.agency}</Badge>
-              )}
-            </div>
-            
-            {/* Toggle AI */}
             <div className="flex items-center space-x-2">
-              <Brain className="h-4 w-4 text-teams-purple" />
-              <span className="text-sm font-medium">Analyse IA</span>
-              <Switch
-                checked={showInsight}
-                onCheckedChange={handleAIToggle}
-              />
+              <Badge variant="outline" className="capitalize">
+                {filters.period}
+              </Badge>
+              {filters.compareWith && (
+                <Badge variant="outline">
+                  Avec comparaison
+                </Badge>
+              )}
+              <div className="flex items-center space-x-2">
+                <Brain className="h-4 w-4 text-teams-purple" />
+                <span className="text-sm font-medium">Analyse IA</span>
+                <Switch
+                  checked={showInsight}
+                  onCheckedChange={handleAIToggle}
+                />
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
 
         {/* Filtres */}
-        <div className="mb-6">
-          <FilterPanel
-            filters={filters}
-            onFiltersChange={onFiltersChange}
-            departments={departments}
-            agencies={agencies}
-            onRefresh={() => {}}
-          />
-        </div>
+        <FilterPanel
+          filters={filters}
+          onFiltersChange={onFiltersChange}
+          departments={departments}
+          agencies={agencies}
+          onRefresh={() => {}}
+        />
 
         {/* Métriques principales */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
