@@ -46,7 +46,11 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
   ).map(dept => ({
     name: dept.department,
     effectif: dept.count,
-    etp: dept.etp
+    etp: dept.etp,
+    ...(dept.countPrevious !== undefined && {
+      effectifPrecedent: dept.countPrevious,
+      etpPrecedent: dept.etpPrevious
+    })
   }));
 
   return (
@@ -251,7 +255,15 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                   />
                   <YAxis fontSize={10} stroke="hsl(var(--muted-foreground))" />
                   <Tooltip 
-                    formatter={(value, name) => [value, name === 'effectif' ? 'Effectif' : 'ETP']}
+                    formatter={(value, name) => {
+                      const labels: { [key: string]: string } = {
+                        'effectif': 'Effectif',
+                        'etp': 'ETP',
+                        'effectifPrecedent': 'Effectif (période précédente)',
+                        'etpPrecedent': 'ETP (période précédente)'
+                      };
+                      return [value, labels[name as string] || name];
+                    }}
                     labelFormatter={(label) => `Département: ${label}`}
                   />
                   <Legend />
@@ -267,6 +279,24 @@ const HeadcountCard: React.FC<HeadcountCardProps> = ({
                     name="ETP"
                     radius={[2, 2, 0, 0]}
                   />
+                  {data.departmentBreakdown[0]?.countPrevious !== undefined && (
+                    <>
+                      <Bar 
+                        dataKey="effectifPrecedent" 
+                        fill="#5B5FC7" 
+                        fillOpacity={0.5}
+                        name="Effectif (période précédente)"
+                        radius={[2, 2, 0, 0]}
+                      />
+                      <Bar 
+                        dataKey="etpPrecedent" 
+                        fill="#6264A7" 
+                        fillOpacity={0.5}
+                        name="ETP (période précédente)"
+                        radius={[2, 2, 0, 0]}
+                      />
+                    </>
+                  )}
                 </BarChart>
               </ResponsiveContainer>
             </div>

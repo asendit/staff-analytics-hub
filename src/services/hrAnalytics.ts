@@ -53,7 +53,13 @@ export interface ExtendedHeadcountData {
   newHires: number;
   departures: number;
   trend: number | null;
-  departmentBreakdown: Array<{ department: string; count: number; etp: number }>;
+  departmentBreakdown: Array<{ 
+    department: string; 
+    count: number; 
+    etp: number;
+    countPrevious?: number;
+    etpPrevious?: number;
+  }>;
   comparison: 'higher' | 'lower' | 'stable';
   category: 'positive' | 'negative' | 'neutral';
   insight: string;
@@ -362,7 +368,7 @@ export class HRAnalytics {
       return terminationDate && terminationDate >= periodStart && terminationDate <= periodEnd;
     }).length;
     
-    // Répartition par département (top 5)
+    // Répartition par département 
     const departmentCounts = new Map<string, { count: number; etp: number }>();
     activeEmployees.forEach(employee => {
       const current = departmentCounts.get(employee.department) || { count: 0, etp: 0 };
@@ -372,10 +378,25 @@ export class HRAnalytics {
       });
     });
     
+    // Simuler les données de comparaison si nécessaire
     const departmentBreakdown = Array.from(departmentCounts.entries())
-      .map(([department, data]) => ({ department, ...data }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+      .map(([department, data]) => {
+        const result: any = {
+          department,
+          count: data.count,
+          etp: data.etp
+        };
+        
+        // Ajouter les données de comparaison simulées si demandées
+        if (filters.compareWith) {
+          const variationFactor = faker.number.float({ min: 0.85, max: 1.15 });
+          result.countPrevious = Math.max(0, Math.round(data.count * variationFactor));
+          result.etpPrevious = Math.max(0, Math.round(data.etp * variationFactor * 10) / 10);
+        }
+        
+        return result;
+      })
+      .sort((a, b) => b.count - a.count);
     
     const trend = this.calculateTrend(filters);
     

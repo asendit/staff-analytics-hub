@@ -104,13 +104,7 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
           { agency: 'Bordeaux', count: 34, countN1: 30 }
         ];
 
-        const departmentBreakdown = [
-          { department: 'Technique', count: 142, countN1: 135 },
-          { department: 'Commercial', count: 89, countN1: 82 },
-          { department: 'Marketing', count: 45, countN1: 40 },
-          { department: 'RH', count: 23, countN1: 21 },
-          { department: 'Finance', count: 19, countN1: 17 }
-        ];
+        const departmentBreakdown = headcountData.departmentBreakdown;
 
         setDetailData({
           ...headcountData,
@@ -517,10 +511,20 @@ const KPIDetails: React.FC<KPIDetailsProps> = ({
                       name={`Effectif ${comparisonLabels.current}`}
                       radius={[4, 4, 0, 0]}
                     />
-                    {filters.compareWith && (
+                    {filters.compareWith && detailData.departmentBreakdown[0]?.countPrevious !== undefined && (
+                      <Bar 
+                        dataKey="countPrevious" 
+                        fill="hsl(var(--muted-foreground))" 
+                        fillOpacity={0.7}
+                        name={`Effectif ${comparisonLabels.comparison}`}
+                        radius={[4, 4, 0, 0]}
+                      />
+                    )}
+                    {filters.compareWith && detailData.departmentBreakdown[0]?.countN1 !== undefined && (
                       <Bar 
                         dataKey="countN1" 
                         fill="hsl(var(--muted-foreground))" 
+                        fillOpacity={0.7}
                         name={`Effectif ${comparisonLabels.comparison}`}
                         radius={[4, 4, 0, 0]}
                       />
