@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import KPIDetails from '../pages/KPIDetails';
 import TurnoverDetails from '../pages/TurnoverDetails';
 import SeniorityDetails from '../pages/SeniorityDetails';
+import AbsenteeismDetails from '../pages/AbsenteeismDetails';
 import { HRAnalytics, FilterOptions } from '../services/hrAnalytics';
 import { convertHRData } from '../utils/dataConverter';
 import { generateHRData } from '../data/hrDataGenerator';
@@ -79,6 +80,16 @@ const KPIDetailsRoute: React.FC = () => {
     case 'seniority':
       return (
         <SeniorityDetails
+          analytics={analytics}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          showInsight={showInsight}
+          onShowInsightChange={handleShowInsightChange}
+        />
+      );
+    case 'absenteeism':
+      return (
+        <AbsenteeismDetails
           analytics={analytics}
           filters={filters}
           onFiltersChange={handleFiltersChange}

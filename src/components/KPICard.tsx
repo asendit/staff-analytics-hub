@@ -28,6 +28,8 @@ const KPICard: React.FC<KPICardProps> = ({
   const handleCardClick = () => {
     if (kpi.id === 'turnover') {
       navigate('/kpi-details/turnover');
+    } else if (kpi.id === 'absenteeism') {
+      navigate('/kpi-details/absenteeism');
     } else {
       onChartClick();
     }

@@ -1762,4 +1762,68 @@ export class HRAnalytics {
 
     return employees;
   }
+
+  // Méthodes pour les détails d'absentéisme
+  getAbsenteeismEvolution(filters: FilterOptions): any[] {
+    const periods = this.generatePeriodLabels(filters.period);
+    
+    return periods.map(period => {
+      const currentRate = faker.number.float({ min: 2, max: 8, multipleOf: 0.1 });
+      const previousRate = filters.compareWith ? faker.number.float({ min: 2, max: 8, multipleOf: 0.1 }) : null;
+      
+      return {
+        period,
+        current: currentRate,
+        ...(previousRate && { previous: previousRate })
+      };
+    });
+  }
+
+  getAbsenteeismByAgency(filters: FilterOptions): any[] {
+    const agencies = this.getAgencies();
+    
+    return agencies.map(agency => ({
+      name: agency,
+      value: faker.number.float({ min: 1, max: 10, multipleOf: 0.1 }),
+      comparison: filters.compareWith ? faker.number.float({ min: -2, max: 2, multipleOf: 0.1 }) : null
+    }));
+  }
+
+  getAbsenteeismByDepartment(filters: FilterOptions): any[] {
+    const departments = this.getDepartments();
+    
+    return departments.map(dept => ({
+      name: dept,
+      value: faker.number.float({ min: 1, max: 10, multipleOf: 0.1 }),
+      comparison: filters.compareWith ? faker.number.float({ min: -2, max: 2, multipleOf: 0.1 }) : null
+    }));
+  }
+
+  getAbsenteeismByType(filters: FilterOptions): any[] {
+    const types = ['Maladie', 'Congés familiaux', 'Accident travail', 'Formation', 'Autres'];
+    
+    return types.map(type => ({
+      name: type,
+      value: faker.number.float({ min: 10, max: 40, multipleOf: 0.1 }),
+      comparison: filters.compareWith ? faker.number.float({ min: -5, max: 5, multipleOf: 0.1 }) : null
+    }));
+  }
+
+  getAbsenteeismByDemographic(filters: FilterOptions): any[] {
+    const ageRanges = ['<25 ans', '25-35 ans', '36-45 ans', '46-55 ans', '>55 ans'];
+    
+    return ageRanges.map(range => ({
+      name: range,
+      value: faker.number.float({ min: 1, max: 12, multipleOf: 0.1 }),
+      comparison: filters.compareWith ? faker.number.float({ min: -3, max: 3, multipleOf: 0.1 }) : null
+    }));
+  }
+
+  getDepartments(): string[] {
+    return ['RH', 'IT', 'Finance', 'Commercial', 'Marketing', 'Production'];
+  }
+
+  getAgencies(): string[] {
+    return ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nantes', 'Strasbourg'];
+  }
 }
