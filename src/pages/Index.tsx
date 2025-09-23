@@ -84,12 +84,10 @@ const Index = () => {
       name: 'Tableau de bord Manager (Défaut)',
       description: 'Indicateurs de gestion d\'équipe et de performance opérationnelle',
       kpis: [
-        'team-headcount', 'team-performance', 'absenteeism', 'remote-work', 
-        'team-satisfaction', 'workload-distribution', 'training-completion', 'team-turnover'
+        'team-headcount', 'team-turnover', 'absenteeism', 'remote-work', 'team-satisfaction'
       ],
       kpiOrder: [
-        'team-headcount', 'team-performance', 'team-satisfaction', 'absenteeism', 
-        'remote-work', 'workload-distribution', 'training-completion', 'team-turnover'
+        'team-headcount', 'team-turnover', 'absenteeism', 'remote-work', 'team-satisfaction'
       ],
       createdAt: new Date().toISOString(),
       isDefault: true
