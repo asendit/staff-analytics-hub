@@ -1943,4 +1943,60 @@ export class HRAnalytics {
       };
     });
   }
+
+  // Méthodes pour les détails de masse salariale
+  getSalaryEvolution(filters: FilterOptions): any[] {
+    const periods = [];
+    const currentDate = new Date();
+    
+    // Générer 12 mois de données
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const month = date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'short' });
+      
+      periods.push({
+        period: month,
+        value: faker.number.float({ min: 800000, max: 1200000, multipleOf: 1000 })
+      });
+    }
+    
+    return periods;
+  }
+
+  getSalaryByAgency(filters: FilterOptions): any[] {
+    const agencies = this.getAgencies();
+    
+    return agencies.map(agency => ({
+      agency,
+      value: faker.number.float({ min: 150000, max: 300000, multipleOf: 1000 })
+    }));
+  }
+
+  getSalaryByDepartment(filters: FilterOptions): any[] {
+    const departments = this.getDepartments();
+    
+    return departments.map(department => ({
+      department,
+      value: faker.number.float({ min: 120000, max: 280000, multipleOf: 1000 })
+    }));
+  }
+
+  getSalaryBySeniority(filters: FilterOptions): any[] {
+    const seniorityLevels = [
+      { name: 'Juniors (0-2 ans)', value: faker.number.float({ min: 180000, max: 250000, multipleOf: 1000 }) },
+      { name: 'Intermédiaires (3-7 ans)', value: faker.number.float({ min: 280000, max: 380000, multipleOf: 1000 }) },
+      { name: 'Seniors (8+ ans)', value: faker.number.float({ min: 320000, max: 450000, multipleOf: 1000 }) }
+    ];
+    
+    return seniorityLevels;
+  }
+
+  getSalaryByAge(filters: FilterOptions): any[] {
+    const ageGroups = ['18-25 ans', '26-35 ans', '36-45 ans', '46-55 ans', '56-65 ans'];
+    
+    return ageGroups.map(ageGroup => ({
+      ageGroup,
+      value: faker.number.float({ min: 120000, max: 350000, multipleOf: 1000 })
+    }));
+  }
 }

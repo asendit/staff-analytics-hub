@@ -5,6 +5,7 @@ import TurnoverDetails from '../pages/TurnoverDetails';
 import SeniorityDetails from '../pages/SeniorityDetails';
 import AbsenteeismDetails from '../pages/AbsenteeismDetails';
 import EquityDetails from '../pages/EquityDetails';
+import SalaryDetails from '../pages/SalaryDetails';
 import { HRAnalytics, FilterOptions } from '../services/hrAnalytics';
 import { convertHRData } from '../utils/dataConverter';
 import { generateHRData } from '../data/hrDataGenerator';
@@ -101,6 +102,16 @@ const KPIDetailsRoute: React.FC = () => {
     case 'edi':
       return (
         <EquityDetails
+          analytics={analytics}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          showInsight={showInsight}
+          onShowInsightChange={handleShowInsightChange}
+        />
+      );
+    case 'salary':
+      return (
+        <SalaryDetails
           analytics={analytics}
           filters={filters}
           onFiltersChange={handleFiltersChange}
