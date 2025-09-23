@@ -38,7 +38,8 @@ const SeniorityRetentionCard: React.FC<SeniorityRetentionCardProps> = ({
   };
 
   const handleCardClick = () => {
-    onChartClick(data.averageSeniority);
+    // Rediriger vers la page détails ancienneté
+    window.location.href = '/kpi-details/seniority';
   };
 
   return (
