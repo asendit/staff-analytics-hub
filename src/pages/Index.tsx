@@ -70,10 +70,10 @@ const Index = () => {
       name: 'Tableau de bord CEO',
       description: 'Indicateurs stratégiques pour la direction générale',
       kpis: [
-        'headcount', 'turnover', 'absenteeism', 'salary', 'hr-expenses'
+        'headcount', 'turnover', 'absenteeism', 'hr-expenses', 'salary'
       ],
       kpiOrder: [
-        'headcount', 'turnover', 'absenteeism', 'salary', 'hr-expenses'
+        'headcount', 'turnover', 'absenteeism', 'hr-expenses', 'salary'
       ],
       createdAt: new Date().toISOString(),
       isDefault: true
