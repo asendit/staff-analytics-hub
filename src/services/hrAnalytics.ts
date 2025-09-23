@@ -1924,4 +1924,23 @@ export class HRAnalytics {
       };
     });
   }
+
+  getGenderRatioByLevel(filters: FilterOptions): any[] {
+    const levels = ['Manager', 'Collaborateur', 'Stagiaire/Alternant'];
+    
+    return levels.map(level => {
+      const menPercentage = faker.number.float({ min: 25, max: 75, fractionDigits: 1 });
+      const womenPercentage = 100 - menPercentage;
+      
+      return {
+        level,
+        menPercentage,
+        womenPercentage,
+        ...(filters.compareWith && {
+          menPercentageN1: faker.number.float({ min: 25, max: 75, fractionDigits: 1 }),
+          womenPercentageN1: faker.number.float({ min: 25, max: 75, fractionDigits: 1 })
+        })
+      };
+    });
+  }
 }

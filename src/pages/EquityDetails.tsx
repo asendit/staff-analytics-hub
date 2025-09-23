@@ -48,12 +48,14 @@ const EquityDetails: React.FC<EquityDetailsProps> = ({
       const educationDistribution = analytics.getEducationDistribution(filters);
       const salaryGapByCategory = analytics.getSalaryGapByCategory(filters);
       const genderRatioByDept = analytics.getGenderRatioByDepartment(filters);
+      const genderRatioByLevel = analytics.getGenderRatioByLevel(filters);
 
       setEquityData({
         agePyramidData,
         educationDistribution,
         salaryGapByCategory,
-        genderRatioByDept
+        genderRatioByDept,
+        genderRatioByLevel
       });
     } catch (error) {
       console.error('Erreur lors du chargement des données d\'équité:', error);
@@ -278,54 +280,60 @@ const EquityDetails: React.FC<EquityDetailsProps> = ({
             </CardContent>
           </Card>
 
-          {/* Écart salarial H/F par catégorie */}
+          {/* Ratio H/F par niveau hiérarchique */}
           <Card className="teams-card">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5 text-primary" />
-                <span>Écart salarial H/F par catégorie</span>
+                <Users className="h-5 w-5 text-primary" />
+                <span>Ratio H/F par niveau hiérarchique</span>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Comparaison des salaires hommes/femmes par département, métier ou niveau hiérarchique
+                Proportion hommes/femmes selon le niveau de responsabilité (manager ou collaborateur)
               </p>
             </CardHeader>
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={equityData.salaryGapByCategory}>
+                  <BarChart data={equityData.genderRatioByLevel}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis 
-                      dataKey="category" 
+                      dataKey="level" 
                       stroke="hsl(var(--muted-foreground))"
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
                     />
                     <YAxis stroke="hsl(var(--muted-foreground))" />
-                    <Tooltip 
-                      formatter={(value: any) => [`${value}%`, 'Écart salarial']}
+                    <Tooltip />
+                    <Legend />
+                    <Bar 
+                      dataKey="menPercentage" 
+                      stackId="a" 
+                      fill="hsl(var(--primary))" 
+                      name="Hommes (%)"
+                      radius={[0, 0, 4, 4]}
                     />
-                  <Bar 
-                    dataKey="gapPercentage" 
-                    fill="hsl(var(--primary))"
-                    name="Écart salarial (%)"
-                    radius={[4, 4, 0, 0]}
-                  >
-                    {equityData.salaryGapByCategory.map((entry: any, index: number) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={entry.gapPercentage > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--success))'} 
-                      />
-                    ))}
-                  </Bar>
+                    <Bar 
+                      dataKey="womenPercentage" 
+                      stackId="a" 
+                      fill="hsl(var(--success))" 
+                      name="Femmes (%)"
+                      radius={[4, 4, 0, 0]}
+                    />
                     {filters.compareWith && (
-                      <Bar 
-                        dataKey="gapPercentageN1" 
-                        fill="hsl(var(--muted-foreground))"
-                        name="Période précédente (%)"
-                        opacity={0.5}
-                        radius={[4, 4, 0, 0]}
-                      />
+                      <>
+                        <Bar 
+                          dataKey="menPercentageN1" 
+                          stackId="b" 
+                          fill="hsl(var(--muted-foreground))" 
+                          name="Hommes - période précédente (%)"
+                          opacity={0.5}
+                        />
+                        <Bar 
+                          dataKey="womenPercentageN1" 
+                          stackId="b" 
+                          fill="hsl(var(--muted-foreground))" 
+                          name="Femmes - période précédente (%)"
+                          opacity={0.3}
+                        />
+                      </>
                     )}
                   </BarChart>
                 </ResponsiveContainer>
@@ -338,10 +346,10 @@ const EquityDetails: React.FC<EquityDetailsProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-primary" />
-                <span>Ratio H/F par département / niveau hiérarchique</span>
+                <span>Ratio H/F par département</span>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Proportion hommes/femmes selon les équipes et les responsabilités
+                Proportion hommes/femmes selon les équipes
               </p>
             </CardHeader>
             <CardContent>
@@ -397,9 +405,64 @@ const EquityDetails: React.FC<EquityDetailsProps> = ({
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
-  );
+
+        {/* Écart salarial H/F par catégorie - Pleine largeur */}
+        <Card className="teams-card">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              <span>Écart salarial H/F par département</span>
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Comparaison des salaires hommes/femmes par département
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={equityData.salaryGapByCategory}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis 
+                    dataKey="category" 
+                    stroke="hsl(var(--muted-foreground))"
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                  />
+                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <Tooltip 
+                    formatter={(value: any) => [`${value}%`, 'Écart salarial']}
+                  />
+                <Bar 
+                  dataKey="gapPercentage" 
+                  fill="hsl(var(--primary))"
+                  name="Écart salarial (%)"
+                  radius={[4, 4, 0, 0]}
+                >
+                  {equityData.salaryGapByCategory.map((entry: any, index: number) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.gapPercentage > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--success))'} 
+                    />
+                  ))}
+                </Bar>
+                  {filters.compareWith && (
+                    <Bar 
+                      dataKey="gapPercentageN1" 
+                      fill="hsl(var(--muted-foreground))"
+                      name="Période précédente (%)"
+                      opacity={0.5}
+                      radius={[4, 4, 0, 0]}
+                    />
+                  )}
+                 </BarChart>
+               </ResponsiveContainer>
+             </div>
+           </CardContent>
+         </Card>
+       </div>
+     </div>
+   );
 };
 
 export default EquityDetails;
